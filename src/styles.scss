@@ -1,1 +1,48 @@
-/* You can add global styles to this file, and also import other style files */
+/* Глобальные стили и переменные */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* 1. CSS Переменные (Design Tokens) */
+:root {
+  // Цветовая палитра (темная тема)
+  --color-background: #121212;
+  --color-surface: #1e1e1e; // Цвет фона для карточек и других элементов
+  --color-primary: #3b82f6; // Акцентный цвет
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #a3a3a3;
+  --color-border: #2a2a2a;
+
+  // Типографика
+  --font-family-base: 'Inter', sans-serif;
+
+  // Размеры и отступы
+  --border-radius-md: 8px;
+  --spacing-unit: 8px;
+
+  // Переходы
+  --transition-speed: 0.2s ease-in-out;
+}
+
+/* 2. Сброс стилей (Reset) */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
