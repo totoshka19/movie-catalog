@@ -1,0 +1,45 @@
+<div class="app-controls">
+  <!-- Табы для выбора типа контента -->
+  <div class="app-tabs">
+    <a
+      routerLink="/all"
+      [class.active]="activeTab() === 'all'"
+      [queryParams]="{ genre: selectedGenre() }"
+      queryParamsHandling="merge"
+    >Все</a>
+    <a
+      routerLink="/movie"
+      [class.active]="activeTab() === 'movie'"
+      [queryParams]="{ genre: selectedGenre() }"
+      queryParamsHandling="merge"
+    >Фильмы</a>
+    <a
+      routerLink="/tv"
+      [class.active]="activeTab() === 'tv'"
+      [queryParams]="{ genre: selectedGenre() }"
+      queryParamsHandling="merge"
+    >Сериалы</a>
+  </div>
+
+  <!-- Фильтр по жанрам -->
+  <div class="app-genre-filter">
+    <select [value]="selectedGenre() ?? ''" (change)="onGenreChange($event)">
+      <option value="">Все жанры</option>
+      @for (genre of allGenres(); track genre.id) {
+        <option [value]="genre.id">{{ genre.name }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+<!-- Отображаем список контента -->
+@if (isLoading()) {
+  <app-skeleton-list></app-skeleton-list>
+} @else if (error()) {
+  <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
+} @else {
+  <app-movie-list
+    [movies]="filteredMedia()"
+    (movieClick)="onMediaSelect($event)"
+  ></app-movie-list>
+}

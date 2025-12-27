@@ -1,57 +1,57 @@
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
+import { Component, computed, effect, inject } from '@angular/core';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
+
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
-import { MovieListComponent } from './components/movie-list/movie-list.component';
-import { MoviesService } from './services/movies.service';
-import { Movie } from './models/movie.model';
-import { finalize } from 'rxjs';
 import { MovieDetailsComponent } from './components/movie-details/movie-details.component';
-import { SkeletonListComponent } from './components/skeleton-list/skeleton-list.component';
+import { ModalService } from './services/modal.service';
 
 @Component({
   selector: 'app-root',
-  imports: [
-    RouterOutlet,
-    SearchBarComponent,
-    MovieListComponent,
-    MovieDetailsComponent,
-    SkeletonListComponent
-  ],
+  imports: [RouterOutlet, SearchBarComponent, MovieDetailsComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App implements OnInit {
-  protected readonly title = signal('Каталог фильмов');
+export class App {
+  protected readonly title = 'Медиа Каталог';
 
-  private readonly moviesService = inject(MoviesService);
   private readonly router = inject(Router);
+  private readonly modalService = inject(ModalService);
 
-  // Сигнал для отслеживания текущего URL
-  protected readonly isRootRoute = signal(true);
+  protected readonly selectedMedia = this.modalService.selectedMedia;
 
-  // Сигналы для управления состоянием
-  private readonly allMovies = signal<Movie[]>([]); // Хранит все фильмы
-  protected readonly searchQuery = signal<string>(''); // Хранит текущий поисковый запрос
-  protected readonly isLoading = signal(true);
-  protected readonly error = signal<string | null>(null);
-  protected readonly selectedMovie = signal<Movie | null>(null);
-
-  // Вычисляемый сигнал, который автоматически фильтрует фильмы при изменении allMovies или searchQuery
-  protected readonly filteredMovies = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) {
-      return this.allMovies();
-    }
-    return this.allMovies().filter(movie =>
-      movie.title.toLowerCase().includes(query)
-    );
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map(e => e.urlAfterRedirects)
+    )
+  );
+  protected readonly isListPage = computed(() => {
+    const url = this.currentUrl() ?? '';
+    return url.startsWith('/all') || url.startsWith('/movie') || url.startsWith('/tv');
   });
 
+  // Получаем поисковый запрос из URL для инициализации SearchBar
+  protected readonly initialSearchQuery = toSignal(
+    this.router.events.pipe(
+      filter(() => this.isListPage()),
+      map(() => {
+        const urlTree = this.router.parseUrl(this.router.url);
+        return urlTree.queryParams['q'] || '';
+      })
+    )
+  );
+
   constructor() {
-    // Эффект для блокировки прокрутки страницы и компенсации сдвига
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.modalService.close();
+      });
+
     effect(() => {
-      if (this.selectedMovie()) {
+      if (this.selectedMedia()) {
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
         if (scrollbarWidth > 0) {
           document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -62,43 +62,16 @@ export class App implements OnInit {
         document.body.classList.remove('no-scroll');
       }
     });
-
-    // Подписываемся на события роутера, чтобы определять, где мы находимся
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      this.isRootRoute.set(event.urlAfterRedirects === '/');
-      // Закрываем модальное окно при переходе на страницу фильма
-      if (this.selectedMovie()) {
-        this.onCloseDetails();
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    this.loadAllMovies();
   }
 
   onSearch(query: string): void {
-    this.searchQuery.set(query);
-  }
-
-  onMovieSelect(movie: Movie): void {
-    this.selectedMovie.set(movie);
+    this.router.navigate([], {
+      queryParams: { q: query || null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   onCloseDetails(): void {
-    this.selectedMovie.set(null);
-  }
-
-  private loadAllMovies(): void {
-    this.isLoading.set(true);
-    this.error.set(null);
-    this.moviesService.getMovies().pipe(
-      finalize(() => this.isLoading.set(false))
-    ).subscribe({
-      next: (movies) => this.allMovies.set(movies),
-      error: (err) => this.error.set(err.message)
-    });
+    this.modalService.close();
   }
 }

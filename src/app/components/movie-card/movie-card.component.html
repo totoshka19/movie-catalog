@@ -1,20 +1,31 @@
 <article class="movie-card">
   <figure class="movie-card__figure">
     <!-- Показываем плейсхолдер, пока изображение не загрузилось -->
-    @if (!imageLoaded()) {
+    @if (!imageLoaded() || !movie.poster_path) {
       <div class="movie-card__placeholder"></div>
     }
-    <img
-      class="movie-card__poster"
-      [src]="movie.posterUrl"
-      [alt]="'Постер фильма ' + movie.title"
-      [class.movie-card__poster--loaded]="imageLoaded()"
-      (load)="onImageLoad()"
-      loading="lazy"
-    >
+    @if (movie.poster_path) {
+      <img
+        class="movie-card__poster"
+        [src]="getPosterUrl(movie.poster_path)"
+        [alt]="'Постер ' + movie.title"
+        [class.movie-card__poster--loaded]="imageLoaded()"
+        (load)="onImageLoad()"
+        loading="lazy"
+      >
+    }
   </figure>
   <div class="movie-card__info">
     <h3 class="movie-card__title">{{ movie.title }}</h3>
-    <p class="movie-card__year">{{ movie.year }}</p>
+    <p class="movie-card__year">{{ movie.release_date | date: 'yyyy' }}</p>
+    <!-- Отображаем жанры -->
+    @if (movie.genreNames.length) {
+      <div class="movie-card__genres">
+        <!-- Показываем только первые два жанра, чтобы не перегружать карточку -->
+        @for (genre of movie.genreNames.slice(0, 2); track genre) {
+          <span class="movie-card__genre-tag">{{ genre }}</span>
+        }
+      </div>
+    }
   </div>
 </article>

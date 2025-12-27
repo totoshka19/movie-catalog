@@ -1,40 +1,23 @@
 <header class="app-header">
-  <h1>{{ title() }}</h1>
-  <!-- Условие для отображения поиска только на главной странице -->
-  @if (isRootRoute()) {
+  <h1>{{ title }}</h1>
+  <!-- Условие для отображения поиска только на страницах списка -->
+  @if (isListPage()) {
     <app-search-bar
-      [initialQuery]="searchQuery()"
+      [initialQuery]="initialSearchQuery() ?? ''"
       (searchChange)="onSearch($event)"
     ></app-search-bar>
   }
 </header>
 
 <main class="app-main">
-  <!-- Это место, где роутер будет отображать страницы (нашу MovieDetailsPageComponent) -->
+  <!-- Это место, где роутер будет отображать страницы -->
   <router-outlet></router-outlet>
-
-  <!--
-    Отображаем список фильмов только тогда, когда активен корневой маршрут.
-    Для этого нам понадобится проверить текущий URL.
-  -->
-  @if (isRootRoute()) {
-    @if (isLoading()) {
-      <app-skeleton-list></app-skeleton-list>
-    } @else if (error()) {
-      <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
-    } @else {
-      <app-movie-list
-        [movies]="filteredMovies()"
-        (movieClick)="onMovieSelect($event)"
-      ></app-movie-list>
-    }
-  }
 </main>
 
-<!-- Модальное окно для деталей фильма (остается здесь) -->
-@if (selectedMovie(); as movie) {
+<!-- Модальное окно для деталей (управляется через ModalService) -->
+@if (selectedMedia(); as mediaItem) {
   <app-movie-details
-    [movie]="movie"
+    [movie]="mediaItem"
     (close)="onCloseDetails()"
   ></app-movie-details>
 }

@@ -1,0 +1,68 @@
+// Стили, которые раньше были в app.scss
+.app-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.app-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--color-surface);
+  padding: 0.5rem;
+  border-radius: var(--border-radius-md);
+
+  a { // Заменили button на a
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+
+    &.active {
+      background-color: var(--color-primary);
+      color: var(--color-text-primary);
+    }
+
+    &:not(.active):hover {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+.app-genre-filter {
+  select {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition-speed);
+
+    &:focus {
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+.app-state-indicator {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+
+  &--error {
+    color: #f87171; // Tailwind's red-400
+  }
+}

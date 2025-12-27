@@ -1,10 +1,21 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { MoviesService } from './services/movies.service';
+import { of } from 'rxjs';
+import { vi } from 'vitest';
+import { RouterTestingModule } from '@angular/router/testing';
+import { routes } from './app.routes';
+
+const mockMoviesService = {
+  loadGenres: vi.fn().mockReturnValue(of([[], []])),
+  getPopularMedia: vi.fn().mockReturnValue(of([])),
+};
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [App, RouterTestingModule.withRoutes(routes)],
+      providers: [{ provide: MoviesService, useValue: mockMoviesService }],
     }).compileComponents();
   });
 
@@ -19,6 +30,6 @@ describe('App', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Каталог фильмов');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Медиа Каталог');
   });
 });

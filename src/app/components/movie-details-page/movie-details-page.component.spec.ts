@@ -5,22 +5,24 @@ import { vi } from 'vitest';
 
 import { MovieDetailsPageComponent } from './movie-details-page.component';
 import { MoviesService } from '../../services/movies.service';
-import { Movie } from '../../models/movie.model';
+import { MediaItem } from '../../models/movie.model';
 
-// Создаем моковые (тестовые) данные для фильма
-const MOCK_MOVIE: Movie = {
+// Создаем моковые данные, соответствующие интерфейсу MediaItem
+const MOCK_MEDIA_ITEM: MediaItem = {
   id: 1,
   title: 'Тестовый фильм',
-  year: 2024,
-  genres: ['Тест', 'Фантастика'],
-  description: 'Описание тестового фильма.',
-  rating: 8.5,
-  posterUrl: 'https://example.com/poster.jpg'
+  release_date: '2024-01-01',
+  genres: [{ id: 1, name: 'Тест' }],
+  overview: 'Описание тестового фильма.',
+  vote_average: 8.5,
+  poster_path: 'https://example.com/poster.jpg',
+  media_type: 'movie',
+  genreNames: ['Тест'],
 };
 
-// Создаем мок-объект для MoviesService
+// Мокируем новый метод getMediaDetails
 const mockMoviesService = {
-  getMovieById: vi.fn().mockReturnValue(of(MOCK_MOVIE))
+  getMediaDetails: vi.fn().mockReturnValue(of(MOCK_MEDIA_ITEM)),
 };
 
 describe('MovieDetailsPageComponent', () => {
@@ -28,15 +30,11 @@ describe('MovieDetailsPageComponent', () => {
   let fixture: ComponentFixture<MovieDetailsPageComponent>;
 
   beforeEach(async () => {
-    // Сбрасываем моки перед каждым тестом
     vi.clearAllMocks();
 
     await TestBed.configureTestingModule({
       imports: [MovieDetailsPageComponent, RouterTestingModule],
-      providers: [
-        // Подменяем реальный сервис его моковой версией
-        { provide: MoviesService, useValue: mockMoviesService }
-      ]
+      providers: [{ provide: MoviesService, useValue: mockMoviesService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MovieDetailsPageComponent);
@@ -44,36 +42,37 @@ describe('MovieDetailsPageComponent', () => {
   });
 
   it('should create', () => {
-    // Тест 1: Компонент должен успешно создаваться
     expect(component).toBeTruthy();
   });
 
-  it('should call getMovieById with the correct ID from input', () => {
-    // Тест 2: Проверяем, что сервис вызывается с правильным ID
-    // Устанавливаем значение для required input 'id'
+  it('should call getMediaDetails with the correct ID and type from input', () => {
+    // Устанавливаем оба required input: 'id' и 'type'
     fixture.componentRef.setInput('id', '1');
+    fixture.componentRef.setInput('type', 'movie');
     fixture.detectChanges(); // Запускаем обнаружение изменений
 
-    expect(mockMoviesService.getMovieById).toHaveBeenCalled();
-    expect(mockMoviesService.getMovieById).toHaveBeenCalledWith(1);
+    expect(mockMoviesService.getMediaDetails).toHaveBeenCalled();
+    expect(mockMoviesService.getMediaDetails).toHaveBeenCalledWith(1, 'movie');
   });
 
-  it('should display movie details after data is loaded', async () => {
-    // Тест 3: Проверяем, что данные фильма корректно отображаются в шаблоне
+  it('should display media details after data is loaded', async () => {
     fixture.componentRef.setInput('id', '1');
-    fixture.detectChanges(); // Запускаем получение данных
+    fixture.componentRef.setInput('type', 'movie');
+    fixture.detectChanges();
 
-    // Ждем завершения всех асинхронных операций (включая преобразование Observable в signal)
     await fixture.whenStable();
-    fixture.detectChanges(); // Обновляем шаблон с полученными данными
+    fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.movie-details-page__title')?.textContent).toContain(MOCK_MOVIE.title);
-    expect(compiled.querySelector('.movie-details-page__title')?.textContent).toContain(String(MOCK_MOVIE.year));
-    expect(compiled.querySelector('.movie-details-page__rating')?.textContent).toContain(String(MOCK_MOVIE.rating));
-    expect(compiled.querySelector('.movie-details-page__description')?.textContent).toBe(MOCK_MOVIE.description);
-    const genreTags = compiled.querySelectorAll('.movie-details-page__genre-tag');
-    expect(genreTags.length).toBe(MOCK_MOVIE.genres.length);
-    expect(genreTags[0].textContent).toBe(MOCK_MOVIE.genres[0]);
+    expect(compiled.querySelector('.movie-details-page__title')?.textContent).toContain(
+      MOCK_MEDIA_ITEM.title
+    );
+    expect(compiled.querySelector('.movie-details-page__title')?.textContent).toContain('2024');
+    expect(compiled.querySelector('.movie-details-page__rating')?.textContent).toContain(
+      String(MOCK_MEDIA_ITEM.vote_average)
+    );
+    expect(compiled.querySelector('.movie-details-page__description')?.textContent).toBe(
+      MOCK_MEDIA_ITEM.overview
+    );
   });
 });

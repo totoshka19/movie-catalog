@@ -6,23 +6,31 @@
       &times; <!-- Символ крестика -->
     </button>
     <div class="movie-details__poster">
-      <img [src]="movie.posterUrl" [alt]="'Постер фильма ' + movie.title">
+      @if (movie.poster_path) {
+        <img [src]="getPosterUrl(movie.poster_path)" [alt]="'Постер ' + movie.title">
+      } @else {
+        <div class="movie-details__poster-placeholder">Нет постера</div>
+      }
     </div>
     <div class="movie-details__info">
-      <h2 class="movie-details__title">{{ movie.title }} ({{ movie.year }})</h2>
+      <h2 class="movie-details__title">{{ movie.title }} ({{ movie.release_date | date: 'yyyy' }})</h2>
       <div class="movie-details__meta">
-        <span class="movie-details__rating">★ {{ movie.rating }}</span>
-        <div class="movie-details__genres">
-          @for (genre of movie.genres; track genre) {
-            <span class="movie-details__genre-tag">{{ genre }}</span>
-          }
-        </div>
+        <!-- Форматируем рейтинг до одного знака после запятой -->
+        <span class="movie-details__rating">★ {{ movie.vote_average | number: '1.1-1' }}</span>
+        <!-- Жанры могут быть недоступны в данных из общего списка, поэтому проверяем их наличие -->
+        @if (movie.genres?.length) {
+          <div class="movie-details__genres">
+            @for (genre of movie.genres; track genre.id) {
+              <span class="movie-details__genre-tag">{{ genre.name }}</span>
+            }
+          </div>
+        }
       </div>
-      <p class="movie-details__description">{{ movie.description }}</p>
+      <!-- Используем поле overview -->
+      <p class="movie-details__description">{{ movie.overview }}</p>
 
-      <!-- Новая ссылка для перехода на страницу -->
-      <a class="movie-details__page-link" [routerLink]="['/movies', movie.id]">
-        Перейти на страницу фильма
+      <a class="movie-details__page-link" [routerLink]="['/media', movie.media_type, movie.id]">
+        Перейти на страницу
       </a>
     </div>
   </article>
