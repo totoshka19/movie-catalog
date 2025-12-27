@@ -21,8 +21,7 @@
     <!-- Отображаем жанры -->
     @if (movie.genreNames.length) {
       <div class="movie-card__genres">
-        <!-- Показываем только первые два жанра, чтобы не перегружать карточку -->
-        @for (genre of movie.genreNames.slice(0, 2); track genre) {
+        @for (genre of movie.genreNames; track genre) {
           <span class="movie-card__genre-tag">{{ genre }}</span>
         }
       </div>
