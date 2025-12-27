@@ -1,5 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { API_LANGUAGE } from '../core/constants/api.constants';
 
 /**
  * Перехватчик HTTP-запросов для автоматического добавления ключа API.
@@ -12,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authReq = req.clone({
     setParams: {
       api_key: environment.apiKey,
-      language: 'ru-RU' // Добавим язык, чтобы получать данные на русском
+      language: API_LANGUAGE,
     },
   });
 

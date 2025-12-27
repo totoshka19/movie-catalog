@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, forkJoin, of, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import {
   ApiListResponse,
   Genre,
@@ -11,9 +11,7 @@ import {
   TmdbTvShow,
 } from '../models/movie.model';
 import { environment } from '../../environments/environment';
-
-// Определяем тип для фильтрации
-export type MediaType = 'all' | 'movie' | 'tv';
+import { MediaType } from '../core/models/media-type.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -65,7 +63,11 @@ export class MoviesService {
    * @param page - Номер страницы (по умолчанию 1).
    * @returns Observable со списком медиа-элементов.
    */
-  getPopularMedia(type: MediaType = 'all', genreId?: number, page: number = 1): Observable<MediaItem[]> {
+  getPopularMedia(
+    type: MediaType = MediaType.All,
+    genreId?: number,
+    page: number = 1
+  ): Observable<MediaItem[]> {
     let params = new HttpParams().set('page', page.toString());
 
     if (genreId) {
@@ -73,11 +75,11 @@ export class MoviesService {
     }
 
     const movies$ =
-      type === 'all' || type === 'movie'
+      type === MediaType.All || type === MediaType.Movie
         ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/movie/popular`, { params })
         : of(null);
     const tvShows$ =
-      type === 'all' || type === 'tv'
+      type === MediaType.All || type === MediaType.Tv
         ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/tv/popular`, { params })
         : of(null);
 
@@ -86,7 +88,7 @@ export class MoviesService {
         const movies = moviesResponse ? this.normalizeMovies(moviesResponse.results) : [];
         const tvShows = tvShowsResponse ? this.normalizeTvShows(tvShowsResponse.results) : [];
 
-        if (type === 'all') {
+        if (type === MediaType.All) {
           return this.interleaveArrays(movies, tvShows);
         } else {
           return [...movies, ...tvShows];
@@ -102,9 +104,9 @@ export class MoviesService {
    * @param type - Тип элемента ('movie' или 'tv').
    * @returns Observable с детальными данными.
    */
-  getMediaDetails(id: number, type: 'movie' | 'tv'): Observable<MediaItem> {
+  getMediaDetails(id: number, type: MediaType.Movie | MediaType.Tv): Observable<MediaItem> {
     const url = `${this.apiUrl}/${type}/${id}`;
-    if (type === 'movie') {
+    if (type === MediaType.Movie) {
       return this.http.get<TmdbMovie>(url).pipe(
         map(movie => this.normalizeMovies([movie])[0]),
         catchError(this.handleError)
@@ -122,7 +124,7 @@ export class MoviesService {
   private normalizeMovies(movies: TmdbMovie[]): MediaItem[] {
     return movies.map(movie => ({
       ...movie,
-      media_type: 'movie',
+      media_type: MediaType.Movie,
       title: movie.title,
       release_date: movie.release_date,
       genreNames: movie.genres
@@ -134,7 +136,7 @@ export class MoviesService {
   private normalizeTvShows(tvShows: TmdbTvShow[]): MediaItem[] {
     return tvShows.map(tv => ({
       ...tv,
-      media_type: 'tv',
+      media_type: MediaType.Tv,
       title: tv.name,
       release_date: tv.first_air_date,
       genreNames: tv.genres

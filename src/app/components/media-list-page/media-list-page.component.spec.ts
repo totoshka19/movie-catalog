@@ -10,6 +10,7 @@ import { vi } from 'vitest';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { MediaType } from '../../core/models/media-type.enum';
 
 // --- Моковые данные ---
 const MOCK_GENRES: Genre[] = [
@@ -25,7 +26,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
     overview: 'Neo believes...',
     vote_average: 8.7,
     poster_path: '/matrix.jpg',
-    media_type: 'movie',
+    media_type: MediaType.Movie,
     genreNames: ['Action', 'Sci-Fi'],
   },
   {
@@ -35,7 +36,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
     overview: 'Neo and Trinity...',
     vote_average: 7.2,
     poster_path: '/matrix2.jpg',
-    media_type: 'movie',
+    media_type: MediaType.Movie,
     genreNames: ['Action', 'Sci-Fi'],
   },
   {
@@ -45,7 +46,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
     overview: 'Woody and Buzz...',
     vote_average: 8.3,
     poster_path: '/toy.jpg',
-    media_type: 'movie',
+    media_type: MediaType.Movie,
     genreNames: ['Animation', 'Comedy'],
   },
 ];
@@ -63,7 +64,7 @@ describe('MediaListPageComponent', () => {
 
   beforeEach(async () => {
     // Инициализируем Subjects начальными значениями
-    routeDataSubject = new BehaviorSubject({ mediaType: 'movie', genres: MOCK_GENRES });
+    routeDataSubject = new BehaviorSubject({ mediaType: MediaType.Movie, genres: MOCK_GENRES });
     queryParamsSubject = new BehaviorSubject(convertToParamMap({}));
 
     // Создаем моки сервисов
@@ -92,7 +93,7 @@ describe('MediaListPageComponent', () => {
             data: routeDataSubject.asObservable(),
             queryParamMap: queryParamsSubject.asObservable(),
             snapshot: {
-              data: { mediaType: 'movie', genres: MOCK_GENRES },
+              data: { mediaType: MediaType.Movie, genres: MOCK_GENRES },
               queryParamMap: convertToParamMap({})
             }
           },
@@ -116,7 +117,7 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should load media on initialization based on route data', () => {
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', undefined, 1);
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, undefined, 1);
 
     fixture.detectChanges();
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
@@ -171,7 +172,7 @@ describe('MediaListPageComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', 2, 1);
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, 2, 1);
   });
 
   it('should open modal when a movie is clicked', () => {
@@ -217,7 +218,7 @@ describe('MediaListPageComponent', () => {
     let activeLink = fixture.debugElement.query(By.css('.nav-links a.active'));
     expect(activeLink.nativeElement.textContent).toContain('Фильмы');
 
-    routeDataSubject.next({ mediaType: 'tv', genres: [] });
+    routeDataSubject.next({ mediaType: MediaType.Tv, genres: [] });
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -234,6 +235,6 @@ describe('MediaListPageComponent', () => {
     component.onScroll();
 
     // Ожидаем вызов сервиса с страницей 2
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', undefined, 2);
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, undefined, 2);
   });
 });

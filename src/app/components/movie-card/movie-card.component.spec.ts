@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MovieCardComponent } from './movie-card.component';
 import { MediaItem } from '../../models/movie.model';
+import { MediaType } from '../../core/models/media-type.enum';
 
 const MOCK_MEDIA_ITEM: MediaItem = {
   id: 1,
@@ -9,7 +10,7 @@ const MOCK_MEDIA_ITEM: MediaItem = {
   overview: 'Описание тестового фильма.',
   vote_average: 8.5,
   poster_path: 'https://example.com/poster.jpg',
-  media_type: 'movie',
+  media_type: MediaType.Movie,
   genreNames: ['Тест'],
 };
 

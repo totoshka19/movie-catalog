@@ -3,12 +3,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MediaItem, Genre } from '../../models/movie.model';
-import { MoviesService, MediaType } from '../../services/movies.service';
+import { MoviesService } from '../../services/movies.service';
 import { ModalService } from '../../services/modal.service';
 
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { MediaType } from '../../core/models/media-type.enum';
 
 @Component({
   selector: 'app-media-list-page',
@@ -28,7 +29,9 @@ export class MediaListPageComponent {
   private readonly queryParams = toSignal(this.route.queryParamMap);
 
   protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
-  protected readonly activeTab = computed<MediaType>(() => this.routeData()?.['mediaType'] ?? 'all');
+  protected readonly activeTab = computed<MediaType>(
+    () => this.routeData()?.['mediaType'] ?? MediaType.All
+  );
 
   protected readonly selectedGenre = computed(() => {
     const genreId = this.queryParams()?.get('genre');
@@ -39,9 +42,12 @@ export class MediaListPageComponent {
 
   protected readonly searchPlaceholder = computed(() => {
     switch (this.activeTab()) {
-      case 'movie': return 'Поиск фильмов...';
-      case 'tv': return 'Поиск сериалов...';
-      default: return 'Поиск фильмов и сериалов...';
+      case MediaType.Movie:
+        return 'Поиск фильмов...';
+      case MediaType.Tv:
+        return 'Поиск сериалов...';
+      default:
+        return 'Поиск фильмов и сериалов...';
     }
   });
 
@@ -67,9 +73,12 @@ export class MediaListPageComponent {
     if (query) return `По запросу "${query}" ничего не найдено.`;
 
     switch (this.activeTab()) {
-      case 'movie': return 'Фильмы не найдены.';
-      case 'tv': return 'Сериалы не найдены.';
-      default: return 'Контент не найден.';
+      case MediaType.Movie:
+        return 'Фильмы не найдены.';
+      case MediaType.Tv:
+        return 'Сериалы не найдены.';
+      default:
+        return 'Контент не найден.';
     }
   });
 
@@ -102,7 +111,8 @@ export class MediaListPageComponent {
    * Вынесенный метод получения позиции скролла для удобства тестирования
    */
   protected getScrollPosition(): { pos: number; max: number } {
-    const pos = (document.documentElement.scrollTop || document.body.scrollTop) + window.innerHeight;
+    const pos =
+      (document.documentElement.scrollTop || document.body.scrollTop) + window.innerHeight;
     const max = document.documentElement.scrollHeight || document.body.scrollHeight;
     return { pos, max };
   }
@@ -170,7 +180,7 @@ export class MediaListPageComponent {
       error: err => {
         console.error('Ошибка подгрузки:', err);
         this.isLoadingMore.set(false);
-      }
+      },
     });
   }
 }

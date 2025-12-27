@@ -8,6 +8,7 @@ import { MovieDetailsPageComponent } from './movie-details-page.component';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
 import { MoviesService } from '../../services/movies.service';
 import { MediaItem } from '../../models/movie.model';
+import { MediaType } from '../../core/models/media-type.enum';
 
 // Создаем моковые данные, соответствующие интерфейсу MediaItem
 const MOCK_MEDIA_ITEM: MediaItem = {
@@ -18,7 +19,7 @@ const MOCK_MEDIA_ITEM: MediaItem = {
   overview: 'Описание тестового фильма.',
   vote_average: 8.5,
   poster_path: 'https://example.com/poster.jpg',
-  media_type: 'movie',
+  media_type: MediaType.Movie,
   genreNames: ['Тест'],
 };
 
@@ -51,18 +52,18 @@ describe('MovieDetailsPageComponent', () => {
     mockMoviesService.getMediaDetails.mockReturnValue(of(MOCK_MEDIA_ITEM));
 
     fixture.componentRef.setInput('id', '1');
-    fixture.componentRef.setInput('type', 'movie');
+    fixture.componentRef.setInput('type', MediaType.Movie);
     fixture.detectChanges();
 
     expect(mockMoviesService.getMediaDetails).toHaveBeenCalled();
-    expect(mockMoviesService.getMediaDetails).toHaveBeenCalledWith(1, 'movie');
+    expect(mockMoviesService.getMediaDetails).toHaveBeenCalledWith(1, MediaType.Movie);
   });
 
   it('should display media details after data is loaded', async () => {
     mockMoviesService.getMediaDetails.mockReturnValue(of(MOCK_MEDIA_ITEM));
 
     fixture.componentRef.setInput('id', '1');
-    fixture.componentRef.setInput('type', 'movie');
+    fixture.componentRef.setInput('type', MediaType.Movie);
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -78,7 +79,7 @@ describe('MovieDetailsPageComponent', () => {
     mockMoviesService.getMediaDetails.mockReturnValue(loadingSubject);
 
     fixture.componentRef.setInput('id', '999');
-    fixture.componentRef.setInput('type', 'movie');
+    fixture.componentRef.setInput('type', MediaType.Movie);
 
     fixture.detectChanges(); // Инициируем запрос
 

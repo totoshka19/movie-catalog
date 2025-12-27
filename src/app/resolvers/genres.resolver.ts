@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { map } from 'rxjs';
-import { MediaType, MoviesService } from '../services/movies.service';
+import { MoviesService } from '../services/movies.service';
 import { Genre } from '../models/movie.model';
+import { MediaType } from '../core/models/media-type.enum';
 
 /**
  * Resolver, который загружает жанры.
@@ -13,7 +14,7 @@ import { Genre } from '../models/movie.model';
 export const genresResolver: ResolveFn<Genre[]> = (route) => {
   const moviesService = inject(MoviesService);
   // Получаем тип медиа из данных маршрута
-  const mediaType = (route.data['mediaType'] as MediaType) || 'all';
+  const mediaType = (route.data['mediaType'] as MediaType) || MediaType.All;
 
   return moviesService.loadGenres().pipe(
     map(([movieGenres, tvGenres]) => {
@@ -21,13 +22,13 @@ export const genresResolver: ResolveFn<Genre[]> = (route) => {
 
       // 1. Выбор списка жанров
       switch (mediaType) {
-        case 'movie':
+        case MediaType.Movie:
           resultGenres = movieGenres;
           break;
-        case 'tv':
+        case MediaType.Tv:
           resultGenres = tvGenres;
           break;
-        case 'all':
+        case MediaType.All:
         default:
           // Объединяем и убираем дубликаты по ID
           const genreMap = new Map<number, string>();

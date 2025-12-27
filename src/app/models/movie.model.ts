@@ -1,3 +1,5 @@
+import { MediaType } from '../core/models/media-type.enum';
+
 /**
  * Интерфейс для жанра, как его возвращает TMDb API.
  */
@@ -46,7 +48,7 @@ export interface TmdbTvShow {
  */
 export interface MediaItem {
   id: number;
-  media_type: 'movie' | 'tv';
+  media_type: MediaType.Movie | MediaType.Tv;
   title: string;
   release_date: string;
   overview: string;

@@ -8,6 +8,8 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
 import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
+import { MediaType } from '../../core/models/media-type.enum';
+import { APP_ROUTES } from '../../core/constants/routes.constants';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -18,7 +20,7 @@ import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
     NgOptimizedImage,
     BreadcrumbComponent,
     SkeletonDetailsComponent,
-    TmdbImagePipe
+    TmdbImagePipe,
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
@@ -27,7 +29,7 @@ import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
 export class MovieDetailsPageComponent {
   // Получаем id и тип из параметров роута
   public readonly id = input.required<string>();
-  public readonly type = input.required<'movie' | 'tv'>();
+  public readonly type = input.required<MediaType.Movie | MediaType.Tv>();
 
   private readonly moviesService = inject(MoviesService);
 
@@ -50,11 +52,11 @@ export class MovieDetailsPageComponent {
       return [];
     }
 
-    const mediaTypeLabel = item.media_type === 'movie' ? 'Фильмы' : 'Сериалы';
-    const mediaTypeLink = `/${item.media_type}`;
+    const mediaTypeLabel = item.media_type === MediaType.Movie ? 'Фильмы' : 'Сериалы';
+    const mediaTypeLink = item.media_type === MediaType.Movie ? `/${APP_ROUTES.MOVIE}` : `/${APP_ROUTES.TV}`;
 
     return [
-      { label: 'Главная', link: '/' },
+      { label: 'Главная', link: APP_ROUTES.ROOT },
       { label: mediaTypeLabel, link: mediaTypeLink },
       { label: item.title, link: '' }, // У последнего элемента нет ссылки
     ];
