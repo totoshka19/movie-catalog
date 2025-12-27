@@ -1,0 +1,15 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb-list">
+    @for (item of items; track item.link; let isLast = $last) {
+      <li class="breadcrumb-item">
+        <!-- Если это не последний элемент, делаем его ссылкой -->
+        @if (!isLast) {
+          <a [routerLink]="item.link">{{ item.label }}</a>
+        } @else {
+          <!-- Последний элемент - некликабельный текст -->
+          <span aria-current="page">{{ item.label }}</span>
+        }
+      </li>
+    }
+  </ol>
+</nav>

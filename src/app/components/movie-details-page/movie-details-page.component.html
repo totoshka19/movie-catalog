@@ -1,5 +1,5 @@
 <div class="movie-details-page">
-  <a routerLink="/" class="movie-details-page__back-link">← Назад к списку</a>
+  <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
 
   @if (mediaItem(); as itemData) {
     <article class="movie-details-page__content">

@@ -3,14 +3,15 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MoviesService } from '../../services/movies.service';
 import { MediaItem } from '../../models/movie.model';
 import { Observable, switchMap } from 'rxjs';
-import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '../../models/breadcrumb.model';
 
 @Component({
   selector: 'app-movie-details-page',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, NgOptimizedImage],
+  imports: [DatePipe, DecimalPipe, NgOptimizedImage, BreadcrumbComponent],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +34,23 @@ export class MovieDetailsPageComponent {
   // Превращаем Observable с элементом обратно в сигнал для использования в шаблоне
   protected readonly mediaItem = toSignal(this.mediaItem$, {
     initialValue: null,
+  });
+
+  // Сигнал для формирования хлебных крошек
+  protected readonly breadcrumbs = computed<Breadcrumb[]>(() => {
+    const item = this.mediaItem();
+    if (!item) {
+      return [];
+    }
+
+    const mediaTypeLabel = item.media_type === 'movie' ? 'Фильмы' : 'Сериалы';
+    const mediaTypeLink = `/${item.media_type}`;
+
+    return [
+      { label: 'Главная', link: '/' },
+      { label: mediaTypeLabel, link: mediaTypeLink },
+      { label: item.title, link: '' }, // У последнего элемента нет ссылки
+    ];
   });
 
   /**
