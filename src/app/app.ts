@@ -1,4 +1,6 @@
 import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { MovieListComponent } from './components/movie-list/movie-list.component';
 import { MoviesService } from './services/movies.service';
@@ -10,6 +12,7 @@ import { SkeletonListComponent } from './components/skeleton-list/skeleton-list.
 @Component({
   selector: 'app-root',
   imports: [
+    RouterOutlet,
     SearchBarComponent,
     MovieListComponent,
     MovieDetailsComponent,
@@ -22,6 +25,10 @@ export class App implements OnInit {
   protected readonly title = signal('Каталог фильмов');
 
   private readonly moviesService = inject(MoviesService);
+  private readonly router = inject(Router);
+
+  // Сигнал для отслеживания текущего URL
+  protected readonly isRootRoute = signal(true);
 
   // Сигналы для управления состоянием
   private readonly allMovies = signal<Movie[]>([]); // Хранит все фильмы
@@ -45,23 +52,30 @@ export class App implements OnInit {
     // Эффект для блокировки прокрутки страницы и компенсации сдвига
     effect(() => {
       if (this.selectedMovie()) {
-        // Вычисляем ширину скроллбара
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        // Применяем отступ, только если скроллбар был виден (его ширина > 0)
         if (scrollbarWidth > 0) {
           document.body.style.paddingRight = `${scrollbarWidth}px`;
         }
         document.body.classList.add('no-scroll');
       } else {
-        // Убираем стили при закрытии модального окна
         document.body.style.paddingRight = '';
         document.body.classList.remove('no-scroll');
+      }
+    });
+
+    // Подписываемся на события роутера, чтобы определять, где мы находимся
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.isRootRoute.set(event.urlAfterRedirects === '/');
+      // Закрываем модальное окно при переходе на страницу фильма
+      if (this.selectedMovie()) {
+        this.onCloseDetails();
       }
     });
   }
 
   ngOnInit(): void {
-    // Загружаем все фильмы при инициализации
     this.loadAllMovies();
   }
 

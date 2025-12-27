@@ -22,6 +22,18 @@ export class MoviesService {
   }
 
   /**
+   * Получает один фильм по его ID.
+   * @param id - ID фильма.
+   * @returns Observable с данными фильма.
+   */
+  getMovieById(id: number): Observable<Movie> {
+    const url = `${this.moviesUrl}/${id}`;
+    return this.http.get<Movie>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
    * Обрабатывает ошибки HTTP-запросов.
    * @param error - Объект ошибки.
    */

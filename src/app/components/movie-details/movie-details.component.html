@@ -19,6 +19,11 @@
         </div>
       </div>
       <p class="movie-details__description">{{ movie.description }}</p>
+
+      <!-- Новая ссылка для перехода на страницу -->
+      <a class="movie-details__page-link" [routerLink]="['/movies', movie.id]">
+        Перейти на страницу фильма
+      </a>
     </div>
   </article>
 </div>

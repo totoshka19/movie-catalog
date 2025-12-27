@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { MovieDetailsComponent } from './movie-details.component';
 import { Movie } from '../../models/movie.model';
@@ -21,7 +22,10 @@ describe('MovieDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MovieDetailsComponent]
+      imports: [
+        MovieDetailsComponent,
+        RouterTestingModule
+      ]
     })
       .compileComponents();
 

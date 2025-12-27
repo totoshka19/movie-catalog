@@ -1,0 +1,26 @@
+<div class="movie-details-page">
+  <a routerLink="/" class="movie-details-page__back-link">← Назад к списку</a>
+
+  @if (movie(); as movieData) {
+    <article class="movie-details-page__content">
+      <div class="movie-details-page__poster">
+        <img [src]="movieData.posterUrl" [alt]="'Постер фильма ' + movieData.title">
+      </div>
+      <div class="movie-details-page__info">
+        <h1 class="movie-details-page__title">{{ movieData.title }} ({{ movieData.year }})</h1>
+        <div class="movie-details-page__meta">
+          <span class="movie-details-page__rating">★ {{ movieData.rating }}</span>
+          <div class="movie-details-page__genres">
+            @for (genre of movieData.genres; track genre) {
+              <span class="movie-details-page__genre-tag">{{ genre }}</span>
+            }
+          </div>
+        </div>
+        <p class="movie-details-page__description">{{ movieData.description }}</p>
+      </div>
+    </article>
+  } @else {
+    <!-- Можно добавить скелетон и для этой страницы -->
+    <p>Загрузка информации о фильме...</p>
+  }
+</div>

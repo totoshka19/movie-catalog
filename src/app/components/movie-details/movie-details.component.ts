@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { Movie } from '../../models/movie.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-movie-details',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './movie-details.component.html',
   styleUrl: './movie-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
