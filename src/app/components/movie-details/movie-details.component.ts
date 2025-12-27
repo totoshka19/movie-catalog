@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, 
 import { MediaItem } from '../../models/movie.model';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { environment } from '../../../environments/environment';
+import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
 
 @Component({
   selector: 'app-movie-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe],
+  imports: [RouterLink, DatePipe, DecimalPipe, TmdbImagePipe],
   templateUrl: './movie-details.component.html',
   styleUrl: './movie-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,15 +23,6 @@ export class MovieDetailsComponent {
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
     this.onClose();
-  }
-
-  /**
-   * Формирует полный URL для постера.
-   * @param posterPath - Путь к постеру, полученный от API.
-   * @returns Полный URL к изображению или null, если путь не указан.
-   */
-  getPosterUrl(posterPath: string | null): string | null {
-    return posterPath ? `${environment.imageBaseUrl}${posterPath}` : null;
   }
 
   // Предотвращаем закрытие модального окна при клике на его контент

@@ -7,8 +7,12 @@
     <article class="movie-details-page__content">
       <div class="movie-details-page__poster">
         @if(itemData.poster_path) {
-          <!-- Используем ngSrc для оптимизации загрузки изображений -->
-          <img [ngSrc]="getPosterUrl(itemData.poster_path)!" [alt]="'Постер ' + itemData.title" width="250" height="375">
+          <img
+            [ngSrc]="(itemData.poster_path | tmdbImage) ?? ''"
+            [alt]="'Постер ' + itemData.title"
+            width="250"
+            height="375"
+          >
         } @else {
           <div class="movie-details-page__poster-placeholder">Нет постера</div>
         }

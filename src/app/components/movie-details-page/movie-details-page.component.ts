@@ -4,10 +4,10 @@ import { MoviesService } from '../../services/movies.service';
 import { MediaItem } from '../../models/movie.model';
 import { Observable, switchMap } from 'rxjs';
 import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { environment } from '../../../environments/environment';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
+import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -17,7 +17,8 @@ import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.c
     DecimalPipe,
     NgOptimizedImage,
     BreadcrumbComponent,
-    SkeletonDetailsComponent
+    SkeletonDetailsComponent,
+    TmdbImagePipe
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
@@ -58,13 +59,4 @@ export class MovieDetailsPageComponent {
       { label: item.title, link: '' }, // У последнего элемента нет ссылки
     ];
   });
-
-  /**
-   * Формирует полный URL для постера.
-   * @param posterPath - Путь к постеру, полученный от API.
-   * @returns Полный URL к изображению или null, если путь не указан.
-   */
-  getPosterUrl(posterPath: string | null): string | null {
-    return posterPath ? `${environment.imageBaseUrl}${posterPath}` : null;
-  }
 }
