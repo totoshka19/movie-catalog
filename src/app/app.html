@@ -1,12 +1,14 @@
 <header class="app-header">
-  <h1>{{ title }}</h1>
-  <!-- Условие для отображения поиска только на страницах списка -->
-  @if (isListPage()) {
-    <app-search-bar
-      [initialQuery]="initialSearchQuery() ?? ''"
-      (searchChange)="onSearch($event)"
-    ></app-search-bar>
-  }
+  <div class="app-header__content">
+    <h1>{{ title }}</h1>
+    <!-- Условие для отображения поиска только на страницах списка -->
+    @if (isListPage()) {
+      <app-search-bar
+        [initialQuery]="initialSearchQuery() ?? ''"
+        (searchChange)="onSearch($event)"
+      ></app-search-bar>
+    }
+  </div>
 </header>
 
 <main class="app-main">
