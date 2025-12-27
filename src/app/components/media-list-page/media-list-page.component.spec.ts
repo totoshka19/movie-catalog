@@ -9,6 +9,7 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
 
 // --- Моковые данные ---
 const MOCK_GENRES: Genre[] = [
@@ -77,12 +78,12 @@ describe('MediaListPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         MediaListPageComponent,
-        // Удален RouterTestingModule в пользу provideRouter
         MovieListComponent,
-        SkeletonListComponent
+        SkeletonListComponent,
+        SearchBarComponent
       ],
       providers: [
-        provideRouter([]), // Современный способ подключения роутера в тестах
+        provideRouter([]),
         { provide: MoviesService, useValue: moviesServiceMock },
         { provide: ModalService, useValue: modalServiceMock },
         {
@@ -106,8 +107,8 @@ describe('MediaListPageComponent', () => {
     // Спай на навигацию роутера
     vi.spyOn(router, 'navigate');
 
-    fixture.detectChanges(); // Запускает ngOnInit и эффекты
-    await fixture.whenStable(); // Ждем завершения инициализации
+    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -183,11 +184,9 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should show loading skeleton when isLoading is true', async () => {
-    // Создаем Subject и сохраняем ссылку на него
     const loadingSubject = new Subject<MediaItem[]>();
     moviesServiceMock.getPopularMedia.mockReturnValue(loadingSubject);
 
-    // Триггерим перезагрузку
     queryParamsSubject.next(convertToParamMap({ genre: '99' }));
     fixture.detectChanges();
     await fixture.whenStable();
@@ -198,7 +197,6 @@ describe('MediaListPageComponent', () => {
     expect(skeleton).toBeTruthy();
     expect(movieList).toBeNull();
 
-    // ВАЖНО: Завершаем Subject, чтобы закрыть подписку внутри компонента.
     loadingSubject.complete();
   });
 
@@ -216,33 +214,26 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should highlight active tab correctly', async () => {
-    let activeLink = fixture.debugElement.query(By.css('.app-tabs a.active'));
+    let activeLink = fixture.debugElement.query(By.css('.nav-links a.active'));
     expect(activeLink.nativeElement.textContent).toContain('Фильмы');
 
     routeDataSubject.next({ mediaType: 'tv', genres: [] });
     fixture.detectChanges();
     await fixture.whenStable();
 
-    activeLink = fixture.debugElement.query(By.css('.app-tabs a.active'));
+    activeLink = fixture.debugElement.query(By.css('.nav-links a.active'));
     expect(activeLink.nativeElement.textContent).toContain('Сериалы');
   });
 
-  // Тест для проверки подгрузки при скролле
   it('should load next page on scroll', () => {
     moviesServiceMock.getPopularMedia.mockClear();
 
     // Имитируем скролл до низа страницы
-    // Настраиваем значения так, чтобы условие (pos >= max - threshold) выполнилось
     Object.defineProperty(window, 'innerHeight', { value: 1000 });
     Object.defineProperty(document.documentElement, 'scrollTop', { value: 1000, writable: true });
     Object.defineProperty(document.documentElement, 'scrollHeight', { value: 2000, writable: true });
 
     // Вызываем обработчик события скролла
-    window.dispatchEvent(new Event('scroll'));
-
-    // Поскольку HostListener может быть вызван асинхронно или напрямую,
-    // в данном случае мы тестируем логику компонента через публичный метод onScroll
-    // или имитируя событие на window, к которому привязан listener.
     component.onScroll();
 
     // Ожидаем вызов сервиса с страницей 2

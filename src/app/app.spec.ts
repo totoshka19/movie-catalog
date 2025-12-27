@@ -5,6 +5,8 @@ import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from './app.routes';
+import { By } from '@angular/platform-browser';
+import { RouterOutlet } from '@angular/router';
 
 const mockMoviesService = {
   loadGenres: vi.fn().mockReturnValue(of([[], []])),
@@ -25,11 +27,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should contain router-outlet', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Медиа Каталог');
+    const routerOutlet = fixture.debugElement.query(By.directive(RouterOutlet));
+    expect(routerOutlet).toBeTruthy();
   });
 });

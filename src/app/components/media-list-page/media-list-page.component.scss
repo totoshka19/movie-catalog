@@ -1,54 +1,108 @@
-// Стили, которые раньше были в app.scss
-.app-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+:host {
+  display: block;
+  min-height: 100vh;
 }
 
-.app-tabs {
-  display: flex;
-  gap: 0.5rem;
-  background-color: var(--color-surface);
-  padding: 0.5rem;
-  border-radius: var(--border-radius-md);
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr; // По умолчанию (мобильные) - одна колонка
+  gap: 2rem;
+  padding: 1rem;
 
-  a { // Заменили button на a
-    background: none;
-    border: none;
+  // Десктопная версия
+  @media (min-width: 1024px) {
+    grid-template-columns: 280px 1fr; // Сайдбар 280px, остальное контент
+    padding: 2rem;
+    align-items: start; // Чтобы сайдбар не растягивался на всю высоту grid-ячейки
+  }
+}
+
+.sidebar {
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  // На десктопе делаем его липким (sticky)
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+
+    // Стилизация скроллбара для сайдбара
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-border);
+      border-radius: 4px;
+    }
+  }
+
+  &__header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     color: var(--color-text-secondary);
-    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  a {
+    padding: 0.75rem 1rem;
     border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
+    color: var(--color-text-primary);
     text-decoration: none;
-    transition: background-color var(--transition-speed), color var(--transition-speed);
+    transition: background-color var(--transition-speed);
+    font-weight: 500;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
 
     &.active {
       background-color: var(--color-primary);
-      color: var(--color-text-primary);
+      color: white;
     }
+  }
 
-    &:not(.active):hover {
-      color: var(--color-text-primary);
+  // На мобильных вкладки в ряд
+  @media (max-width: 1023px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    a {
+      flex: 1;
+      text-align: center;
+      background-color: var(--color-background);
     }
   }
 }
 
-.app-genre-filter {
+.genre-select-wrapper {
   select {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    color: var(--color-text-primary);
-    background-color: var(--color-surface);
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-background);
     border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-md);
+    color: var(--color-text-primary);
+    border-radius: 6px;
     outline: none;
     cursor: pointer;
-    transition: border-color var(--transition-speed);
 
     &:focus {
       border-color: var(--color-primary);
@@ -63,11 +117,10 @@
   color: var(--color-text-secondary);
 
   &--error {
-    color: #f87171; // Tailwind's red-400
+    color: #f87171;
   }
 }
 
-// Стили для индикатора подгрузки
 .app-loading-more {
   display: flex;
   justify-content: center;
@@ -85,7 +138,5 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }

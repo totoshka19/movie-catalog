@@ -8,11 +8,12 @@ import { ModalService } from '../../services/modal.service';
 
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
 
 @Component({
   selector: 'app-media-list-page',
   standalone: true,
-  imports: [RouterLink, MovieListComponent, SkeletonListComponent],
+  imports: [RouterLink, MovieListComponent, SkeletonListComponent, SearchBarComponent],
   templateUrl: './media-list-page.component.html',
   styleUrl: './media-list-page.component.scss',
 })
@@ -25,24 +26,38 @@ export class MediaListPageComponent {
   // --- Сигналы, получающие состояние из URL и resolver'а ---
   private readonly routeData = toSignal(this.route.data);
   private readonly queryParams = toSignal(this.route.queryParamMap);
+
   protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
   protected readonly activeTab = computed<MediaType>(() => this.routeData()?.['mediaType'] ?? 'all');
+
   protected readonly selectedGenre = computed(() => {
     const genreId = this.queryParams()?.get('genre');
     return genreId ? Number(genreId) : undefined;
   });
+
+  // Получаем поисковый запрос из URL
   protected readonly searchQuery = computed(() => this.queryParams()?.get('q') ?? '');
+
+  // Вычисляем плейсхолдер для поиска в зависимости от вкладки
+  protected readonly searchPlaceholder = computed(() => {
+    switch (this.activeTab()) {
+      case 'movie': return 'Поиск фильмов...';
+      case 'tv': return 'Поиск сериалов...';
+      default: return 'Поиск фильмов и сериалов...';
+    }
+  });
 
   // --- Сигналы для управления состоянием UI и данными ---
   private readonly allMedia = signal<MediaItem[]>([]);
-  protected readonly isLoading = signal(true); // Первичная загрузка (скелетон)
-  protected readonly isLoadingMore = signal(false); // Подгрузка при скролле
+  protected readonly isLoading = signal(true);
+  protected readonly isLoadingMore = signal(false);
   protected readonly error = signal<string | null>(null);
 
   // Пагинация
   private currentPage = 1;
   private hasMorePages = true;
 
+  // Фильтрация (локальная для поиска)
   protected readonly filteredMedia = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) {
@@ -52,42 +67,36 @@ export class MediaListPageComponent {
   });
 
   protected readonly emptyListMessage = computed(() => {
+    const query = this.searchQuery();
+    if (query) return `По запросу "${query}" ничего не найдено.`;
+
     switch (this.activeTab()) {
-      case 'movie':
-        return 'Фильмы не найдены.';
-      case 'tv':
-        return 'Сериалы не найдены.';
-      case 'all':
-      default:
-        return 'Фильмы и сериалы не найдены.';
+      case 'movie': return 'Фильмы не найдены.';
+      case 'tv': return 'Сериалы не найдены.';
+      default: return 'Контент не найден.';
     }
   });
 
   constructor() {
-    // Эффект реагирует на изменение таба или жанра (сброс и новая загрузка)
     effect(() => {
       const type = this.activeTab();
       const genre = this.selectedGenre();
 
-      // Используем untracked, чтобы изменение сигналов внутри loadMedia
-      // не вызывало бесконечный цикл эффекта, хотя здесь это и не критично
       untracked(() => {
         this.resetAndLoad(type, genre);
       });
     });
   }
 
-  // Слушатель скролла для бесконечной прокрутки
   @HostListener('window:scroll')
   onScroll(): void {
-    // Если уже идет загрузка или поиск активен (фильтрация локальная), не подгружаем
     if (this.isLoading() || this.isLoadingMore() || !this.hasMorePages || this.searchQuery()) {
       return;
     }
 
     const pos = (document.documentElement.scrollTop || document.body.scrollTop) + window.innerHeight;
     const max = document.documentElement.scrollHeight || document.body.scrollHeight;
-    const threshold = 500; // Начинаем грузить за 500px до конца
+    const threshold = 500;
 
     if (pos >= max - threshold) {
       this.loadNextPage();
@@ -103,6 +112,14 @@ export class MediaListPageComponent {
     });
   }
 
+  onSearch(query: string): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q: query || null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
   onMediaSelect(item: MediaItem): void {
     this.modalService.open(item);
   }
@@ -114,7 +131,7 @@ export class MediaListPageComponent {
     this.hasMorePages = true;
     this.isLoading.set(true);
     this.error.set(null);
-    this.allMedia.set([]); // Очищаем список
+    this.allMedia.set([]);
 
     this.moviesService.getPopularMedia(type, genreId, this.currentPage).subscribe({
       next: media => {
@@ -142,13 +159,11 @@ export class MediaListPageComponent {
         if (media.length === 0) {
           this.hasMorePages = false;
         } else {
-          // Добавляем новые элементы к существующим
           this.allMedia.update(current => [...current, ...media]);
         }
         this.isLoadingMore.set(false);
       },
       error: err => {
-        // При ошибке подгрузки просто показываем сообщение, не сбрасывая весь список
         console.error('Ошибка подгрузки:', err);
         this.isLoadingMore.set(false);
       }

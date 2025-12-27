@@ -1,53 +1,73 @@
-<div class="app-controls">
-  <!-- Табы для выбора типа контента -->
-  <div class="app-tabs">
-    <a
-      routerLink="/all"
-      [class.active]="activeTab() === 'all'"
-      [queryParams]="{ genre: selectedGenre() }"
-      queryParamsHandling="merge"
-    >Все</a>
-    <a
-      routerLink="/movie"
-      [class.active]="activeTab() === 'movie'"
-      [queryParams]="{ genre: selectedGenre() }"
-      queryParamsHandling="merge"
-    >Фильмы</a>
-    <a
-      routerLink="/tv"
-      [class.active]="activeTab() === 'tv'"
-      [queryParams]="{ genre: selectedGenre() }"
-      queryParamsHandling="merge"
-    >Сериалы</a>
-  </div>
-
-  <!-- Фильтр по жанрам -->
-  <div class="app-genre-filter">
-    <select [value]="selectedGenre() ?? ''" (change)="onGenreChange($event)">
-      <option value="">Все жанры</option>
-      @for (genre of allGenres(); track genre.id) {
-        <option [value]="genre.id">{{ genre.name }}</option>
-      }
-    </select>
-  </div>
-</div>
-
-<!-- Отображаем список контента -->
-@if (isLoading()) {
-  <app-skeleton-list></app-skeleton-list>
-} @else if (error()) {
-  <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
-} @else {
-  <app-movie-list
-    [movies]="filteredMedia()"
-    [emptyMessage]="emptyListMessage()"
-    (movieClick)="onMediaSelect($event)"
-  ></app-movie-list>
-
-  <!-- Индикатор подгрузки новых элементов -->
-  @if (isLoadingMore()) {
-    <div class="app-loading-more">
-      <div class="spinner"></div>
+<div class="page-layout">
+  <!-- Сайдбар: Фиксирован слева на десктопе -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <h1>Медиа Каталог</h1>
     </div>
-  }
-}
+
+    <div class="sidebar__section">
+      <app-search-bar
+        [initialQuery]="searchQuery()"
+        [placeholder]="searchPlaceholder()"
+        (searchChange)="onSearch($event)"
+      ></app-search-bar>
+    </div>
+
+    <nav class="sidebar__nav">
+      <h3>Категории</h3>
+      <div class="nav-links">
+        <a
+          routerLink="/all"
+          [class.active]="activeTab() === 'all'"
+          [queryParams]="{ genre: selectedGenre() }"
+          queryParamsHandling="merge"
+        >Все</a>
+        <a
+          routerLink="/movie"
+          [class.active]="activeTab() === 'movie'"
+          [queryParams]="{ genre: selectedGenre() }"
+          queryParamsHandling="merge"
+        >Фильмы</a>
+        <a
+          routerLink="/tv"
+          [class.active]="activeTab() === 'tv'"
+          [queryParams]="{ genre: selectedGenre() }"
+          queryParamsHandling="merge"
+        >Сериалы</a>
+      </div>
+    </nav>
+
+    <div class="sidebar__section">
+      <h3>Жанры</h3>
+      <div class="genre-select-wrapper">
+        <select [value]="selectedGenre() ?? ''" (change)="onGenreChange($event)">
+          <option value="">Все жанры</option>
+          @for (genre of allGenres(); track genre.id) {
+            <option [value]="genre.id">{{ genre.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Основной контент: Скроллится -->
+  <main class="content">
+    @if (isLoading()) {
+      <app-skeleton-list></app-skeleton-list>
+    } @else if (error()) {
+      <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
+    } @else {
+      <app-movie-list
+        [movies]="filteredMedia()"
+        [emptyMessage]="emptyListMessage()"
+        (movieClick)="onMediaSelect($event)"
+      ></app-movie-list>
+
+      @if (isLoadingMore()) {
+        <div class="app-loading-more">
+          <div class="spinner"></div>
+        </div>
+      }
+    }
+  </main>
+</div>
