@@ -5,7 +5,7 @@
 
 <main class="app-main">
   @if (isLoading()) {
-    <div class="app-state-indicator">Загрузка...</div>
+    <app-skeleton-list></app-skeleton-list>
   } @else if (error()) {
     <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
   } @else {

@@ -1,0 +1,6 @@
+.skeleton-list {
+  display: grid;
+  // Используем те же стили сетки, что и в movie-list, для консистентности
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: calc(var(--spacing-unit) * 3);
+}

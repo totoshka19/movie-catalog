@@ -5,10 +5,16 @@ import { MoviesService } from './services/movies.service';
 import { Movie } from './models/movie.model';
 import { finalize } from 'rxjs';
 import { MovieDetailsComponent } from './components/movie-details/movie-details.component';
+import { SkeletonListComponent } from './components/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [SearchBarComponent, MovieListComponent, MovieDetailsComponent],
+  imports: [
+    SearchBarComponent,
+    MovieListComponent,
+    MovieDetailsComponent,
+    SkeletonListComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
