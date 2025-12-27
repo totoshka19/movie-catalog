@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 import { MediaItem } from '../../models/movie.model';
 import { environment } from '../../../environments/environment';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, DecimalPipe],
   templateUrl: './movie-card.component.html',
   styleUrl: './movie-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

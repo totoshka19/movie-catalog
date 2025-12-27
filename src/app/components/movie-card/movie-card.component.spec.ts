@@ -43,4 +43,11 @@ describe('MovieCard', () => {
     );
     expect(compiled.querySelector('.movie-card__year')?.textContent).toContain('2024');
   });
+
+  it('should display rating badge', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const ratingEl = compiled.querySelector('.movie-card__rating');
+    expect(ratingEl).toBeTruthy();
+    expect(ratingEl?.textContent).toContain('8.5');
+  });
 });

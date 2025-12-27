@@ -92,7 +92,7 @@
   &__rating {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #f59e0b; // Tailwind's amber-500
+    color: var(--color-rating);
   }
 
   &__genres {

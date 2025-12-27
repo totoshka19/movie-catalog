@@ -49,6 +49,24 @@
     }
   }
 
+  &__rating {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: var(--color-rating);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
   &__info {
     padding: calc(var(--spacing-unit) * 2);
     flex-grow: 1;
