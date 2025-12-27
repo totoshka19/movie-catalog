@@ -46,3 +46,8 @@ a {
   color: var(--color-primary);
   text-decoration: none;
 }
+
+/* 3. Вспомогательный класс для блокировки прокрутки */
+body.no-scroll {
+  overflow: hidden;
+}

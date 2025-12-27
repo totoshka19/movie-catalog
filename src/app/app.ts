@@ -36,11 +36,19 @@ export class App implements OnInit {
   });
 
   constructor() {
-    // Эффект для блокировки прокрутки страницы при открытии модального окна
+    // Эффект для блокировки прокрутки страницы и компенсации сдвига
     effect(() => {
       if (this.selectedMovie()) {
+        // Вычисляем ширину скроллбара
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        // Применяем отступ, только если скроллбар был виден (его ширина > 0)
+        if (scrollbarWidth > 0) {
+          document.body.style.paddingRight = `${scrollbarWidth}px`;
+        }
         document.body.classList.add('no-scroll');
       } else {
+        // Убираем стили при закрытии модального окна
+        document.body.style.paddingRight = '';
         document.body.classList.remove('no-scroll');
       }
     });
