@@ -1,9 +1,21 @@
 <div class="search-bar">
   <input
+    #searchInput
     class="search-bar__input"
     type="text"
     placeholder="Поиск фильмов..."
     aria-label="Поиск фильмов"
     [formControl]="searchControl"
   >
+  <!-- Кнопка очистки появляется, только если в поле есть значение -->
+  @if (searchControl.value) {
+    <button
+      class="search-bar__clear-btn"
+      (click)="clearSearch()"
+      aria-label="Очистить поиск"
+      type="button"
+    >
+      &times; <!-- Символ крестика -->
+    </button>
+  }
 </div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -12,6 +12,9 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
   @Output() searchChange = new EventEmitter<string>();
+
+  // Получаем доступ к нативному элементу input из шаблона
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   searchControl = new FormControl('');
   private destroy$ = new Subject<void>();
@@ -31,5 +34,14 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Очищает поле ввода и устанавливает на него фокус.
+   */
+  clearSearch(): void {
+    this.searchControl.setValue('');
+    // Возвращаем фокус в поле ввода для удобства пользователя
+    this.searchInput.nativeElement.focus();
   }
 }
