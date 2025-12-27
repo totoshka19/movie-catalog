@@ -1,5 +1,5 @@
-import { Component, computed, effect, HostListener, inject, signal, untracked } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { MediaItem, Genre } from '../../models/movie.model';
@@ -8,13 +8,14 @@ import { ModalService } from '../../services/modal.service';
 
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
-import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { MediaType } from '../../core/models/media-type.enum';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 
 @Component({
   selector: 'app-media-list-page',
   standalone: true,
-  imports: [RouterLink, MovieListComponent, SkeletonListComponent, SearchBarComponent],
+  imports: [MovieListComponent, SkeletonListComponent, SidebarComponent, InfiniteScrollDirective],
   templateUrl: './media-list-page.component.html',
   styleUrl: './media-list-page.component.scss',
 })
@@ -58,7 +59,7 @@ export class MediaListPageComponent {
   protected readonly error = signal<string | null>(null);
 
   private currentPage = 1;
-  private hasMorePages = true;
+  protected hasMorePages = true;
 
   protected readonly filteredMedia = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -91,30 +92,6 @@ export class MediaListPageComponent {
         this.resetAndLoad(type, genre);
       });
     });
-  }
-
-  @HostListener('window:scroll')
-  onScroll(): void {
-    if (this.isLoading() || this.isLoadingMore() || !this.hasMorePages || this.searchQuery()) {
-      return;
-    }
-
-    const { pos, max } = this.getScrollPosition();
-    const threshold = 500;
-
-    if (pos >= max - threshold) {
-      this.loadNextPage();
-    }
-  }
-
-  /**
-   * Вынесенный метод получения позиции скролла для удобства тестирования
-   */
-  protected getScrollPosition(): { pos: number; max: number } {
-    const pos =
-      (document.documentElement.scrollTop || document.body.scrollTop) + window.innerHeight;
-    const max = document.documentElement.scrollHeight || document.body.scrollHeight;
-    return { pos, max };
   }
 
   onGenreChange(event: Event): void {
@@ -162,7 +139,8 @@ export class MediaListPageComponent {
     });
   }
 
-  private loadNextPage(): void {
+  // ИЗМЕНЕНО: protected -> public, чтобы метод был доступен для spyOn в тесте
+  public loadNextPage(): void {
     this.isLoadingMore.set(true);
     this.currentPage++;
     const type = this.activeTab();

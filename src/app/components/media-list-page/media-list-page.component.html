@@ -1,57 +1,26 @@
 <div class="page-layout">
-  <!-- Сайдбар: Фиксирован слева на десктопе -->
-  <aside class="sidebar">
-    <div class="sidebar__header">
-      <h1>Медиа Каталог</h1>
-    </div>
+  <app-sidebar
+    [initialQuery]="searchQuery()"
+    [placeholder]="searchPlaceholder()"
+    [activeTab]="activeTab()"
+    [selectedGenre]="selectedGenre()"
+    [genres]="allGenres()"
+    (searchChange)="onSearch($event)"
+    (genreChange)="onGenreChange($event)"
+  ></app-sidebar>
 
-    <div class="sidebar__section">
-      <app-search-bar
-        [initialQuery]="searchQuery()"
-        [placeholder]="searchPlaceholder()"
-        (searchChange)="onSearch($event)"
-      ></app-search-bar>
-    </div>
-
-    <nav class="sidebar__nav">
-      <h3>Категории</h3>
-      <div class="nav-links">
-        <a
-          routerLink="/all"
-          [class.active]="activeTab() === 'all'"
-          [queryParams]="{ genre: selectedGenre() }"
-          queryParamsHandling="merge"
-        >Все</a>
-        <a
-          routerLink="/movie"
-          [class.active]="activeTab() === 'movie'"
-          [queryParams]="{ genre: selectedGenre() }"
-          queryParamsHandling="merge"
-        >Фильмы</a>
-        <a
-          routerLink="/tv"
-          [class.active]="activeTab() === 'tv'"
-          [queryParams]="{ genre: selectedGenre() }"
-          queryParamsHandling="merge"
-        >Сериалы</a>
-      </div>
-    </nav>
-
-    <div class="sidebar__section">
-      <h3>Жанры</h3>
-      <div class="genre-select-wrapper">
-        <select [value]="selectedGenre() ?? ''" (change)="onGenreChange($event)">
-          <option value="">Все жанры</option>
-          @for (genre of allGenres(); track genre.id) {
-            <option [value]="genre.id">{{ genre.name }}</option>
-          }
-        </select>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Основной контент: Скроллится -->
-  <main class="content">
+  <!--
+    Основной контент: Скроллится.
+    Применяем директиву appInfiniteScroll.
+    - [disabled] блокирует срабатывание, пока идет загрузка или больше нет страниц.
+    - (scrollEnd) вызывает метод подгрузки следующей страницы.
+  -->
+  <main
+    class="content"
+    appInfiniteScroll
+    [disabled]="isLoading() || isLoadingMore() || !hasMorePages || !!searchQuery()"
+    (scrollEnd)="loadNextPage()"
+  >
     @if (isLoading()) {
       <app-skeleton-list></app-skeleton-list>
     } @else if (error()) {

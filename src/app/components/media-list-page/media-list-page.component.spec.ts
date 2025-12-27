@@ -11,6 +11,8 @@ import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { MediaType } from '../../core/models/media-type.enum';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 
 // --- Моковые данные ---
 const MOCK_GENRES: Genre[] = [
@@ -81,7 +83,9 @@ describe('MediaListPageComponent', () => {
         MediaListPageComponent,
         MovieListComponent,
         SkeletonListComponent,
-        SearchBarComponent
+        SearchBarComponent,
+        SidebarComponent,
+        InfiniteScrollDirective,
       ],
       providers: [
         provideRouter([]),
@@ -94,8 +98,8 @@ describe('MediaListPageComponent', () => {
             queryParamMap: queryParamsSubject.asObservable(),
             snapshot: {
               data: { mediaType: MediaType.Movie, genres: MOCK_GENRES },
-              queryParamMap: convertToParamMap({})
-            }
+              queryParamMap: convertToParamMap({}),
+            },
           },
         },
       ],
@@ -126,7 +130,9 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should filter media based on search query param', async () => {
-    expect(fixture.debugElement.query(By.directive(MovieListComponent)).componentInstance.movies.length).toBe(3);
+    expect(
+      fixture.debugElement.query(By.directive(MovieListComponent)).componentInstance.movies.length
+    ).toBe(3);
 
     queryParamsSubject.next(convertToParamMap({ q: 'Matrix' }));
     fixture.detectChanges();
@@ -226,15 +232,12 @@ describe('MediaListPageComponent', () => {
     expect(activeLink.nativeElement.textContent).toContain('Сериалы');
   });
 
-  it('should load next page on scroll', () => {
-    moviesServiceMock.getPopularMedia.mockClear();
+  it('should call loadNextPage when infinite scroll emits', () => {
+    const spy = vi.spyOn(component, 'loadNextPage');
+    const mainContent = fixture.debugElement.query(By.css('main'));
 
-    vi.spyOn(component as any, 'getScrollPosition').mockReturnValue({ pos: 1500, max: 2000 });
+    mainContent.triggerEventHandler('scrollEnd', null);
 
-    // Вызываем обработчик события скролла
-    component.onScroll();
-
-    // Ожидаем вызов сервиса с страницей 2
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, undefined, 2);
+    expect(spy).toHaveBeenCalled();
   });
 });
