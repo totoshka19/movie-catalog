@@ -26,10 +26,7 @@ export class MediaListPageComponent {
   // --- Сигналы, получающие состояние из URL и resolver'а ---
   private readonly routeData = toSignal(this.route.data);
   private readonly queryParams = toSignal(this.route.queryParamMap);
-
-  // ИСПРАВЛЕНО: Получаем жанры из данных, которые предоставил resolver
   protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
-
   protected readonly activeTab = computed<MediaType>(() => this.routeData()?.['mediaType'] ?? 'all');
   protected readonly selectedGenre = computed(() => {
     const genreId = this.queryParams()?.get('genre');
@@ -50,16 +47,23 @@ export class MediaListPageComponent {
     return this.allMedia().filter(item => item.title.toLowerCase().includes(query));
   });
 
+  protected readonly emptyListMessage = computed(() => {
+    switch (this.activeTab()) {
+      case 'movie':
+        return 'Фильмы не найдены.';
+      case 'tv':
+        return 'Сериалы не найдены.';
+      case 'all':
+      default:
+        return 'Фильмы и сериалы не найдены.';
+    }
+  });
+
   constructor() {
-    // Реактивный эффект: перезагружает данные при смене таба или жанра
     effect(() => {
       this.loadMedia(this.activeTab(), this.selectedGenre());
     });
   }
-
-  // ngOnInit больше не нужен для загрузки жанров
-
-  // --- Обработчики событий от UI ---
 
   onGenreChange(event: Event): void {
     const selectedId = (event.target as HTMLSelectElement).value;

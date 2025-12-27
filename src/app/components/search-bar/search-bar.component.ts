@@ -11,20 +11,17 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
   styleUrl: './search-bar.component.scss'
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
-  @Input() initialQuery: string = ''; // 1. Добавляем Input для получения начального значения
+  @Input() initialQuery: string = '';
+  @Input() placeholder: string = 'Поиск...';
   @Output() searchChange = new EventEmitter<string>();
 
-  // Получаем доступ к нативному элементу input из шаблона
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   searchControl = new FormControl('');
   private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    // 2. Устанавливаем начальное значение в FormControl при инициализации
-    // { emitEvent: false } предотвращает срабатывание valueChanges и отправку события наверх
     this.searchControl.setValue(this.initialQuery, { emitEvent: false });
-
     this.searchControl.valueChanges
       .pipe(
         debounceTime(300),
@@ -41,12 +38,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Очищает поле ввода и устанавливает на него фокус.
-   */
   clearSearch(): void {
     this.searchControl.setValue('');
-    // Возвращаем фокус в поле ввода для удобства пользователя
     this.searchInput.nativeElement.focus();
   }
 }

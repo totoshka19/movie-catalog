@@ -12,6 +12,7 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
 })
 export class MovieListComponent {
   @Input({ required: true }) movies: MediaItem[] = [];
+  @Input() emptyMessage: string = 'Элементы не найдены.';
   @Output() movieClick = new EventEmitter<MediaItem>();
 
   onCardClick(movie: MediaItem): void {

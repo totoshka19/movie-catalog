@@ -5,6 +5,7 @@
     @if (isListPage()) {
       <app-search-bar
         [initialQuery]="initialSearchQuery() ?? ''"
+        [placeholder]="searchPlaceholder()"
         (searchChange)="onSearch($event)"
       ></app-search-bar>
     }

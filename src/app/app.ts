@@ -32,6 +32,22 @@ export class App {
     return url.startsWith('/all') || url.startsWith('/movie') || url.startsWith('/tv');
   });
 
+  // Вычисляемый сигнал для определения текста плейсхолдера
+  protected readonly searchPlaceholder = computed(() => {
+    const url = this.currentUrl() ?? '';
+    if (url.startsWith('/all')) {
+      return 'Поиск фильмов или сериалов...';
+    }
+    if (url.startsWith('/movie')) {
+      return 'Поиск фильмов...';
+    }
+    if (url.startsWith('/tv')) {
+      return 'Поиск сериалов...';
+    }
+    // Возвращаем значение по умолчанию на всякий случай
+    return 'Поиск...';
+  });
+
   // Получаем поисковый запрос из URL для инициализации SearchBar
   protected readonly initialSearchQuery = toSignal(
     this.router.events.pipe(
