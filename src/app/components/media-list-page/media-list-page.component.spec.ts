@@ -115,7 +115,7 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should load media on initialization based on route data', () => {
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', undefined);
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', undefined, 1);
 
     fixture.detectChanges();
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
@@ -170,7 +170,7 @@ describe('MediaListPageComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', 2);
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', 2, 1);
   });
 
   it('should open modal when a movie is clicked', () => {
@@ -199,8 +199,6 @@ describe('MediaListPageComponent', () => {
     expect(movieList).toBeNull();
 
     // ВАЖНО: Завершаем Subject, чтобы закрыть подписку внутри компонента.
-    // Это предотвращает утечки памяти, которые могут вызвать крах (Heap Corruption)
-    // при запуске тестов в среде с jsdom/canvas.
     loadingSubject.complete();
   });
 
@@ -227,5 +225,27 @@ describe('MediaListPageComponent', () => {
 
     activeLink = fixture.debugElement.query(By.css('.app-tabs a.active'));
     expect(activeLink.nativeElement.textContent).toContain('Сериалы');
+  });
+
+  // Тест для проверки подгрузки при скролле
+  it('should load next page on scroll', () => {
+    moviesServiceMock.getPopularMedia.mockClear();
+
+    // Имитируем скролл до низа страницы
+    // Настраиваем значения так, чтобы условие (pos >= max - threshold) выполнилось
+    Object.defineProperty(window, 'innerHeight', { value: 1000 });
+    Object.defineProperty(document.documentElement, 'scrollTop', { value: 1000, writable: true });
+    Object.defineProperty(document.documentElement, 'scrollHeight', { value: 2000, writable: true });
+
+    // Вызываем обработчик события скролла
+    window.dispatchEvent(new Event('scroll'));
+
+    // Поскольку HostListener может быть вызван асинхронно или напрямую,
+    // в данном случае мы тестируем логику компонента через публичный метод onScroll
+    // или имитируя событие на window, к которому привязан listener.
+    component.onScroll();
+
+    // Ожидаем вызов сервиса с страницей 2
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith('movie', undefined, 2);
   });
 });

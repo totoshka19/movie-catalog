@@ -59,13 +59,15 @@ export class MoviesService {
   }
 
   /**
-   * Получает популярные фильмы и/или сериалы с возможностью фильтрации по жанру.
+   * Получает популярные фильмы и/или сериалы с возможностью фильтрации по жанру и пагинацией.
    * @param type - Тип контента для загрузки ('all', 'movie', 'tv').
    * @param genreId - ID жанра для фильтрации.
+   * @param page - Номер страницы (по умолчанию 1).
    * @returns Observable со списком медиа-элементов.
    */
-  getPopularMedia(type: MediaType = 'all', genreId?: number): Observable<MediaItem[]> {
-    let params = new HttpParams();
+  getPopularMedia(type: MediaType = 'all', genreId?: number, page: number = 1): Observable<MediaItem[]> {
+    let params = new HttpParams().set('page', page.toString());
+
     if (genreId) {
       params = params.set('with_genres', genreId.toString());
     }

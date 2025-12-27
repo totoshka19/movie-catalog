@@ -43,4 +43,11 @@
     [emptyMessage]="emptyListMessage()"
     (movieClick)="onMediaSelect($event)"
   ></app-movie-list>
+
+  <!-- Индикатор подгрузки новых элементов -->
+  @if (isLoadingMore()) {
+    <div class="app-loading-more">
+      <div class="spinner"></div>
+    </div>
+  }
 }
