@@ -65,35 +65,30 @@ export class MoviesService {
    * @returns Observable со списком медиа-элементов.
    */
   getPopularMedia(type: MediaType = 'all', genreId?: number): Observable<MediaItem[]> {
-    // Убеждаемся, что жанры загружены, перед тем как делать основной запрос
-    return this.loadGenres().pipe(
-      switchMap(() => {
-        let params = new HttpParams();
-        if (genreId) {
-          params = params.set('with_genres', genreId.toString());
+    let params = new HttpParams();
+    if (genreId) {
+      params = params.set('with_genres', genreId.toString());
+    }
+
+    const movies$ =
+      type === 'all' || type === 'movie'
+        ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/movie/popular`, { params })
+        : of(null);
+    const tvShows$ =
+      type === 'all' || type === 'tv'
+        ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/tv/popular`, { params })
+        : of(null);
+
+    return forkJoin([movies$, tvShows$]).pipe(
+      map(([moviesResponse, tvShowsResponse]) => {
+        const movies = moviesResponse ? this.normalizeMovies(moviesResponse.results) : [];
+        const tvShows = tvShowsResponse ? this.normalizeTvShows(tvShowsResponse.results) : [];
+
+        if (type === 'all') {
+          return this.interleaveArrays(movies, tvShows);
+        } else {
+          return [...movies, ...tvShows];
         }
-
-        const movies$ =
-          type === 'all' || type === 'movie'
-            ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/movie/popular`, { params })
-            : of(null);
-        const tvShows$ =
-          type === 'all' || type === 'tv'
-            ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/tv/popular`, { params })
-            : of(null);
-
-        return forkJoin([movies$, tvShows$]).pipe(
-          map(([moviesResponse, tvShowsResponse]) => {
-            const movies = moviesResponse ? this.normalizeMovies(moviesResponse.results) : [];
-            const tvShows = tvShowsResponse ? this.normalizeTvShows(tvShowsResponse.results) : [];
-
-            if (type === 'all') {
-              return this.interleaveArrays(movies, tvShows);
-            } else {
-              return [...movies, ...tvShows];
-            }
-          })
-        );
       }),
       catchError(this.handleError)
     );
