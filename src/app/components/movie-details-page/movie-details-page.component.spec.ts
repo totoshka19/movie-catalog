@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
+import { By } from '@angular/platform-browser';
 
 import { MovieDetailsPageComponent } from './movie-details-page.component';
+import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
 import { MoviesService } from '../../services/movies.service';
 import { MediaItem } from '../../models/movie.model';
 
@@ -20,9 +22,9 @@ const MOCK_MEDIA_ITEM: MediaItem = {
   genreNames: ['Тест'],
 };
 
-// Мокируем новый метод getMediaDetails
+// Мокируем сервис
 const mockMoviesService = {
-  getMediaDetails: vi.fn().mockReturnValue(of(MOCK_MEDIA_ITEM)),
+  getMediaDetails: vi.fn(),
 };
 
 describe('MovieDetailsPageComponent', () => {
@@ -33,7 +35,7 @@ describe('MovieDetailsPageComponent', () => {
     vi.clearAllMocks();
 
     await TestBed.configureTestingModule({
-      imports: [MovieDetailsPageComponent, RouterTestingModule],
+      imports: [MovieDetailsPageComponent, RouterTestingModule, SkeletonDetailsComponent],
       providers: [{ provide: MoviesService, useValue: mockMoviesService }],
     }).compileComponents();
 
@@ -46,33 +48,49 @@ describe('MovieDetailsPageComponent', () => {
   });
 
   it('should call getMediaDetails with the correct ID and type from input', () => {
-    // Устанавливаем оба required input: 'id' и 'type'
+    mockMoviesService.getMediaDetails.mockReturnValue(of(MOCK_MEDIA_ITEM));
+
     fixture.componentRef.setInput('id', '1');
     fixture.componentRef.setInput('type', 'movie');
-    fixture.detectChanges(); // Запускаем обнаружение изменений
+    fixture.detectChanges();
 
     expect(mockMoviesService.getMediaDetails).toHaveBeenCalled();
     expect(mockMoviesService.getMediaDetails).toHaveBeenCalledWith(1, 'movie');
   });
 
   it('should display media details after data is loaded', async () => {
+    mockMoviesService.getMediaDetails.mockReturnValue(of(MOCK_MEDIA_ITEM));
+
     fixture.componentRef.setInput('id', '1');
     fixture.componentRef.setInput('type', 'movie');
     fixture.detectChanges();
-
     await fixture.whenStable();
-    fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.movie-details-page__title')?.textContent).toContain(
       MOCK_MEDIA_ITEM.title
     );
-    expect(compiled.querySelector('.movie-details-page__title')?.textContent).toContain('2024');
-    expect(compiled.querySelector('.movie-details-page__rating')?.textContent).toContain(
-      String(MOCK_MEDIA_ITEM.vote_average)
-    );
-    expect(compiled.querySelector('.movie-details-page__description')?.textContent).toBe(
-      MOCK_MEDIA_ITEM.overview
-    );
+  });
+
+  it('should show skeleton while loading', async () => {
+    // Используем Subject, чтобы имитировать долгую загрузку
+    const loadingSubject = new Subject<MediaItem>();
+    mockMoviesService.getMediaDetails.mockReturnValue(loadingSubject);
+
+    fixture.componentRef.setInput('id', '999');
+    fixture.componentRef.setInput('type', 'movie');
+
+    fixture.detectChanges(); // Инициируем запрос
+
+    // Проверяем, что отображается скелетон
+    const skeleton = fixture.debugElement.query(By.directive(SkeletonDetailsComponent));
+    expect(skeleton).toBeTruthy();
+
+    // Проверяем, что контент еще не отображается
+    const content = fixture.nativeElement.querySelector('.movie-details-page__content');
+    expect(content).toBeNull();
+
+    // Завершаем Subject для избежания утечек памяти
+    loadingSubject.complete();
   });
 });

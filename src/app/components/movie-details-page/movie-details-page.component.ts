@@ -7,11 +7,18 @@ import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
+import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
 
 @Component({
   selector: 'app-movie-details-page',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, NgOptimizedImage, BreadcrumbComponent],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    NgOptimizedImage,
+    BreadcrumbComponent,
+    SkeletonDetailsComponent
+  ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +33,6 @@ export class MovieDetailsPageComponent {
   // Создаем сигнал из инпутов, чтобы отслеживать их изменения вместе
   private readonly routeParams = computed(() => ({ id: this.id(), type: this.type() }));
 
-  // ИСПРАВЛЕНИЕ: Вызываем новый метод getMediaDetails и передаем ему id и type
   private readonly mediaItem$: Observable<MediaItem> = toObservable(this.routeParams).pipe(
     switchMap(({ id, type }) => this.moviesService.getMediaDetails(Number(id), type))
   );

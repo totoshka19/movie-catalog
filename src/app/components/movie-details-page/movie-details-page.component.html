@@ -1,7 +1,9 @@
 <div class="movie-details-page">
-  <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
-
+  <!-- Условие if проверяет наличие данных -->
   @if (mediaItem(); as itemData) {
+    <!-- Контент загружен -->
+    <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
+
     <article class="movie-details-page__content">
       <div class="movie-details-page__poster">
         @if(itemData.poster_path) {
@@ -25,7 +27,7 @@
       </div>
     </article>
   } @else {
-    <!-- Можно добавить скелетон и для этой страницы -->
-    <p>Загрузка информации...</p>
+    <!-- Данные загружаются: показываем скелетон -->
+    <app-skeleton-details></app-skeleton-details>
   }
 </div>
