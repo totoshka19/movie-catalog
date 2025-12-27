@@ -1,0 +1,20 @@
+<article class="movie-card">
+  <figure class="movie-card__figure">
+    <!-- Показываем плейсхолдер, пока изображение не загрузилось -->
+    @if (!imageLoaded()) {
+      <div class="movie-card__placeholder"></div>
+    }
+    <img
+      class="movie-card__poster"
+      [src]="movie.posterUrl"
+      [alt]="'Постер фильма ' + movie.title"
+      [class.movie-card__poster--loaded]="imageLoaded()"
+      (load)="onImageLoad()"
+      loading="lazy"
+    >
+  </figure>
+  <div class="movie-card__info">
+    <h3 class="movie-card__title">{{ movie.title }}</h3>
+    <p class="movie-card__year">{{ movie.year }}</p>
+  </div>
+</article>

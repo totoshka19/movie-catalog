@@ -1,0 +1,13 @@
+.movie-list {
+  display: grid;
+  // Адаптивная сетка
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: calc(var(--spacing-unit) * 3);
+
+  &__empty-message {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: calc(var(--spacing-unit) * 5) 0;
+    font-size: 1.2rem;
+  }
+}

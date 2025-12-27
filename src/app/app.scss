@@ -9,10 +9,24 @@
   padding-bottom: 1rem;
   margin-bottom: 2rem;
   border-bottom: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 
   h1 {
     font-size: 2.5rem;
     margin: 0;
     font-weight: 600;
+  }
+}
+
+.app-state-indicator {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+
+  &--error {
+    color: #f87171; // Tailwind's red-400
   }
 }

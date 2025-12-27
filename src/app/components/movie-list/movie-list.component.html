@@ -1,0 +1,9 @@
+<div class="movie-list">
+  @for (movie of movies; track movie.id) {
+    <app-movie-card [movie]="movie"></app-movie-card>
+  }
+</div>
+
+@if (!movies.length) {
+  <p class="movie-list__empty-message">Фильмы не найдены.</p>
+}

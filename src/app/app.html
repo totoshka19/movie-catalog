@@ -4,4 +4,11 @@
 </header>
 
 <main class="app-main">
+  @if (isLoading()) {
+    <div class="app-state-indicator">Загрузка...</div>
+  } @else if (error()) {
+    <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
+  } @else {
+    <app-movie-list [movies]="filteredMovies()"></app-movie-list>
+  }
 </main>
