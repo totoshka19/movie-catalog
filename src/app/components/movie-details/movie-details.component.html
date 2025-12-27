@@ -1,0 +1,24 @@
+<!-- Оверлей для затемнения фона и отлова клика для закрытия -->
+<div class="movie-details__overlay" (click)="onClose()">
+  <!-- Сам контент модального окна -->
+  <article class="movie-details__content" (click)="onContentClick($event)">
+    <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть">
+      &times; <!-- Символ крестика -->
+    </button>
+    <div class="movie-details__poster">
+      <img [src]="movie.posterUrl" [alt]="'Постер фильма ' + movie.title">
+    </div>
+    <div class="movie-details__info">
+      <h2 class="movie-details__title">{{ movie.title }} ({{ movie.year }})</h2>
+      <div class="movie-details__meta">
+        <span class="movie-details__rating">★ {{ movie.rating }}</span>
+        <div class="movie-details__genres">
+          @for (genre of movie.genres; track genre) {
+            <span class="movie-details__genre-tag">{{ genre }}</span>
+          }
+        </div>
+      </div>
+      <p class="movie-details__description">{{ movie.description }}</p>
+    </div>
+  </article>
+</div>

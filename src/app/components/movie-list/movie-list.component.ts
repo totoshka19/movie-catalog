@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Movie } from '../../models/movie.model';
 import { MovieCardComponent } from '../movie-card/movie-card.component';
 
@@ -12,4 +12,9 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
 })
 export class MovieListComponent {
   @Input({ required: true }) movies: Movie[] = [];
+  @Output() movieClick = new EventEmitter<Movie>();
+
+  onCardClick(movie: Movie): void {
+    this.movieClick.emit(movie);
+  }
 }

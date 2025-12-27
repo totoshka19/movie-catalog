@@ -9,6 +9,17 @@
   } @else if (error()) {
     <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
   } @else {
-    <app-movie-list [movies]="filteredMovies()"></app-movie-list>
+    <app-movie-list
+      [movies]="filteredMovies()"
+      (movieClick)="onMovieSelect($event)"
+    ></app-movie-list>
   }
 </main>
+
+<!-- Модальное окно для деталей фильма -->
+@if (selectedMovie(); as movie) {
+  <app-movie-details
+    [movie]="movie"
+    (close)="onCloseDetails()"
+  ></app-movie-details>
+}
