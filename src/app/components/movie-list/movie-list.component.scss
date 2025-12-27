@@ -1,8 +1,19 @@
+@use '../../../styles/responsive' as *;
+
 .movie-list {
   display: grid;
-  // Адаптивная сетка
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: calc(var(--spacing-unit) * 3);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+
+  @include respond-to('desktop-lg') {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: calc(var(--spacing-unit) * 3); // ~24px
+  }
+
+  @include respond-to('mobile') {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
 
   &__empty-message {
     text-align: center;

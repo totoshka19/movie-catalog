@@ -1,0 +1,23 @@
+@use 'sass:map';
+
+// Карта брейкпоинтов (Desktop First)
+$breakpoints: (
+  'desktop-xl': 1919px, // < 1920px
+  'desktop-lg': 1439px, // < 1440px
+  'desktop': 1023px,    // < 1024px
+  'tablet': 767px,      // < 768px
+  'mobile': 479px       // < 480px
+);
+
+// Миксин для медиа-запросов (Desktop First подход)
+@mixin respond-to($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint);
+
+    @media (max-width: $value) {
+      @content;
+    }
+  } @else {
+    @warn "Неизвестный брейкпоинт: #{$breakpoint}. Доступные значения: #{map.keys($breakpoints)}";
+  }
+}

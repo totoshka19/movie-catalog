@@ -228,10 +228,7 @@ describe('MediaListPageComponent', () => {
   it('should load next page on scroll', () => {
     moviesServiceMock.getPopularMedia.mockClear();
 
-    // Имитируем скролл до низа страницы
-    Object.defineProperty(window, 'innerHeight', { value: 1000 });
-    Object.defineProperty(document.documentElement, 'scrollTop', { value: 1000, writable: true });
-    Object.defineProperty(document.documentElement, 'scrollHeight', { value: 2000, writable: true });
+    vi.spyOn(component as any, 'getScrollPosition').mockReturnValue({ pos: 1500, max: 2000 });
 
     // Вызываем обработчик события скролла
     component.onScroll();

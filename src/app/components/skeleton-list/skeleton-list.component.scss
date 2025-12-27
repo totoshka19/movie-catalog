@@ -1,6 +1,17 @@
+@use '../../../styles/responsive' as *;
+
 .skeleton-list {
   display: grid;
-  // Используем те же стили сетки, что и в movie-list, для консистентности
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: calc(var(--spacing-unit) * 3);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+
+  @include respond-to('desktop-lg') {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: calc(var(--spacing-unit) * 3);
+  }
+
+  @include respond-to('mobile') {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
 }

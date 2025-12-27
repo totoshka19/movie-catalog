@@ -1,3 +1,5 @@
+@use '../../../styles/responsive' as *;
+
 :host {
   display: block;
   min-height: 100vh;
@@ -5,15 +7,25 @@
 
 .page-layout {
   display: grid;
-  grid-template-columns: 1fr; // По умолчанию (мобильные) - одна колонка
-  gap: 2rem;
-  padding: 1rem;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+  padding: 2.5rem;
+  align-items: start;
 
-  // Десктопная версия
-  @media (min-width: 1024px) {
-    grid-template-columns: 280px 1fr; // Сайдбар 280px, остальное контент
+  @include respond-to('desktop-lg') {
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
     padding: 2rem;
-    align-items: start; // Чтобы сайдбар не растягивался на всю высоту grid-ячейки
+  }
+
+  @include respond-to('desktop') {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  @include respond-to('tablet') {
+    padding: 1rem;
   }
 }
 
@@ -24,22 +36,24 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  z-index: 10;
+  position: sticky;
+  top: 2rem;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
 
-  // На десктопе делаем его липким (sticky)
-  @media (min-width: 1024px) {
-    position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 4px;
+  }
 
-    // Стилизация скроллбара для сайдбара
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--color-border);
-      border-radius: 4px;
-    }
+  @include respond-to('desktop') {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
   }
 
   &__header h1 {
@@ -80,8 +94,7 @@
     }
   }
 
-  // На мобильных вкладки в ряд
-  @media (max-width: 1023px) {
+  @include respond-to('desktop') {
     flex-direction: row;
     flex-wrap: wrap;
 
@@ -89,6 +102,7 @@
       flex: 1;
       text-align: center;
       background-color: var(--color-background);
+      white-space: nowrap;
     }
   }
 }

@@ -35,10 +35,8 @@ export class MediaListPageComponent {
     return genreId ? Number(genreId) : undefined;
   });
 
-  // Получаем поисковый запрос из URL
   protected readonly searchQuery = computed(() => this.queryParams()?.get('q') ?? '');
 
-  // Вычисляем плейсхолдер для поиска в зависимости от вкладки
   protected readonly searchPlaceholder = computed(() => {
     switch (this.activeTab()) {
       case 'movie': return 'Поиск фильмов...';
@@ -53,11 +51,9 @@ export class MediaListPageComponent {
   protected readonly isLoadingMore = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  // Пагинация
   private currentPage = 1;
   private hasMorePages = true;
 
-  // Фильтрация (локальная для поиска)
   protected readonly filteredMedia = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) {
@@ -94,13 +90,21 @@ export class MediaListPageComponent {
       return;
     }
 
-    const pos = (document.documentElement.scrollTop || document.body.scrollTop) + window.innerHeight;
-    const max = document.documentElement.scrollHeight || document.body.scrollHeight;
+    const { pos, max } = this.getScrollPosition();
     const threshold = 500;
 
     if (pos >= max - threshold) {
       this.loadNextPage();
     }
+  }
+
+  /**
+   * Вынесенный метод получения позиции скролла для удобства тестирования
+   */
+  protected getScrollPosition(): { pos: number; max: number } {
+    const pos = (document.documentElement.scrollTop || document.body.scrollTop) + window.innerHeight;
+    const max = document.documentElement.scrollHeight || document.body.scrollHeight;
+    return { pos, max };
   }
 
   onGenreChange(event: Event): void {

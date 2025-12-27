@@ -23,6 +23,12 @@
 
   // Переходы
   --transition-speed: 0.2s ease-in-out;
+
+  // Брейкпоинты (для справки, в SCSS используем медиа-запросы)
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-desktop-lg: 1440px;
+  --bp-desktop-xl: 1920px;
 }
 
 /* 2. Сброс стилей (Reset) */
