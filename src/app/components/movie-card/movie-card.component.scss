@@ -7,22 +7,25 @@
   background-color: var(--color-surface);
   border-radius: var(--border-radius-md);
   overflow: hidden;
-  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  transition: box-shadow var(--transition-speed);
   height: 100%;
   display: flex;
   flex-direction: column;
 
   &:hover {
-    transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &:hover &__poster {
+    transform: scale(1.05);
   }
 
   &__figure {
     margin: 0;
     position: relative;
-    // Сохраняем соотношение сторон постера (примерно 2:3)
     padding-top: 150%;
     background-color: #2a2a2a;
+    overflow: hidden;
   }
 
   &__placeholder {
@@ -42,7 +45,8 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transition: opacity var(--transition-speed);
+    transition: opacity var(--transition-speed), transform var(--transition-speed);
+    transform-origin: center center;
 
     &--loaded {
       opacity: 1;
@@ -72,6 +76,8 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    z-index: 1;
+    background-color: var(--color-surface);
   }
 
   &__title {
