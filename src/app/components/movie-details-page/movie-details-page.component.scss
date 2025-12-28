@@ -1,15 +1,40 @@
 @use '../../../styles/responsive' as *;
 
-// ИСПРАВЛЕНИЕ: Убираем стили layout'а с хоста, оставляя только display: block.
 :host {
   display: block;
 }
 
-// ИСПРАВЛЕНИЕ: Переносим стили layout'а сюда, увеличиваем ширину и синхронизируем отступы с главной страницей.
+// Новый полноэкранный хедер для хлебных крошек
+.movie-details-page__header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  // Используем тот же фон, что и у основного хедера, для консистентности
+  background-color: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+// Контейнер внутри хедера для ограничения ширины хлебных крошек
+.movie-details-page__breadcrumb-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0.75rem 2.5rem;
+
+  @include respond-to('desktop-lg') {
+    padding: 0.75rem 2rem;
+  }
+
+  @include respond-to('tablet') {
+    padding: 0.75rem 1rem;
+  }
+}
+
+// Этот класс теперь является контейнером для основного контента.
 .movie-details-page {
-  max-width: 1440px; // Увеличили максимальную ширину
-  margin: 0 auto; // Центрируем контейнер
-  padding: 2rem 2.5rem; // Добавляем отступы, как на главной
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
 
   @include respond-to('desktop-lg') {
     padding: 2rem;
@@ -17,19 +42,6 @@
 
   @include respond-to('tablet') {
     padding: 1.5rem 1rem;
-  }
-
-
-  &__breadcrumb {
-    // Минималистичные стили для фиксации
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    //background-color: var(--color-surface);
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--color-border);
-    // Отступ от контента снизу, чтобы он не прилипал
-    margin-bottom: 1.5rem;
   }
 
   &__content {
@@ -44,7 +56,7 @@
 
   &__poster {
     flex-shrink: 0;
-    width: 300px; // Увеличили размер постера
+    width: 300px;
 
     img {
       width: 100%;
@@ -56,7 +68,7 @@
   // Стиль для заглушки на отдельной странице
   &__poster-placeholder {
     width: 100%;
-    height: 450px; // Адаптировали высоту под новый размер
+    height: 450px;
     background-color: #2a2a2a;
     display: flex;
     align-items: center;
@@ -74,7 +86,7 @@
   }
 
   &__title {
-    font-size: 2.5rem; // Увеличили заголовок
+    font-size: 2.5rem;
     font-weight: 700;
     line-height: 1.2;
   }
@@ -107,7 +119,6 @@
   }
 
   &__genre-tag {
-    /* ИЗМЕНЕНИЕ: Используем новую переменную и делаем текст белым */
     background-color: var(--color-accent-tag);
     color: white;
     padding: calc(var(--spacing-unit) / 2) var(--spacing-unit);
@@ -126,13 +137,13 @@
   }
 
   &__description {
-    line-height: 1.7; // Увеличили межстрочный интервал
+    line-height: 1.7;
     color: var(--color-text-secondary);
     font-size: 1rem;
   }
 
   &__actions {
-    margin-top: auto; // Прижимает блок к низу
+    margin-top: auto;
     padding-top: 1rem;
   }
 
@@ -211,11 +222,11 @@
     }
     &__poster {
       width: 100%;
-      max-width: 250px; // Увеличили
+      max-width: 250px;
       margin: 0 auto;
     }
     &__poster-placeholder {
-      height: 375px; // Увеличили
+      height: 375px;
     }
     &__title {
       font-size: 1.8rem;

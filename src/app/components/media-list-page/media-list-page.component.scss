@@ -2,10 +2,13 @@
 
 :host {
   display: block;
-  min-height: 100vh; // Возвращаем нормальную минимальную высоту
+  min-height: 100vh;
 }
 
 .page-layout {
+  max-width: 1920px;
+  margin: 0 auto;
+
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 3rem;

@@ -1,11 +1,18 @@
+<!-- Новый полноэкранный хедер для хлебных крошек -->
+<div class="movie-details-page__header">
+  <div class="movie-details-page__breadcrumb-container">
+    <!-- Хлебные крошки отображаются только после загрузки данных -->
+    @if (mediaItem()) {
+      <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
+    }
+  </div>
+</div>
+
+<!-- Основной контейнер страницы с ограниченной шириной -->
 <div class="movie-details-page">
   <!-- Условие if проверяет наличие данных -->
   @if (mediaItem(); as itemData) {
     <!-- Контент загружен -->
-    <div class="movie-details-page__breadcrumb">
-      <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
-    </div>
-
     <article class="movie-details-page__content">
       <div class="movie-details-page__poster">
         @if(itemData.poster_path) {
