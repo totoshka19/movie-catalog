@@ -34,22 +34,44 @@ export class MediaListStateService {
   private currentSortBy: SortType = SortType.Newest;
 
   /**
-   * Отфильтрованный список медиа.
+   * Отфильтрованный и отсортированный список медиа.
    * Если активен поиск по строке (query), то дополнительно фильтрует
-   * результаты на клиенте по выбранным жанрам, т.к. API поиска
-   * не поддерживает фильтрацию по жанрам в одном запросе.
+   * и сортирует результаты на клиенте, так как API поиска не
+   * поддерживает эти операции в одном запросе.
    */
   public readonly filteredMedia = computed(() => {
     const media = this.allMedia();
     const genres = this.selectedGenres();
     const query = this.searchQuery();
+    const sortBy = this.currentSortBy; // Используем сохраненный тип сортировки
 
-    if (query && genres.length > 0) {
-      return media.filter(item => {
-        return item.genre_ids && item.genre_ids.some(id => genres.includes(id));
-      });
+    // Шаг 1: Фильтрация по жанрам (только при активном поиске)
+    const genreFilteredMedia =
+      query && genres.length > 0
+        ? media.filter(item => item.genre_ids?.some(id => genres.includes(id)))
+        : media;
+
+    // Шаг 2: Сортировка (только при активном поиске)
+    if (query) {
+      // Создаем копию массива, чтобы не мутировать исходный
+      const sortedMedia = [...genreFilteredMedia];
+      switch (sortBy) {
+        case SortType.TopRated:
+          return sortedMedia.sort((a, b) => b.vote_average - a.vote_average);
+        case SortType.Newest:
+          return sortedMedia.sort((a, b) => {
+            // Преобразуем строки в даты для корректного сравнения
+            const dateA = a.release_date ? new Date(a.release_date).getTime() : 0;
+            const dateB = b.release_date ? new Date(b.release_date).getTime() : 0;
+            return dateB - dateA;
+          });
+        default:
+          return sortedMedia;
+      }
     }
-    return media;
+
+    // Если поиска нет, возвращаем как есть (API уже отсортировал)
+    return genreFilteredMedia;
   });
 
   /**
@@ -66,7 +88,7 @@ export class MediaListStateService {
     genreIds: number[],
     query: string
   ): void {
-    // Сохраняем текущие параметры для использования в `loadNextPage`
+    // Сохраняем текущие параметры для использования в `loadNextPage` и `filteredMedia`
     this.currentType = type;
     this.currentSortBy = sortBy;
 
@@ -146,6 +168,8 @@ export class MediaListStateService {
     page: number
   ): Observable<MediaItem[]> {
     if (query) {
+      // При поиске мы игнорируем sortBy и genreIds в запросе к API,
+      // так как они будут применены на клиенте.
       return this.moviesService.searchMedia(query, type, page);
     } else {
       return this.moviesService.getPopularMedia(type, sortBy, genreIds, page);

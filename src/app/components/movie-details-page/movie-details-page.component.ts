@@ -10,6 +10,8 @@ import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.c
 import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
 import { MediaType } from '../../core/models/media-type.enum';
 import { APP_ROUTES } from '../../core/constants/routes.constants';
+import { NavigationHistoryService } from '../../services/navigation-history.service';
+import { Params } from '@angular/router';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -32,6 +34,7 @@ export class MovieDetailsPageComponent {
   public readonly type = input.required<MediaType.Movie | MediaType.Tv>();
 
   private readonly moviesService = inject(MoviesService);
+  private readonly navigationHistoryService = inject(NavigationHistoryService);
 
   // Создаем сигнал из инпутов, чтобы отслеживать их изменения вместе
   private readonly routeParams = computed(() => ({ id: this.id(), type: this.type() }));
@@ -53,11 +56,41 @@ export class MovieDetailsPageComponent {
     }
 
     const mediaTypeLabel = item.media_type === MediaType.Movie ? 'Фильмы' : 'Сериалы';
-    const mediaTypeLink = item.media_type === MediaType.Movie ? `/${APP_ROUTES.MOVIE}` : `/${APP_ROUTES.TV}`;
+    const previousUrl = this.navigationHistoryService.previousUrl();
+
+    // Определяем, является ли предыдущий URL валидной страницей списка
+    const isPreviousUrlList =
+      previousUrl.startsWith(`/${APP_ROUTES.MOVIE}`) ||
+      previousUrl.startsWith(`/${APP_ROUTES.TV}`) ||
+      previousUrl.startsWith(`/${APP_ROUTES.ALL}`);
+
+    let homeQueryParams: Params | undefined;
+    let mediaTypeLink: string[] | string;
+    let mediaTypeQueryParams: Params | undefined;
+
+    if (isPreviousUrlList) {
+      // Парсим URL, чтобы отделить путь от query-параметров
+      const url = new URL(previousUrl, window.location.origin);
+      mediaTypeLink = [url.pathname];
+      mediaTypeQueryParams = {};
+      url.searchParams.forEach((value, key) => {
+        (mediaTypeQueryParams as Params)[key] = value;
+      });
+      // Используем те же query-параметры для ссылки "Главная"
+      homeQueryParams = mediaTypeQueryParams;
+    } else {
+      // Создаем ссылку по умолчанию без параметров, если пришли не со страницы списка
+      mediaTypeLink =
+        item.media_type === MediaType.Movie ? [`/${APP_ROUTES.MOVIE}`] : [`/${APP_ROUTES.TV}`];
+    }
 
     return [
-      { label: 'Главная', link: APP_ROUTES.ROOT },
-      { label: mediaTypeLabel, link: mediaTypeLink },
+      {
+        label: 'Главная',
+        link: [`/${APP_ROUTES.ALL}`], // Ссылка всегда ведет на таб "Все"
+        queryParams: homeQueryParams, // Но с сохранением фильтров
+      },
+      { label: mediaTypeLabel, link: mediaTypeLink, queryParams: mediaTypeQueryParams },
       { label: item.title, link: '' }, // У последнего элемента нет ссылки
     ];
   });

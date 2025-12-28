@@ -4,6 +4,7 @@ import { filter } from 'rxjs';
 
 import { MovieDetailsComponent } from './components/movie-details/movie-details.component';
 import { ModalService } from './services/modal.service';
+import { NavigationHistoryService } from './services/navigation-history.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,8 @@ import { ModalService } from './services/modal.service';
 export class App {
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+  // Инжектируем сервис, чтобы он был создан и начал работать
+  private readonly navigationHistoryService = inject(NavigationHistoryService);
 
   protected readonly selectedMedia = this.modalService.selectedMedia;
 
