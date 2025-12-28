@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output, signal, AfterViewInit } from '@angular/core';
 import { MediaItem } from '../../models/movie.model';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -12,9 +12,23 @@ import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
   styleUrl: './movie-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MovieDetailsComponent {
+export class MovieDetailsComponent implements AfterViewInit {
   @Input({ required: true }) movie!: MediaItem;
   @Output() close = new EventEmitter<void>();
+
+  /**
+   * Сигнал для управления CSS-классом, который запускает анимации появления и исчезновения.
+   */
+  protected readonly isVisible = signal(false);
+
+  /**
+   * После того, как компонент отрисовался в DOM,
+   * запускаем анимацию появления с небольшой задержкой.
+   */
+  ngAfterViewInit(): void {
+    // Задержка нужна, чтобы браузер успел отрисовать начальное (скрытое) состояние
+    setTimeout(() => this.isVisible.set(true), 10);
+  }
 
   /**
    * Прослушивает нажатие клавиши Escape на уровне документа
@@ -31,6 +45,9 @@ export class MovieDetailsComponent {
   }
 
   onClose(): void {
-    this.close.emit();
+    // 1. Запускаем анимацию исчезновения
+    this.isVisible.set(false);
+    // 2. Ждем завершения анимации (200ms, как в CSS) и только потом эмитим событие
+    setTimeout(() => this.close.emit(), 200);
   }
 }

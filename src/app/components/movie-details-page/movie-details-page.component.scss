@@ -103,3 +103,15 @@
     }
   }
 }
+
+// Стили для индикатора состояния (ошибки)
+.app-state-indicator {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+
+  &--error {
+    color: var(--color-error);
+  }
+}

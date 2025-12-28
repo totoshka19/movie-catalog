@@ -31,6 +31,9 @@
         <p class="movie-details-page__description">{{ itemData.overview }}</p>
       </div>
     </article>
+  } @else if (error()) {
+    <!-- Состояние ошибки -->
+    <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
   } @else {
     <!-- Данные загружаются: показываем скелетон -->
     <app-skeleton-details></app-skeleton-details>

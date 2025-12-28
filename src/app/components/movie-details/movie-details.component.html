@@ -1,5 +1,6 @@
 <!-- Оверлей для затемнения фона и отлова клика для закрытия -->
-<div class="movie-details__overlay" (click)="onClose()">
+<!-- Привязываем класс is-visible к сигналу для управления анимацией -->
+<div class="movie-details__overlay" (click)="onClose()" [class.is-visible]="isVisible()">
   <!-- Сам контент модального окна -->
   <article class="movie-details__content" (click)="onContentClick($event)">
     <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть">

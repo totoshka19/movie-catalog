@@ -41,6 +41,16 @@ describe('MovieDetailsComponent', () => {
     fixture.detectChanges(); // Запускаем первоначальную привязку данных
   });
 
+  // Включаем фейковые таймеры перед каждым тестом в этом сьюте
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  // Возвращаем реальные таймеры после каждого теста
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should create', () => {
     // Тест 1: Компонент успешно создается
     expect(component).toBeTruthy();
@@ -61,7 +71,7 @@ describe('MovieDetailsComponent', () => {
     expect(genreTags[0].textContent).toBe('Тест');
   });
 
-  it('should emit close event on close button click', () => {
+  it('should emit close event on close button click', async () => {
     // Тест 3: Проверяем, что событие close вызывается при клике на кнопку закрытия
     const spy = vi.spyOn(component.close, 'emit');
     const closeButton = fixture.nativeElement.querySelector(
@@ -70,11 +80,14 @@ describe('MovieDetailsComponent', () => {
 
     closeButton.click(); // Симулируем клик
 
+    // "Проматываем" время на 200 мс, чтобы выполнился setTimeout
+    await vi.advanceTimersByTimeAsync(200);
+
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it('should emit close event on overlay click', () => {
+  it('should emit close event on overlay click', async () => {
     // Тест 4: Проверяем, что событие close вызывается при клике на оверлей
     const spy = vi.spyOn(component.close, 'emit');
     const overlay = fixture.nativeElement.querySelector(
@@ -82,6 +95,9 @@ describe('MovieDetailsComponent', () => {
     ) as HTMLElement;
 
     overlay.click(); // Симулируем клик
+
+    // "Проматываем" время на 200 мс
+    await vi.advanceTimersByTimeAsync(200);
 
     expect(spy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledTimes(1);
