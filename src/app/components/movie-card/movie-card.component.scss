@@ -106,6 +106,12 @@
     font-weight: 600;
     margin-bottom: calc(var(--spacing-unit) / 2);
     color: var(--color-text-primary);
+
+    // Свойства для ограничения текста тремя строками с многоточием
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   &__year {
