@@ -10,6 +10,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
 
 # IDEs and editors
 .idea/
@@ -33,6 +34,7 @@ yarn-error.log
 .sass-cache/
 /connect.lock
 /coverage
+.vitest-cache/
 /libpeerconnection.log
 testem.log
 /typings
@@ -41,3 +43,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Local environment files
+src/environments/environment.local.ts
