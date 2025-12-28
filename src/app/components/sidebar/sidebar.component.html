@@ -10,7 +10,13 @@
 
   <div class="sidebar__section">
     <div class="sidebar__header">
-      <h3>Жанры</h3>
+      <h3>
+        Жанры
+        <!-- Отображаем счетчик, если выбран хотя бы один жанр -->
+        @if (selectedGenres.length) {
+          <span class="sidebar__genre-count">{{ selectedGenres.length }}</span>
+        }
+      </h3>
       @if (selectedGenres.length) {
         <button class="sidebar__reset-btn" (click)="resetGenres()">Сбросить</button>
       }
