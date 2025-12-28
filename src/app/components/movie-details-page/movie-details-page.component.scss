@@ -25,7 +25,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: var(--color-background);
+    //background-color: var(--color-surface);
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--color-border);
     // Отступ от контента снизу, чтобы он не прилипал
@@ -107,7 +107,9 @@
   }
 
   &__genre-tag {
-    background-color: var(--color-border);
+    /* ИЗМЕНЕНИЕ: Используем новую переменную и делаем текст белым */
+    background-color: var(--color-accent-tag);
+    color: white;
     padding: calc(var(--spacing-unit) / 2) var(--spacing-unit);
     border-radius: 4px;
     font-size: 0.8rem;

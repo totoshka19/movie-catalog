@@ -5,8 +5,9 @@
 :root {
   // Цветовая палитра (темная тема)
   --color-background: #121212;
-  --color-surface: #1e1e1e; // Цвет фона для карточек и других элементов
-  --color-primary: #3b82f6; // Акцентный цвет
+  //--color-surface: #1e1e1e; // Цвет фона для карточек и других элементов
+  --color-surface: #0a0b18; // Цвет фона для карточек и других элементов
+  --color-primary: #3018a2; // Акцентный цвет
   --color-text-primary: #f5f5f5;
   --color-text-secondary: #a3a3a3;
   --color-border: #2a2a2a;
@@ -14,6 +15,7 @@
   // Семантические цвета
   --color-rating: #fbbf24; // Цвет рейтинга (золотисто-янтарный)
   --color-error: #f87171; // Цвет для сообщений об ошибках
+  --color-accent-tag: #8a218d;
 
   // Типографика
   --font-family-base: 'Inter', sans-serif;
@@ -42,10 +44,25 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-family-base);
-  background-color: var(--color-background);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ИЗМЕНЕНИЕ: Применяем фоновое изображение из папки public */
+body {
+  /* Темно-синий цвет как fallback на случай, если картинка не загрузится */
+  background-color: #0c0a18;
+  /* ИЗМЕНЕНИЕ: Путь теперь ведет в корень сайта */
+  background-image: url('/background.png');
+  /* Картинка будет зафиксирована и не будет скроллиться вместе с контентом */
+  background-attachment: fixed;
+  /* Масштабируем картинку, чтобы она полностью покрывала фон без искажений */
+  background-size: cover;
+  /* Центрируем картинку */
+  background-position: center center;
+  /* Гарантируем, что фон покроет всю высоту, даже если контента мало */
+  min-height: 100vh;
 }
 
 * {
@@ -86,7 +103,7 @@ body.no-scroll {
     color: white;
 
     &:hover {
-      background-color: #2563eb;
+      background-color: #210f6c;
     }
   }
 }

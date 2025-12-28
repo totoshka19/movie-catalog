@@ -63,12 +63,16 @@
   &__reset-btn {
     background: none;
     border: none;
-    color: var(--color-primary);
+    /* ИЗМЕНЕНИЕ: Меняем цвет текста на основной (белый) */
+    color: var(--color-text-primary);
     font-size: 0.8rem;
     cursor: pointer;
     padding: 0;
+    opacity: 0.8;
+    transition: opacity var(--transition-speed);
 
     &:hover {
+      opacity: 1;
       text-decoration: underline;
     }
   }

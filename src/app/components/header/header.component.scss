@@ -5,7 +5,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(18, 18, 18, 0.95); // Полупрозрачный фон
+  background-color: rgba(18, 18, 18, 0.8); // Полупрозрачный фон
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
 }
@@ -35,7 +35,7 @@
     a {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--color-primary);
+      color: var(--color-rating);
       text-decoration: none;
       white-space: nowrap;
     }
@@ -70,7 +70,7 @@
       white-space: nowrap;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(48, 24, 162, 0.4);
         color: var(--color-text-primary);
       }
 
