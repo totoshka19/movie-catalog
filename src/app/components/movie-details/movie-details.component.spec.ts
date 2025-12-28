@@ -20,6 +20,7 @@ const MOCK_MEDIA_ITEM: MediaItem = {
   poster_path: 'https://example.com/poster.jpg',
   media_type: MediaType.Movie,
   genreNames: ['Тест', 'Фантастика'],
+  genre_ids: [1, 2], // Добавлено поле
 };
 
 describe('MovieDetailsComponent', () => {

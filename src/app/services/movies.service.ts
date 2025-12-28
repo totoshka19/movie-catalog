@@ -20,16 +20,11 @@ export class MoviesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  // Кэш для жанров, чтобы не запрашивать их каждый раз
   private movieGenreMap = new Map<number, string>();
   private tvGenreMap = new Map<number, string>();
   private movieGenres: Genre[] = [];
   private tvGenres: Genre[] = [];
 
-  /**
-   * Загружает и кэширует жанры для фильмов и сериалов.
-   * @returns Observable, который завершается, когда жанры загружены.
-   */
   loadGenres(): Observable<[Genre[], Genre[]]> {
     if (this.movieGenres.length > 0 && this.tvGenres.length > 0) {
       return of([this.movieGenres, this.tvGenres]);
@@ -56,32 +51,19 @@ export class MoviesService {
     );
   }
 
-  /**
-   * Получает популярные фильмы и/или сериалы с возможностью фильтрации по жанрам и пагинацией.
-   * Использует endpoint /discover для поддержки фильтрации.
-   * @param type - Тип контента для загрузки ('all', 'movie', 'tv').
-   * @param genreIds - Массив ID жанров для фильтрации.
-   * @param page - Номер страницы (по умолчанию 1).
-   * @returns Observable со списком медиа-элементов.
-   */
   getPopularMedia(
     type: MediaType = MediaType.All,
     genreIds: number[] = [],
     page: number = 1
   ): Observable<MediaItem[]> {
-    // Добавляем сортировку по популярности, чтобы эмулировать поведение /popular,
-    // но с возможностью фильтрации.
     let params = new HttpParams()
       .set('page', page.toString())
       .set('sort_by', 'popularity.desc');
 
     if (genreIds && genreIds.length > 0) {
-      // TMDb API использует запятую для AND (и) и пайп (|) для OR (или).
-      // Обычно в фильтрах используется запятая.
       params = params.set('with_genres', genreIds.join(','));
     }
 
-    // Заменяем /movie/popular на /discover/movie и /tv/popular на /discover/tv
     const movies$ =
       type === MediaType.All || type === MediaType.Movie
         ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/discover/movie`, { params })
@@ -91,27 +73,30 @@ export class MoviesService {
         ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/discover/tv`, { params })
         : of(null);
 
-    return forkJoin([movies$, tvShows$]).pipe(
-      map(([moviesResponse, tvShowsResponse]) => {
-        const movies = moviesResponse ? this.normalizeMovies(moviesResponse.results) : [];
-        const tvShows = tvShowsResponse ? this.normalizeTvShows(tvShowsResponse.results) : [];
-
-        if (type === MediaType.All) {
-          return this.interleaveArrays(movies, tvShows);
-        } else {
-          return [...movies, ...tvShows];
-        }
-      }),
-      catchError(this.handleError)
-    );
+    return this.processMediaRequests(movies$, tvShows$, type);
   }
 
-  /**
-   * Получает детальную информацию о фильме или сериале по его ID.
-   * @param id - ID элемента.
-   * @param type - Тип элемента ('movie' или 'tv').
-   * @returns Observable с детальными данными.
-   */
+  searchMedia(
+    query: string,
+    type: MediaType = MediaType.All,
+    page: number = 1
+  ): Observable<MediaItem[]> {
+    const params = new HttpParams()
+      .set('query', query)
+      .set('page', page.toString());
+
+    const movies$ =
+      type === MediaType.All || type === MediaType.Movie
+        ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/search/movie`, { params })
+        : of(null);
+    const tvShows$ =
+      type === MediaType.All || type === MediaType.Tv
+        ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/search/tv`, { params })
+        : of(null);
+
+    return this.processMediaRequests(movies$, tvShows$, type);
+  }
+
   getMediaDetails(id: number, type: MediaType.Movie | MediaType.Tv): Observable<MediaItem> {
     const url = `${this.apiUrl}/${type}/${id}`;
     if (type === MediaType.Movie) {
@@ -127,7 +112,27 @@ export class MoviesService {
     }
   }
 
-  // --- Приватные методы-хелперы для нормализации данных ---
+  // --- Приватные методы ---
+
+  private processMediaRequests(
+    movies$: Observable<ApiListResponse<TmdbMovie> | null>,
+    tvShows$: Observable<ApiListResponse<TmdbTvShow> | null>,
+    type: MediaType
+  ): Observable<MediaItem[]> {
+    return forkJoin([movies$, tvShows$]).pipe(
+      map(([moviesResponse, tvShowsResponse]) => {
+        const movies = moviesResponse ? this.normalizeMovies(moviesResponse.results) : [];
+        const tvShows = tvShowsResponse ? this.normalizeTvShows(tvShowsResponse.results) : [];
+
+        if (type === MediaType.All) {
+          return this.interleaveArrays(movies, tvShows);
+        } else {
+          return [...movies, ...tvShows];
+        }
+      }),
+      catchError(this.handleError)
+    );
+  }
 
   private normalizeMovies(movies: TmdbMovie[]): MediaItem[] {
     return movies.map(movie => ({
@@ -135,6 +140,7 @@ export class MoviesService {
       media_type: MediaType.Movie,
       title: movie.title,
       release_date: movie.release_date,
+      genre_ids: movie.genre_ids || (movie.genres ? movie.genres.map(g => g.id) : []),
       genreNames: movie.genres
         ? movie.genres.map(g => g.name)
         : movie.genre_ids.map(id => this.movieGenreMap.get(id)!).filter(Boolean),
@@ -147,18 +153,13 @@ export class MoviesService {
       media_type: MediaType.Tv,
       title: tv.name,
       release_date: tv.first_air_date,
+      genre_ids: tv.genre_ids || (tv.genres ? tv.genres.map(g => g.id) : []),
       genreNames: tv.genres
         ? tv.genres.map(g => g.name)
         : tv.genre_ids.map(id => this.tvGenreMap.get(id)!).filter(Boolean),
     }));
   }
 
-  /**
-   * Объединяет два массива, чередуя их элементы.
-   * @param movies - Массив с фильмами.
-   * @param tvShows - Массив с сериалами.
-   * @returns Один массив с чередующимися элементами.
-   */
   private interleaveArrays(movies: MediaItem[], tvShows: MediaItem[]): MediaItem[] {
     const result: MediaItem[] = [];
     const maxLength = Math.max(movies.length, tvShows.length);

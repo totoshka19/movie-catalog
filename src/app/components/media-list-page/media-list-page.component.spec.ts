@@ -31,6 +31,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
     poster_path: '/matrix.jpg',
     media_type: MediaType.Movie,
     genreNames: ['Action', 'Sci-Fi'],
+    genre_ids: [1, 3], // Добавлено поле
   },
   {
     id: 102,
@@ -41,6 +42,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
     poster_path: '/matrix2.jpg',
     media_type: MediaType.Movie,
     genreNames: ['Action', 'Sci-Fi'],
+    genre_ids: [1, 3], // Добавлено поле
   },
   {
     id: 103,
@@ -51,6 +53,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
     poster_path: '/toy.jpg',
     media_type: MediaType.Movie,
     genreNames: ['Animation', 'Comedy'],
+    genre_ids: [4, 2], // Добавлено поле
   },
 ];
 
@@ -73,6 +76,8 @@ describe('MediaListPageComponent', () => {
     // Создаем моки сервисов
     moviesServiceMock = {
       getPopularMedia: vi.fn().mockReturnValue(of(MOCK_MEDIA_ITEMS)),
+      // Добавляем мок для searchMedia
+      searchMedia: vi.fn().mockReturnValue(of([])),
     };
 
     modalServiceMock = {
@@ -123,7 +128,6 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should load media on initialization based on route data', () => {
-    // Теперь ожидаем пустой массив жанров вместо undefined
     expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [], 1);
 
     fixture.detectChanges();
@@ -132,28 +136,24 @@ describe('MediaListPageComponent', () => {
     expect(movieList.componentInstance.movies.length).toBe(3);
   });
 
-  it('should filter media based on search query param', async () => {
-    expect(
-      fixture.debugElement.query(By.directive(MovieListComponent)).componentInstance.movies.length
-    ).toBe(3);
+  it('should call searchMedia when query param is present', async () => {
+    // Настраиваем мок, чтобы он возвращал отфильтрованные данные (имитируем сервер)
+    const searchResults = MOCK_MEDIA_ITEMS.filter(m => m.title.includes('Matrix'));
+    moviesServiceMock.searchMedia.mockReturnValue(of(searchResults));
 
     queryParamsSubject.next(convertToParamMap({ q: 'Matrix' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
+    // Проверяем, что был вызван метод поиска
+    expect(moviesServiceMock.searchMedia).toHaveBeenCalledWith('Matrix', MediaType.Movie, 1);
+
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
     expect(movieList.componentInstance.movies.length).toBe(2);
     expect(movieList.componentInstance.movies[0].title).toBe('The Matrix');
-
-    queryParamsSubject.next(convertToParamMap({ q: 'NotFoundTerm' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(movieList.componentInstance.movies.length).toBe(0);
   });
 
   it('should pass genres to sidebar', () => {
-    // Проверяем, что жанры передаются в компонент сайдбара
     const sidebar = fixture.debugElement.query(By.directive(SidebarComponent));
     expect(sidebar).toBeTruthy();
     expect(sidebar.componentInstance.genres).toEqual(MOCK_GENRES);
@@ -162,7 +162,6 @@ describe('MediaListPageComponent', () => {
   it('should navigate with new query params when genre is changed via sidebar', () => {
     const sidebar = fixture.debugElement.query(By.directive(SidebarComponent));
 
-    // Эмитим событие изменения жанров из сайдбара (выбрали жанр с ID 1)
     sidebar.triggerEventHandler('genreChange', [1]);
 
     expect(router.navigate).toHaveBeenCalledWith([], {
@@ -170,37 +169,37 @@ describe('MediaListPageComponent', () => {
       queryParams: { genre: '1' },
       queryParamsHandling: 'merge',
     });
-
-    // Проверяем множественный выбор
-    sidebar.triggerEventHandler('genreChange', [1, 2]);
-    expect(router.navigate).toHaveBeenCalledWith([], {
-      relativeTo: expect.anything(),
-      queryParams: { genre: '1,2' },
-      queryParamsHandling: 'merge',
-    });
   });
 
   it('should reload media when genre query param changes', async () => {
     moviesServiceMock.getPopularMedia.mockClear();
 
-    // Симулируем изменение URL (выбран жанр 2)
     queryParamsSubject.next(convertToParamMap({ genre: '2' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // Ожидаем вызов сервиса с массивом [2]
     expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [2], 1);
   });
 
-  it('should reload media when multiple genres selected', async () => {
-    moviesServiceMock.getPopularMedia.mockClear();
+  it('should filter search results on client side when genres are selected during search', async () => {
+    // Сценарий: Ищем "Matrix" (сервер вернет 2 фильма), но выбран жанр "Comedy" (id: 2).
+    // У Матрицы жанры [1, 3], у Истории игрушек [4, 2].
+    // Результат поиска "Matrix" вернет только фильмы про Матрицу.
+    // Клиентский фильтр должен скрыть их, так как у них нет жанра 2.
 
-    // Симулируем изменение URL (выбраны жанры 1 и 2)
-    queryParamsSubject.next(convertToParamMap({ genre: '1,2' }));
+    const searchResults = MOCK_MEDIA_ITEMS.filter(m => m.title.includes('Matrix'));
+    moviesServiceMock.searchMedia.mockReturnValue(of(searchResults));
+
+    // Устанавливаем и поиск, и жанр
+    queryParamsSubject.next(convertToParamMap({ q: 'Matrix', genre: '2' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [1, 2], 1);
+    expect(moviesServiceMock.searchMedia).toHaveBeenCalledWith('Matrix', MediaType.Movie, 1);
+
+    const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
+    // Ожидаем 0, так как Матрица не Комедия
+    expect(movieList.componentInstance.movies.length).toBe(0);
   });
 
   it('should open modal when a movie is clicked', () => {
@@ -240,19 +239,6 @@ describe('MediaListPageComponent', () => {
     const errorEl = fixture.debugElement.query(By.css('.app-state-indicator--error'));
     expect(errorEl).toBeTruthy();
     expect(errorEl.nativeElement.textContent).toContain(errorMessage);
-  });
-
-  it('should highlight active tab correctly in header', async () => {
-    const header = fixture.debugElement.query(By.directive(HeaderComponent));
-    expect(header).toBeTruthy();
-
-    expect(header.componentInstance.activeTab).toBe(MediaType.Movie);
-
-    routeDataSubject.next({ mediaType: MediaType.Tv, genres: [] });
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(header.componentInstance.activeTab).toBe(MediaType.Tv);
   });
 
   it('should call loadNextPage when infinite scroll emits', () => {

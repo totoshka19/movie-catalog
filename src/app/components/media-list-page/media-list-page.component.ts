@@ -12,6 +12,7 @@ import { MediaType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-media-list-page',
@@ -41,11 +42,9 @@ export class MediaListPageComponent {
     () => this.routeData()?.['mediaType'] ?? MediaType.All
   );
 
-  // Теперь это массив чисел
   protected readonly selectedGenres = computed<number[]>(() => {
     const genreParam = this.queryParams()?.get('genre');
     if (!genreParam) return [];
-    // Разбиваем строку "12,28" на массив [12, 28]
     return genreParam.split(',').map(id => Number(id)).filter(id => !isNaN(id));
   });
 
@@ -71,12 +70,25 @@ export class MediaListPageComponent {
   private currentPage = 1;
   protected hasMorePages = true;
 
+  // Логика фильтрации
   protected readonly filteredMedia = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) {
-      return this.allMedia();
+    const media = this.allMedia();
+    const genres = this.selectedGenres();
+    const query = this.searchQuery();
+
+    // ВАЖНО: Если мы используем поиск (query не пустой), то API вернул нам результаты
+    // без учета жанров (так работает /search). Поэтому мы должны отфильтровать их
+    // на клиенте здесь.
+    if (query && genres.length > 0) {
+      return media.filter(item => {
+        // Оставляем элемент, если хотя бы один из его жанров есть в списке выбранных
+        return item.genre_ids && item.genre_ids.some(id => genres.includes(id));
+      });
     }
-    return this.allMedia().filter(item => item.title.toLowerCase().includes(query));
+
+    // Если поиска нет (режим популярных), то фильтрация уже произошла на сервере (/discover),
+    // или если фильтры не выбраны - возвращаем всё как есть.
+    return media;
   });
 
   protected readonly emptyListMessage = computed(() => {
@@ -97,15 +109,15 @@ export class MediaListPageComponent {
     effect(() => {
       const type = this.activeTab();
       const genres = this.selectedGenres();
+      const query = this.searchQuery();
 
       untracked(() => {
-        this.resetAndLoad(type, genres);
+        this.resetAndLoad(type, genres, query);
       });
     });
   }
 
   onGenreChange(genres: number[]): void {
-    // Преобразуем массив обратно в строку через запятую, или null если пусто
     const genreParam = genres.length > 0 ? genres.join(',') : null;
 
     this.router.navigate([], {
@@ -129,14 +141,16 @@ export class MediaListPageComponent {
 
   // --- Методы загрузки данных ---
 
-  private resetAndLoad(type: MediaType, genreIds: number[]): void {
+  private resetAndLoad(type: MediaType, genreIds: number[], query: string): void {
     this.currentPage = 1;
     this.hasMorePages = true;
     this.isLoading.set(true);
     this.error.set(null);
     this.allMedia.set([]);
 
-    this.moviesService.getPopularMedia(type, genreIds, this.currentPage).subscribe({
+    const request$ = this.getDataObservable(type, genreIds, query, this.currentPage);
+
+    request$.subscribe({
       next: media => {
         this.allMedia.set(media);
         this.isLoading.set(false);
@@ -156,8 +170,11 @@ export class MediaListPageComponent {
     this.currentPage++;
     const type = this.activeTab();
     const genreIds = this.selectedGenres();
+    const query = this.searchQuery();
 
-    this.moviesService.getPopularMedia(type, genreIds, this.currentPage).subscribe({
+    const request$ = this.getDataObservable(type, genreIds, query, this.currentPage);
+
+    request$.subscribe({
       next: media => {
         if (media.length === 0) {
           this.hasMorePages = false;
@@ -171,5 +188,20 @@ export class MediaListPageComponent {
         this.isLoadingMore.set(false);
       },
     });
+  }
+
+  private getDataObservable(
+    type: MediaType,
+    genreIds: number[],
+    query: string,
+    page: number
+  ): Observable<MediaItem[]> {
+    if (query) {
+      // При поиске мы игнорируем genreIds в запросе, так как API их не поддерживает.
+      // Фильтрация произойдет в computed filteredMedia.
+      return this.moviesService.searchMedia(query, type, page);
+    } else {
+      return this.moviesService.getPopularMedia(type, genreIds, page);
+    }
   }
 }

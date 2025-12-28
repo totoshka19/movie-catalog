@@ -56,6 +56,7 @@ export interface MediaItem {
   poster_path: string | null;
   genres?: Genre[];
   genreNames: string[];
+  genre_ids: number[];
 }
 
 /**
