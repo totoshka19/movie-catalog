@@ -58,6 +58,7 @@ export class MoviesService {
 
   /**
    * Получает популярные фильмы и/или сериалы с возможностью фильтрации по жанрам и пагинацией.
+   * Использует endpoint /discover для поддержки фильтрации.
    * @param type - Тип контента для загрузки ('all', 'movie', 'tv').
    * @param genreIds - Массив ID жанров для фильтрации.
    * @param page - Номер страницы (по умолчанию 1).
@@ -68,7 +69,11 @@ export class MoviesService {
     genreIds: number[] = [],
     page: number = 1
   ): Observable<MediaItem[]> {
-    let params = new HttpParams().set('page', page.toString());
+    // Добавляем сортировку по популярности, чтобы эмулировать поведение /popular,
+    // но с возможностью фильтрации.
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('sort_by', 'popularity.desc');
 
     if (genreIds && genreIds.length > 0) {
       // TMDb API использует запятую для AND (и) и пайп (|) для OR (или).
@@ -76,13 +81,14 @@ export class MoviesService {
       params = params.set('with_genres', genreIds.join(','));
     }
 
+    // Заменяем /movie/popular на /discover/movie и /tv/popular на /discover/tv
     const movies$ =
       type === MediaType.All || type === MediaType.Movie
-        ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/movie/popular`, { params })
+        ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/discover/movie`, { params })
         : of(null);
     const tvShows$ =
       type === MediaType.All || type === MediaType.Tv
-        ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/tv/popular`, { params })
+        ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/discover/tv`, { params })
         : of(null);
 
     return forkJoin([movies$, tvShows$]).pipe(
@@ -148,7 +154,7 @@ export class MoviesService {
   }
 
   /**
-   * НОВЫЙ МЕТОД: Объединяет два массива, чередуя их элементы.
+   * Объединяет два массива, чередуя их элементы.
    * @param movies - Массив с фильмами.
    * @param tvShows - Массив с сериалами.
    * @returns Один массив с чередующимися элементами.
