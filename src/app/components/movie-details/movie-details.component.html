@@ -30,8 +30,9 @@
       <!-- Используем поле overview -->
       <p class="movie-details__description">{{ movie.overview }}</p>
 
+      <!-- ИСПРАВЛЕНИЕ: Обновляем текст на кнопке -->
       <a class="movie-details__page-link" [routerLink]="['/media', movie.media_type, movie.id]">
-        Перейти на страницу
+        Подробнее
       </a>
     </div>
   </article>

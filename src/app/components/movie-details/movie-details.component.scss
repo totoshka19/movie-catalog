@@ -75,8 +75,10 @@
 
     img {
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: cover;
       border-radius: var(--border-radius-md);
+      display: block;
     }
   }
 
@@ -137,7 +139,8 @@
     // Ограничиваем описание и добавляем многоточие
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 8; // Увеличили количество строк
+    /* ИСПРАВЛЕНИЕ: Уменьшаем количество видимых строк текста */
+    -webkit-line-clamp: 6;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -163,21 +166,26 @@
     }
     // На мобильных устройствах можно показывать чуть больше текста
     &__description {
-      -webkit-line-clamp: 10; // Увеличили и здесь
+      /* ИСПРАВЛЕНИЕ: Уменьшаем количество строк и здесь для консистентности */
+      -webkit-line-clamp: 8;
     }
   }
 }
 
 .movie-details__page-link {
   display: inline-block;
-  margin-top: auto;
-  padding-top: var(--spacing-unit);
-  color: var(--color-primary);
+  margin-top: auto; /* Это свойство прижимает кнопку к низу блока */
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
   text-decoration: none;
   font-weight: 500;
-  transition: opacity var(--transition-speed);
+  transition: background-color var(--transition-speed);
 
   &:hover {
-    opacity: 0.8;
+    /* Затемняем кнопку при наведении для обратной связи */
+    background-color: #2563eb;
   }
 }
