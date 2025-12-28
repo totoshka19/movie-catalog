@@ -34,6 +34,8 @@
 .content {
   // Оставляем это правило, чтобы сайдбар не прыгал вертикально при пустом поиске
   min-height: calc(100vh - 10rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .app-state-indicator {
@@ -61,6 +63,14 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
+}
+
+// Стили для элемента-триггера
+.infinite-scroll-trigger {
+  height: 1px; // Минимальная высота, чтобы элемент существовал
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
 }
 
 @keyframes spin {

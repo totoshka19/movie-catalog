@@ -15,17 +15,10 @@
   ></app-sidebar>
 
   <!--
-    Основной контент: Скроллится.
-    Применяем директиву appInfiniteScroll.
-    - [disabled] блокирует срабатывание, пока идет загрузка или больше нет страниц.
-    - (scrollEnd) вызывает метод подгрузки следующей страницы.
+    Основной контент.
+    ИЗМЕНЕНИЕ: Убрали директиву appInfiniteScroll с тега main.
   -->
-  <main
-    class="content"
-    appInfiniteScroll
-    [disabled]="isLoading() || isLoadingMore() || !hasMorePages || !!searchQuery()"
-    (scrollEnd)="loadNextPage()"
-  >
+  <main class="content">
     @if (isLoading()) {
       <app-skeleton-list></app-skeleton-list>
     } @else if (error()) {
@@ -41,6 +34,22 @@
         <div class="app-loading-more">
           <div class="spinner"></div>
         </div>
+      }
+
+      <!--
+        ИЗМЕНЕНИЕ: Добавили невидимый "якорь" для Infinite Scroll.
+        Когда этот элемент приближается к вьюпорту, срабатывает событие.
+        Мы скрываем его (или не рендерим), если поиск активен (обычно в поиске пагинация
+        может работать иначе, но в текущей логике блокируем, как было).
+      -->
+      @if (!searchQuery()) {
+        <div
+          class="infinite-scroll-trigger"
+          appInfiniteScroll
+          [threshold]="500"
+          [disabled]="isLoading() || isLoadingMore() || !hasMorePages"
+          (scrollEnd)="loadNextPage()"
+        ></div>
       }
     }
   </main>

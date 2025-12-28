@@ -70,6 +70,21 @@ describe('MediaListPageComponent', () => {
   let queryParamsSubject: BehaviorSubject<any>;
 
   beforeEach(async () => {
+    // Мокаем IntersectionObserver, так как он используется в директиве InfiniteScroll
+    // ВАЖНО: используем function, а не стрелочную функцию
+    const MockIntersectionObserver = vi.fn(function() {
+      return {
+        observe: vi.fn(),
+        disconnect: vi.fn(),
+        unobserve: vi.fn(),
+        takeRecords: vi.fn(),
+        root: null,
+        rootMargin: '',
+        thresholds: [],
+      };
+    });
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+
     // Инициализируем Subjects начальными значениями
     routeDataSubject = new BehaviorSubject({ mediaType: MediaType.All, genres: MOCK_GENRES });
     // По умолчанию query-параметры отсутствуют для проверки дефолтной сортировки
@@ -131,6 +146,10 @@ describe('MediaListPageComponent', () => {
 
     fixture.detectChanges();
     await fixture.whenStable();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('should create', () => {
@@ -228,8 +247,14 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should call loadNextPage on scrollEnd', () => {
-    const contentElement = fixture.debugElement.query(By.css('.content'));
-    contentElement.triggerEventHandler('scrollEnd');
+    // В новой реализации директива висит на элементе с классом .infinite-scroll-trigger,
+    // а не на .content
+    const triggerElement = fixture.debugElement.query(By.css('.infinite-scroll-trigger'));
+
+    // Элемент должен существовать, так как поискового запроса нет
+    expect(triggerElement).toBeTruthy();
+
+    triggerElement.triggerEventHandler('scrollEnd');
     expect(mediaListStateServiceMock.loadNextPage).toHaveBeenCalled();
   });
 });
