@@ -2,7 +2,9 @@
   <!-- Условие if проверяет наличие данных -->
   @if (mediaItem(); as itemData) {
     <!-- Контент загружен -->
-    <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
+    <div class="movie-details-page__breadcrumb">
+      <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
+    </div>
 
     <article class="movie-details-page__content">
       <div class="movie-details-page__poster">
@@ -10,8 +12,8 @@
           <img
             [ngSrc]="(itemData.poster_path | tmdbImage:'w500') ?? ''"
             [alt]="'Постер ' + itemData.title"
-            width="250"
-            height="375"
+            width="300"
+            height="450"
             priority
           >
         } @else {
@@ -20,6 +22,11 @@
       </div>
       <div class="movie-details-page__info">
         <h1 class="movie-details-page__title">{{ itemData.title }} ({{ itemData.release_date | date: 'yyyy' }})</h1>
+
+        @if (itemData.tagline) {
+          <p class="movie-details-page__tagline">{{ itemData.tagline }}</p>
+        }
+
         <div class="movie-details-page__meta">
           <span class="movie-details-page__rating">★ {{ itemData.vote_average | number: '1.1-1' }}</span>
           <div class="movie-details-page__genres">
@@ -28,9 +35,63 @@
             }
           </div>
         </div>
+
+        <!-- Дополнительная информация (продолжительность, сезоны и т.д.) -->
+        <div class="movie-details-page__extra-info">
+          @if (itemData.runtime) {
+            <span>Продолжительность: {{ itemData.runtime }} мин.</span>
+          }
+          @if (itemData.number_of_seasons) {
+            <span>Сезонов: {{ itemData.number_of_seasons }}</span>
+          }
+          @if (itemData.number_of_episodes) {
+            <span>Эпизодов: {{ itemData.number_of_episodes }}</span>
+          }
+          @if (itemData.status) {
+            <span>Статус: {{ itemData.status | statusTranslation }}</span>
+          }
+        </div>
+
+
         <p class="movie-details-page__description">{{ itemData.overview }}</p>
       </div>
     </article>
+
+    <!-- Секция с актерским составом -->
+    @if (itemData.credits?.cast?.length) {
+      <section class="movie-details-page__section">
+        <h2 class="movie-details-page__section-title">Актерский состав</h2>
+        <div class="cast-list">
+          <!-- ИСПРАВЛЕНИЕ: Меняем количество отображаемых актеров с 10 на 8 -->
+          @for (actor of itemData.credits!.cast.slice(0, 8); track actor.id) {
+            <div class="cast-member">
+              <div class="cast-member__photo">
+                @if (actor.profile_path) {
+                  <img [src]="actor.profile_path | tmdbImage:'w185'" [alt]="actor.name" loading="lazy">
+                } @else {
+                  <div class="cast-member__photo-placeholder"></div>
+                }
+              </div>
+              <p class="cast-member__name">{{ actor.name }}</p>
+              <p class="cast-member__character">{{ actor.character }}</p>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Секция с рекомендациями -->
+    @if (itemData.recommendations?.length) {
+      <section class="movie-details-page__section">
+        <h2 class="movie-details-page__section-title">Рекомендации</h2>
+        <!-- Предоставляем пустой массив как значение по умолчанию -->
+        <app-movie-list
+          [movies]="itemData.recommendations ?? []"
+          (movieClick)="onRecommendationClick($event)"
+        ></app-movie-list>
+      </section>
+    }
+
   } @else if (error()) {
     <!-- Состояние ошибки -->
     <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>

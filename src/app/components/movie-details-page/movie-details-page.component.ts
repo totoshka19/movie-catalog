@@ -11,7 +11,9 @@ import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
 import { MediaType } from '../../core/models/media-type.enum';
 import { APP_ROUTES } from '../../core/constants/routes.constants';
 import { NavigationHistoryService } from '../../services/navigation-history.service';
-import { Params } from '@angular/router';
+import { Params, Router } from '@angular/router';
+import { MovieListComponent } from '../movie-list/movie-list.component';
+import { StatusTranslationPipe } from '../../pipes/status-translation.pipe';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -23,6 +25,8 @@ import { Params } from '@angular/router';
     BreadcrumbComponent,
     SkeletonDetailsComponent,
     TmdbImagePipe,
+    MovieListComponent,
+    StatusTranslationPipe, // ИСПРАВЛЕНИЕ: Импортируем новый пайп
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
@@ -35,6 +39,7 @@ export class MovieDetailsPageComponent {
 
   private readonly moviesService = inject(MoviesService);
   private readonly navigationHistoryService = inject(NavigationHistoryService);
+  private readonly router = inject(Router);
 
   // Сигнал для хранения состояния ошибки
   protected readonly error = signal<string | null>(null);
@@ -46,6 +51,8 @@ export class MovieDetailsPageComponent {
     switchMap(({ id, type }) => {
       // Сбрасываем ошибку перед новым запросом
       this.error.set(null);
+      // Прокручиваем страницу вверх при навигации
+      window.scrollTo(0, 0);
       return this.moviesService.getMediaDetails(Number(id), type);
     }),
     catchError((err: Error) => {
@@ -107,4 +114,13 @@ export class MovieDetailsPageComponent {
       { label: item.title, link: '' }, // У последнего элемента нет ссылки
     ];
   });
+
+  /**
+   * Обрабатывает клик по карточке в списке рекомендаций.
+   * Осуществляет навигацию на страницу деталей для выбранного элемента.
+   * @param item - Выбранный фильм или сериал.
+   */
+  onRecommendationClick(item: MediaItem): void {
+    this.router.navigate(['/media', item.media_type, item.id]);
+  }
 }

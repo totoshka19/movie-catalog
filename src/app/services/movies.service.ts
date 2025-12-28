@@ -4,11 +4,13 @@ import { Observable, forkJoin, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import {
   ApiListResponse,
+  Credits,
   Genre,
   GenreListResponse,
   MediaItem,
   TmdbMovie,
   TmdbTvShow,
+  Video,
 } from '../models/movie.model';
 import { environment } from '../../environments/environment';
 import { MediaType, SortType } from '../core/models/media-type.enum';
@@ -131,14 +133,17 @@ export class MoviesService {
   }
 
   getMediaDetails(id: number, type: MediaType.Movie | MediaType.Tv): Observable<MediaItem> {
+    // Используем append_to_response для получения всех данных одним запросом
+    const params = new HttpParams().set('append_to_response', 'credits,videos,recommendations');
     const url = `${this.apiUrl}/${type}/${id}`;
+
     if (type === MediaType.Movie) {
-      return this.http.get<TmdbMovie>(url).pipe(
+      return this.http.get<TmdbMovie>(url, { params }).pipe(
         map(movie => this.normalizeMovies([movie])[0]),
         catchError(this.handleError)
       );
     } else {
-      return this.http.get<TmdbTvShow>(url).pipe(
+      return this.http.get<TmdbTvShow>(url, { params }).pipe(
         map(tv => this.normalizeTvShows([tv])[0]),
         catchError(this.handleError)
       );
@@ -177,6 +182,11 @@ export class MoviesService {
       genreNames: movie.genres
         ? movie.genres.map(g => g.name)
         : movie.genre_ids.map(id => this.movieGenreMap.get(id)!).filter(Boolean),
+      // Нормализуем дополнительные данные
+      credits: this.normalizeCredits(movie.credits),
+      videos: this.normalizeVideos(movie.videos?.results),
+      // ИСПРАВЛЕНИЕ: Ограничиваем количество рекомендаций до 10
+      recommendations: movie.recommendations ? this.normalizeMovies(movie.recommendations.results.slice(0, 10)) : [],
     }));
   }
 
@@ -190,7 +200,33 @@ export class MoviesService {
       genreNames: tv.genres
         ? tv.genres.map(g => g.name)
         : tv.genre_ids.map(id => this.tvGenreMap.get(id)!).filter(Boolean),
+      // Нормализуем дополнительные данные
+      credits: this.normalizeCredits(tv.credits),
+      videos: this.normalizeVideos(tv.videos?.results),
+      // ИСПРАВЛЕНИЕ: Ограничиваем количество рекомендаций до 10
+      recommendations: tv.recommendations ? this.normalizeTvShows(tv.recommendations.results.slice(0, 10)) : [],
     }));
+  }
+
+  /**
+   * Оставляем только актеров и ключевых членов съемочной группы.
+   */
+  private normalizeCredits(credits?: Credits): Credits | undefined {
+    if (!credits) return undefined;
+    return {
+      cast: credits.cast,
+      crew: credits.crew.filter(
+        member => ['Director', 'Screenplay', 'Writer', 'Original Music Composer'].includes(member.job)
+      ),
+    };
+  }
+
+  /**
+   * Оставляем только официальные трейлеры с YouTube.
+   */
+  private normalizeVideos(videos?: Video[]): Video[] | undefined {
+    if (!videos) return undefined;
+    return videos.filter(video => video.site === 'YouTube' && video.type === 'Trailer');
   }
 
   private interleaveArrays(movies: MediaItem[], tvShows: MediaItem[]): MediaItem[] {

@@ -3,6 +3,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { By } from '@angular/platform-browser';
+// ИСПРАВЛЕНИЕ: Импортируем токен IMAGE_LOADER напрямую
+import { IMAGE_LOADER } from '@angular/common';
 
 import { MovieDetailsPageComponent } from './movie-details-page.component';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
@@ -35,10 +37,19 @@ describe('MovieDetailsPageComponent', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    // Мокаем window.scrollTo перед каждым тестом
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
 
     await TestBed.configureTestingModule({
       imports: [MovieDetailsPageComponent, RouterTestingModule, SkeletonDetailsComponent],
-      providers: [{ provide: MoviesService, useValue: mockMoviesService }],
+      providers: [
+        { provide: MoviesService, useValue: mockMoviesService },
+        // ИСПРАВЛЕНИЕ: Вручную предоставляем пустую функцию-загрузчик для токена IMAGE_LOADER
+        {
+          provide: IMAGE_LOADER,
+          useValue: () => '', // Функция-пустышка
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MovieDetailsPageComponent);
