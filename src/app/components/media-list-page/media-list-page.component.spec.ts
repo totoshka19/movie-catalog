@@ -1,9 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MediaListPageComponent } from './media-list-page.component';
-import { MoviesService } from '../../services/movies.service';
 import { ModalService } from '../../services/modal.service';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
-import { BehaviorSubject, of, throwError, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { Genre, MediaItem } from '../../models/movie.model';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -14,6 +13,8 @@ import { MediaType, SortType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 import { HeaderComponent } from '../header/header.component';
+import { MediaListStateService } from '../../services/media-list-state.service';
+import { signal } from '@angular/core';
 
 // --- Моковые данные ---
 const MOCK_GENRES: Genre[] = [
@@ -60,7 +61,7 @@ const MOCK_MEDIA_ITEMS: MediaItem[] = [
 describe('MediaListPageComponent', () => {
   let component: MediaListPageComponent;
   let fixture: ComponentFixture<MediaListPageComponent>;
-  let moviesServiceMock: any;
+  let mediaListStateServiceMock: any;
   let modalServiceMock: any;
   let router: Router;
 
@@ -75,9 +76,17 @@ describe('MediaListPageComponent', () => {
     queryParamsSubject = new BehaviorSubject(convertToParamMap({ sort_by: 'newest' }));
 
     // Создаем моки сервисов
-    moviesServiceMock = {
-      getPopularMedia: vi.fn().mockReturnValue(of(MOCK_MEDIA_ITEMS)),
-      searchMedia: vi.fn().mockReturnValue(of([])),
+    mediaListStateServiceMock = {
+      // Предоставляем сигналы для привязки в шаблоне
+      isLoading: signal(false),
+      isLoadingMore: signal(false),
+      error: signal(null),
+      filteredMedia: signal(MOCK_MEDIA_ITEMS),
+      // Предоставляем геттер, который будет использоваться в шаблоне
+      canLoadMore: () => true,
+      // Мокируем методы, которые будет вызывать компонент
+      resetAndLoad: vi.fn(),
+      loadNextPage: vi.fn(),
     };
 
     modalServiceMock = {
@@ -96,7 +105,8 @@ describe('MediaListPageComponent', () => {
       ],
       providers: [
         provideRouter([]),
-        { provide: MoviesService, useValue: moviesServiceMock },
+        // Заменяем реальный сервис на мок
+        { provide: MediaListStateService, useValue: mediaListStateServiceMock },
         { provide: ModalService, useValue: modalServiceMock },
         {
           provide: ActivatedRoute,
@@ -127,47 +137,49 @@ describe('MediaListPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load media on initialization with default sort', () => {
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(
+  it('should call resetAndLoad on initialization with default sort', () => {
+    expect(mediaListStateServiceMock.resetAndLoad).toHaveBeenCalledWith(
       MediaType.All,
       SortType.Newest,
       [],
-      1
+      ''
     );
 
     fixture.detectChanges();
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
     expect(movieList).toBeTruthy();
+    // Проверяем, что данные из мока сервиса состояния переданы в компонент списка
     expect(movieList.componentInstance.movies.length).toBe(3);
   });
 
-  it('should reload media when sort_by query param changes', async () => {
-    moviesServiceMock.getPopularMedia.mockClear();
+  it('should call resetAndLoad when sort_by query param changes', async () => {
+    mediaListStateServiceMock.resetAndLoad.mockClear();
 
     queryParamsSubject.next(convertToParamMap({ sort_by: 'top_rated' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(
+    expect(mediaListStateServiceMock.resetAndLoad).toHaveBeenCalledWith(
       MediaType.All,
       SortType.TopRated,
       [],
-      1
+      ''
     );
   });
 
-  it('should call searchMedia when query param is present', async () => {
-    const searchResults = MOCK_MEDIA_ITEMS.filter(m => m.title.includes('Matrix'));
-    moviesServiceMock.searchMedia.mockReturnValue(of(searchResults));
+  it('should call resetAndLoad with search query when q param is present', async () => {
+    mediaListStateServiceMock.resetAndLoad.mockClear();
 
     queryParamsSubject.next(convertToParamMap({ q: 'Matrix' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(moviesServiceMock.searchMedia).toHaveBeenCalledWith('Matrix', MediaType.All, 1);
-
-    const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
-    expect(movieList.componentInstance.movies.length).toBe(2);
+    expect(mediaListStateServiceMock.resetAndLoad).toHaveBeenCalledWith(
+      MediaType.All,
+      SortType.Newest, // Сортировка по умолчанию
+      [],
+      'Matrix'
+    );
   });
 
   it('should pass genres to sidebar', () => {
@@ -198,19 +210,25 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should show loading skeleton when isLoading is true', async () => {
-    const loadingSubject = new Subject<MediaItem[]>();
-    moviesServiceMock.getPopularMedia.mockReturnValue(loadingSubject);
-
-    queryParamsSubject.next(convertToParamMap({ genre: '99' }));
+    // Устанавливаем сигнал isLoading в моке в true
+    mediaListStateServiceMock.isLoading.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
 
     const skeleton = fixture.debugElement.query(By.directive(SkeletonListComponent));
-    const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
+    // Когда isLoading=true, список фильмов не должен рендериться (из-за @if в шаблоне)
+    const content = fixture.debugElement.query(By.css('.content > app-movie-list'));
 
     expect(skeleton).toBeTruthy();
-    expect(movieList).toBeNull();
+    expect(content).toBeNull();
 
-    loadingSubject.complete();
+    // Возвращаем состояние для других тестов
+    mediaListStateServiceMock.isLoading.set(false);
+  });
+
+  it('should call loadNextPage on scrollEnd', () => {
+    const contentElement = fixture.debugElement.query(By.css('.content'));
+    contentElement.triggerEventHandler('scrollEnd');
+    expect(mediaListStateServiceMock.loadNextPage).toHaveBeenCalled();
   });
 });
