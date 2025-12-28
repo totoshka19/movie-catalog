@@ -1,9 +1,18 @@
 <article class="movie-card">
   <figure class="movie-card__figure">
-    <!-- Показываем плейсхолдер, пока изображение не загрузилось -->
-    @if (!imageLoaded() || !movie.poster_path) {
+    <!-- 1. Если у фильма нет постера (poster_path === null) -->
+    @if (!movie.poster_path) {
+      <div class="movie-card__no-poster">
+        <span>Нет постера</span>
+      </div>
+    }
+
+    <!-- 2. Если постер есть, но он еще загружается -->
+    @if (movie.poster_path && !imageLoaded()) {
       <div class="movie-card__placeholder"></div>
     }
+
+    <!-- 3. Изображение (рендерится только если есть путь) -->
     @if (movie.poster_path) {
       <img
         class="movie-card__poster"
