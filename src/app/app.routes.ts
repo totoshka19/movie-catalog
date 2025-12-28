@@ -4,6 +4,7 @@ import { MediaListPageComponent } from './components/media-list-page/media-list-
 import { genresResolver } from './resolvers/genres.resolver';
 import { APP_ROUTES } from './core/constants/routes.constants';
 import { MediaType } from './core/models/media-type.enum';
+import { mediaTypeGuard } from './guards/media-type.guard';
 
 export const routes: Routes = [
   // Маршруты для главной страницы с табами
@@ -29,6 +30,7 @@ export const routes: Routes = [
   {
     path: `${APP_ROUTES.MEDIA}/:type/:id`,
     component: MovieDetailsPageComponent,
+    canActivate: [mediaTypeGuard],
   },
   // Редирект с корневого пути на таб "Все" с сортировкой "Новинки" по умолчанию
   {
