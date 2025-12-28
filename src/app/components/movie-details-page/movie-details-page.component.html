@@ -54,6 +54,15 @@
 
 
         <p class="movie-details-page__description">{{ itemData.overview }}</p>
+
+        <!-- Блок с кнопками действий -->
+        <div class="movie-details-page__actions">
+          @if (itemData.videos?.length) {
+            <button class="btn btn--primary" (click)="onPlayTrailer()">
+              Смотреть трейлер
+            </button>
+          }
+        </div>
       </div>
     </article>
 
@@ -100,3 +109,12 @@
     <app-skeleton-details></app-skeleton-details>
   }
 </div>
+
+<!-- Модальное окно с плеером -->
+@if (selectedTrailerKey(); as key) {
+  <app-video-player
+    [videoKey]="key"
+    [title]="mediaItem()?.title ?? 'Трейлер'"
+    (close)="onCloseTrailer()"
+  ></app-video-player>
+}

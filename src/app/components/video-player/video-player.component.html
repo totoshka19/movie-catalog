@@ -1,0 +1,18 @@
+<div class="video-player__overlay" (click)="onClose()" [class.is-visible]="isVisible()">
+  <div class="video-player__content" (click)="onContentClick($event)">
+    <div class="video-player__header">
+      <h3 class="video-player__title">{{ title }}</h3>
+      <button class="video-player__close-btn" (click)="onClose()" aria-label="Закрыть">
+        &times;
+      </button>
+    </div>
+    <div class="video-player__container">
+      <iframe
+        [src]="videoUrl"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</div>

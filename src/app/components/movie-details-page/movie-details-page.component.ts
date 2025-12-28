@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MoviesService } from '../../services/movies.service';
 import { MediaItem } from '../../models/movie.model';
@@ -14,6 +14,7 @@ import { NavigationHistoryService } from '../../services/navigation-history.serv
 import { Params, Router } from '@angular/router';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { StatusTranslationPipe } from '../../pipes/status-translation.pipe';
+import { VideoPlayerComponent } from '../video-player/video-player.component';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -26,7 +27,8 @@ import { StatusTranslationPipe } from '../../pipes/status-translation.pipe';
     SkeletonDetailsComponent,
     TmdbImagePipe,
     MovieListComponent,
-    StatusTranslationPipe, // ИСПРАВЛЕНИЕ: Импортируем новый пайп
+    StatusTranslationPipe,
+    VideoPlayerComponent, // Импортируем новый компонент
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
@@ -44,13 +46,17 @@ export class MovieDetailsPageComponent {
   // Сигнал для хранения состояния ошибки
   protected readonly error = signal<string | null>(null);
 
+  // Сигнал для управления видимостью трейлера
+  protected readonly selectedTrailerKey = signal<string | null>(null);
+
   // Создаем сигнал из инпутов, чтобы отслеживать их изменения вместе
   private readonly routeParams = computed(() => ({ id: this.id(), type: this.type() }));
 
   private readonly mediaItem$: Observable<MediaItem> = toObservable(this.routeParams).pipe(
     switchMap(({ id, type }) => {
-      // Сбрасываем ошибку перед новым запросом
+      // Сбрасываем ошибку и трейлер перед новым запросом
       this.error.set(null);
+      this.selectedTrailerKey.set(null);
       // Прокручиваем страницу вверх при навигации
       window.scrollTo(0, 0);
       return this.moviesService.getMediaDetails(Number(id), type);
@@ -115,6 +121,17 @@ export class MovieDetailsPageComponent {
     ];
   });
 
+  constructor() {
+    // Добавляем эффект для блокировки скролла при открытии трейлера
+    effect(() => {
+      if (this.selectedTrailerKey()) {
+        document.body.classList.add('no-scroll');
+      } else {
+        document.body.classList.remove('no-scroll');
+      }
+    });
+  }
+
   /**
    * Обрабатывает клик по карточке в списке рекомендаций.
    * Осуществляет навигацию на страницу деталей для выбранного элемента.
@@ -122,5 +139,22 @@ export class MovieDetailsPageComponent {
    */
   onRecommendationClick(item: MediaItem): void {
     this.router.navigate(['/media', item.media_type, item.id]);
+  }
+
+  /**
+   * Находит ключ первого доступного трейлера и открывает плеер.
+   */
+  onPlayTrailer(): void {
+    const videos = this.mediaItem()?.videos;
+    if (videos && videos.length > 0) {
+      this.selectedTrailerKey.set(videos[0].key);
+    }
+  }
+
+  /**
+   * Закрывает плеер с трейлером.
+   */
+  onCloseTrailer(): void {
+    this.selectedTrailerKey.set(null);
   }
 }

@@ -129,6 +129,11 @@
     font-size: 1rem;
   }
 
+  &__actions {
+    margin-top: auto; // Прижимает блок к низу
+    padding-top: 1rem;
+  }
+
   &__section {
     margin-top: 3rem;
   }
