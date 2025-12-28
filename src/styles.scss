@@ -32,6 +32,10 @@
 }
 
 /* 2. Сброс стилей (Reset) */
+html {
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
   margin: 0;

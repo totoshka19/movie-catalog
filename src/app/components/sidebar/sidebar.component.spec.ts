@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { vi } from 'vitest';
+import { By } from '@angular/platform-browser';
 
 import { SidebarComponent } from './sidebar.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-import { By } from '@angular/platform-browser';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
@@ -12,7 +11,7 @@ describe('SidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent, RouterTestingModule, SearchBarComponent],
+      imports: [SidebarComponent, SearchBarComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarComponent);

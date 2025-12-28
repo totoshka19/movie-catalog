@@ -1,0 +1,78 @@
+@use '../../../styles/responsive' as *;
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(18, 18, 18, 0.95); // Полупрозрачный фон
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header {
+  &__container {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 1rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+
+    @include respond-to('desktop-lg') {
+      padding: 1rem 2rem;
+    }
+
+    @include respond-to('tablet') {
+      padding: 1rem;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  &__logo {
+    a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    gap: 0.5rem;
+
+    a {
+      padding: 0.5rem 1.5rem;
+      border-radius: 6px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: all var(--transition-speed);
+      font-weight: 500;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--color-text-primary);
+      }
+
+      &.active {
+        background-color: var(--color-primary);
+        color: white;
+      }
+    }
+
+    @include respond-to('mobile') {
+      width: 100%;
+      justify-content: space-between;
+
+      a {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}

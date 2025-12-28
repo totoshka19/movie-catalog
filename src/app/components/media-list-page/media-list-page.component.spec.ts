@@ -13,6 +13,7 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { MediaType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { HeaderComponent } from '../header/header.component';
 
 // --- Моковые данные ---
 const MOCK_GENRES: Genre[] = [
@@ -86,6 +87,7 @@ describe('MediaListPageComponent', () => {
         SearchBarComponent,
         SidebarComponent,
         InfiniteScrollDirective,
+        HeaderComponent
       ],
       providers: [
         provideRouter([]),
@@ -220,16 +222,19 @@ describe('MediaListPageComponent', () => {
     expect(errorEl.nativeElement.textContent).toContain(errorMessage);
   });
 
-  it('should highlight active tab correctly', async () => {
-    let activeLink = fixture.debugElement.query(By.css('.nav-links a.active'));
-    expect(activeLink.nativeElement.textContent).toContain('Фильмы');
+  it('should highlight active tab correctly in header', async () => {
+    // В предыдущей версии табы были в сайдбаре, теперь в хедере
+    const header = fixture.debugElement.query(By.directive(HeaderComponent));
+    expect(header).toBeTruthy();
+
+    // Проверяем свойство activeTab у компонента хедера
+    expect(header.componentInstance.activeTab).toBe(MediaType.Movie);
 
     routeDataSubject.next({ mediaType: MediaType.Tv, genres: [] });
     fixture.detectChanges();
     await fixture.whenStable();
 
-    activeLink = fixture.debugElement.query(By.css('.nav-links a.active'));
-    expect(activeLink.nativeElement.textContent).toContain('Сериалы');
+    expect(header.componentInstance.activeTab).toBe(MediaType.Tv);
   });
 
   it('should call loadNextPage when infinite scroll emits', () => {

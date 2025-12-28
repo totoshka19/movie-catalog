@@ -10,12 +10,19 @@ import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
 import { MediaType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { HeaderComponent } from '../header/header.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 
 @Component({
   selector: 'app-media-list-page',
   standalone: true,
-  imports: [MovieListComponent, SkeletonListComponent, SidebarComponent, InfiniteScrollDirective],
+  imports: [
+    MovieListComponent,
+    SkeletonListComponent,
+    SidebarComponent,
+    HeaderComponent,
+    InfiniteScrollDirective
+  ],
   templateUrl: './media-list-page.component.html',
   styleUrl: './media-list-page.component.scss',
 })
@@ -139,7 +146,6 @@ export class MediaListPageComponent {
     });
   }
 
-  // ИЗМЕНЕНО: protected -> public, чтобы метод был доступен для spyOn в тесте
   public loadNextPage(): void {
     this.isLoadingMore.set(true);
     this.currentPage++;

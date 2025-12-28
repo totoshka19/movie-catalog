@@ -1,0 +1,28 @@
+<header class="app-header">
+  <div class="app-header__container">
+    <div class="app-header__logo">
+      <a routerLink="/">Медиа Каталог</a>
+    </div>
+
+    <nav class="app-header__nav">
+      <a
+        routerLink="/all"
+        [class.active]="activeTab === 'all'"
+        [queryParams]="{ genre: selectedGenre }"
+        queryParamsHandling="merge"
+      >Все</a>
+      <a
+        routerLink="/movie"
+        [class.active]="activeTab === 'movie'"
+        [queryParams]="{ genre: selectedGenre }"
+        queryParamsHandling="merge"
+      >Фильмы</a>
+      <a
+        routerLink="/tv"
+        [class.active]="activeTab === 'tv'"
+        [queryParams]="{ genre: selectedGenre }"
+        queryParamsHandling="merge"
+      >Сериалы</a>
+    </nav>
+  </div>
+</header>

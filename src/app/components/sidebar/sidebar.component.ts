@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { Genre } from '../../models/movie.model';
-import { MediaType } from '../../core/models/media-type.enum';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, SearchBarComponent],
+  imports: [SearchBarComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,7 +13,6 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 export class SidebarComponent {
   @Input({ required: true }) initialQuery: string = '';
   @Input({ required: true }) placeholder: string = 'Поиск...';
-  @Input({ required: true }) activeTab: MediaType = MediaType.All;
   @Input() selectedGenre?: number;
   @Input({ required: true }) genres: Genre[] = [];
 

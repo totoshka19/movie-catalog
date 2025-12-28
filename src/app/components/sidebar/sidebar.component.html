@@ -1,9 +1,5 @@
 <!-- Сайдбар: Фиксирован слева на десктопе -->
 <aside class="sidebar">
-  <div class="sidebar__header">
-    <h1>Медиа Каталог</h1>
-  </div>
-
   <div class="sidebar__section">
     <app-search-bar
       [initialQuery]="initialQuery"
@@ -11,30 +7,6 @@
       (searchChange)="onSearch($event)"
     ></app-search-bar>
   </div>
-
-  <nav class="sidebar__nav">
-    <h3>Категории</h3>
-    <div class="nav-links">
-      <a
-        routerLink="/all"
-        [class.active]="activeTab === 'all'"
-        [queryParams]="{ genre: selectedGenre }"
-        queryParamsHandling="merge"
-      >Все</a>
-      <a
-        routerLink="/movie"
-        [class.active]="activeTab === 'movie'"
-        [queryParams]="{ genre: selectedGenre }"
-        queryParamsHandling="merge"
-      >Фильмы</a>
-      <a
-        routerLink="/tv"
-        [class.active]="activeTab === 'tv'"
-        [queryParams]="{ genre: selectedGenre }"
-        queryParamsHandling="merge"
-      >Сериалы</a>
-    </div>
-  </nav>
 
   <div class="sidebar__section">
     <h3>Жанры</h3>
