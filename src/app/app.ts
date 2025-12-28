@@ -28,16 +28,11 @@ export class App {
         this.modalService.close();
       });
 
-    // Блокировка скролла при открытом модальном окне
+    // Упрощенная блокировка скролла, полагающаяся на CSS
     effect(() => {
       if (this.selectedMedia()) {
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        if (scrollbarWidth > 0) {
-          document.body.style.paddingRight = `${scrollbarWidth}px`;
-        }
         document.body.classList.add('no-scroll');
       } else {
-        document.body.style.paddingRight = '';
         document.body.classList.remove('no-scroll');
       }
     });
