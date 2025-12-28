@@ -72,8 +72,8 @@ describe('MediaListPageComponent', () => {
   beforeEach(async () => {
     // Инициализируем Subjects начальными значениями
     routeDataSubject = new BehaviorSubject({ mediaType: MediaType.All, genres: MOCK_GENRES });
-    // По умолчанию сортировка 'newest'
-    queryParamsSubject = new BehaviorSubject(convertToParamMap({ sort_by: 'newest' }));
+    // По умолчанию query-параметры отсутствуют для проверки дефолтной сортировки
+    queryParamsSubject = new BehaviorSubject(convertToParamMap({}));
 
     // Создаем моки сервисов
     mediaListStateServiceMock = {
@@ -115,7 +115,7 @@ describe('MediaListPageComponent', () => {
             queryParamMap: queryParamsSubject.asObservable(),
             snapshot: {
               data: { mediaType: MediaType.All, genres: MOCK_GENRES },
-              queryParamMap: convertToParamMap({ sort_by: 'newest' }),
+              queryParamMap: convertToParamMap({}),
             },
           },
         },
@@ -140,7 +140,7 @@ describe('MediaListPageComponent', () => {
   it('should call resetAndLoad on initialization with default sort', () => {
     expect(mediaListStateServiceMock.resetAndLoad).toHaveBeenCalledWith(
       MediaType.All,
-      SortType.Newest,
+      SortType.TopRated,
       [],
       ''
     );
@@ -155,13 +155,14 @@ describe('MediaListPageComponent', () => {
   it('should call resetAndLoad when sort_by query param changes', async () => {
     mediaListStateServiceMock.resetAndLoad.mockClear();
 
-    queryParamsSubject.next(convertToParamMap({ sort_by: 'top_rated' }));
+    // Переключаемся на 'newest', чтобы проверить, что компонент реагирует на изменение параметра
+    queryParamsSubject.next(convertToParamMap({ sort_by: 'newest' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
     expect(mediaListStateServiceMock.resetAndLoad).toHaveBeenCalledWith(
       MediaType.All,
-      SortType.TopRated,
+      SortType.Newest,
       [],
       ''
     );
@@ -176,7 +177,7 @@ describe('MediaListPageComponent', () => {
 
     expect(mediaListStateServiceMock.resetAndLoad).toHaveBeenCalledWith(
       MediaType.All,
-      SortType.Newest, // Сортировка по умолчанию
+      SortType.TopRated, // Сортировка по умолчанию
       [],
       'Matrix'
     );

@@ -41,8 +41,9 @@ export class MediaListPageComponent {
   protected readonly activeType = computed<MediaType>(
     () => this.routeData()?.['mediaType'] ?? MediaType.All
   );
+  // Тип сортировки берем из query-параметров, по умолчанию 'top_rated'
   protected readonly activeSort = computed<SortType>(
-    () => (this.queryParams()?.get('sort_by') as SortType) ?? SortType.Newest
+    () => (this.queryParams()?.get('sort_by') as SortType) ?? SortType.TopRated
   );
   protected readonly selectedGenres = computed<number[]>(() => {
     const genreParam = this.queryParams()?.get('genre');

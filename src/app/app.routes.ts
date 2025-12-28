@@ -32,7 +32,7 @@ export const routes: Routes = [
     component: MovieDetailsPageComponent,
     canActivate: [mediaTypeGuard],
   },
-  // Редирект с корневого пути на таб "Все" с сортировкой "Новинки" по умолчанию
+  // Редирект с корневого пути на таб "Все" с сортировкой "Лучшее" по умолчанию
   {
     path: '',
     redirectTo: `/${APP_ROUTES.ALL}`,
