@@ -11,7 +11,7 @@ import {
   TmdbTvShow,
 } from '../models/movie.model';
 import { environment } from '../../environments/environment';
-import { MediaType } from '../core/models/media-type.enum';
+import { MediaType, SortType } from '../core/models/media-type.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -52,26 +52,60 @@ export class MoviesService {
   }
 
   getPopularMedia(
-    type: MediaType = MediaType.All,
+    type: MediaType,
+    sortBy: SortType,
     genreIds: number[] = [],
     page: number = 1
   ): Observable<MediaItem[]> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('sort_by', 'popularity.desc');
+    let baseParams = new HttpParams().set('page', page.toString());
 
     if (genreIds && genreIds.length > 0) {
-      params = params.set('with_genres', genreIds.join(','));
+      baseParams = baseParams.set('with_genres', genreIds.join(','));
     }
 
-    const movies$ =
-      type === MediaType.All || type === MediaType.Movie
-        ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/discover/movie`, { params })
-        : of(null);
-    const tvShows$ =
-      type === MediaType.All || type === MediaType.Tv
-        ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/discover/tv`, { params })
-        : of(null);
+    // Получаем сегодняшнюю дату в формате YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
+
+    // Устанавливаем параметры сортировки
+    switch (sortBy) {
+      case SortType.Newest:
+        // Для новинок добавляем фильтр, чтобы не показывать еще не вышедшие
+        break;
+      case SortType.TopRated:
+        baseParams = baseParams
+          .set('sort_by', 'vote_average.desc')
+          .set('vote_count.gte', '300'); // Отсекаем фильмы с малым числом голосов
+        break;
+    }
+
+    // Определяем, нужно ли запрашивать фильмы и/или сериалы
+    const fetchMovies = type === MediaType.All || type === MediaType.Movie;
+    const fetchTv = type === MediaType.All || type === MediaType.Tv;
+
+    // Клонируем базовые параметры для каждого типа, чтобы добавить специфичную сортировку
+    let movieParams = baseParams;
+    let tvParams = baseParams;
+
+    if (sortBy === SortType.Newest) {
+      // Добавляем сортировку по дате и фильтр по максимальной дате (сегодня)
+      movieParams = baseParams
+        .set('sort_by', 'primary_release_date.desc')
+        .set('primary_release_date.lte', today);
+      tvParams = baseParams
+        .set('sort_by', 'first_air_date.desc')
+        .set('first_air_date.lte', today);
+    }
+
+    const movies$ = fetchMovies
+      ? this.http.get<ApiListResponse<TmdbMovie>>(`${this.apiUrl}/discover/movie`, {
+        params: movieParams,
+      })
+      : of(null);
+    const tvShows$ = fetchTv
+      ? this.http.get<ApiListResponse<TmdbTvShow>>(`${this.apiUrl}/discover/tv`, {
+        params: tvParams,
+      })
+      : of(null);
 
     return this.processMediaRequests(movies$, tvShows$, type);
   }
@@ -81,9 +115,7 @@ export class MoviesService {
     type: MediaType = MediaType.All,
     page: number = 1
   ): Observable<MediaItem[]> {
-    const params = new HttpParams()
-      .set('query', query)
-      .set('page', page.toString());
+    const params = new HttpParams().set('query', query).set('page', page.toString());
 
     const movies$ =
       type === MediaType.All || type === MediaType.Movie

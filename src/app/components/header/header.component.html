@@ -4,25 +4,44 @@
       <a routerLink="/">Медиа Каталог</a>
     </div>
 
-    <nav class="app-header__nav">
-      <a
-        routerLink="/all"
-        [class.active]="activeTab === 'all'"
-        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
-        queryParamsHandling="merge"
-      >Все</a>
-      <a
-        routerLink="/movie"
-        [class.active]="activeTab === 'movie'"
-        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
-        queryParamsHandling="merge"
-      >Фильмы</a>
-      <a
-        routerLink="/tv"
-        [class.active]="activeTab === 'tv'"
-        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
-        queryParamsHandling="merge"
-      >Сериалы</a>
-    </nav>
+    <div class="app-header__filters">
+      <!-- Группа 1: Сортировка -->
+      <nav class="app-header__nav app-header__nav--sort">
+        <a
+          [routerLink]="[]"
+          [queryParams]="{ sort_by: 'newest' }"
+          queryParamsHandling="merge"
+          [class.active]="activeSort === 'newest'"
+        >Новинки</a>
+        <a
+          [routerLink]="[]"
+          [queryParams]="{ sort_by: 'top_rated' }"
+          queryParamsHandling="merge"
+          [class.active]="activeSort === 'top_rated'"
+        >Лучшее</a>
+      </nav>
+
+      <!-- Группа 2: Тип контента -->
+      <nav class="app-header__nav app-header__nav--type">
+        <a
+          routerLink="/all"
+          [class.active]="activeType === 'all'"
+          [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
+          queryParamsHandling="merge"
+        >Все</a>
+        <a
+          routerLink="/movie"
+          [class.active]="activeType === 'movie'"
+          [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
+          queryParamsHandling="merge"
+        >Фильмы</a>
+        <a
+          routerLink="/tv"
+          [class.active]="activeType === 'tv'"
+          [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
+          queryParamsHandling="merge"
+        >Сериалы</a>
+      </nav>
+    </div>
   </div>
 </header>

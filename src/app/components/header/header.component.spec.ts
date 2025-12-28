@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderComponent } from './header.component';
 import { By } from '@angular/platform-browser';
-import { MediaType } from '../../core/models/media-type.enum';
+import { MediaType, SortType } from '../../core/models/media-type.enum';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -17,7 +17,8 @@ describe('HeaderComponent', () => {
     component = fixture.componentInstance;
 
     // Инициализируем обязательные инпуты
-    fixture.componentRef.setInput('activeTab', MediaType.All);
+    fixture.componentRef.setInput('activeType', MediaType.All);
+    fixture.componentRef.setInput('activeSort', SortType.Newest);
     fixture.detectChanges();
   });
 
@@ -25,12 +26,21 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should highlight active tab', () => {
+  it('should highlight active sort and type tabs', () => {
+    // Проверяем состояние по умолчанию
+    let activeLinks = fixture.debugElement.queryAll(By.css('a.active'));
+    expect(activeLinks.length).toBe(2);
+    expect(activeLinks[0].nativeElement.textContent).toContain('Новинки');
+    expect(activeLinks[1].nativeElement.textContent).toContain('Все');
+
     // Используем setInput для корректного обновления OnPush компонента
-    fixture.componentRef.setInput('activeTab', MediaType.Movie);
+    fixture.componentRef.setInput('activeType', MediaType.Movie);
+    fixture.componentRef.setInput('activeSort', SortType.TopRated);
     fixture.detectChanges();
 
-    const activeLink = fixture.debugElement.query(By.css('a.active'));
-    expect(activeLink.nativeElement.textContent).toContain('Фильмы');
+    activeLinks = fixture.debugElement.queryAll(By.css('a.active'));
+    expect(activeLinks.length).toBe(2);
+    expect(activeLinks[0].nativeElement.textContent).toContain('Лучшее');
+    expect(activeLinks[1].nativeElement.textContent).toContain('Фильмы');
   });
 });

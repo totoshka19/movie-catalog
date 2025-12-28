@@ -30,7 +30,7 @@ export const routes: Routes = [
     path: `${APP_ROUTES.MEDIA}/:type/:id`,
     component: MovieDetailsPageComponent,
   },
-  // Редирект с корневого пути на таб "Все"
+  // Редирект с корневого пути на таб "Все" с сортировкой "Новинки" по умолчанию
   {
     path: '',
     redirectTo: `/${APP_ROUTES.ALL}`,

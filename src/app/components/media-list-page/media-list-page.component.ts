@@ -8,7 +8,7 @@ import { ModalService } from '../../services/modal.service';
 
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
-import { MediaType } from '../../core/models/media-type.enum';
+import { MediaType, SortType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
@@ -22,7 +22,7 @@ import { Observable } from 'rxjs';
     SkeletonListComponent,
     SidebarComponent,
     HeaderComponent,
-    InfiniteScrollDirective
+    InfiniteScrollDirective,
   ],
   templateUrl: './media-list-page.component.html',
   styleUrl: './media-list-page.component.scss',
@@ -38,8 +38,13 @@ export class MediaListPageComponent {
   private readonly queryParams = toSignal(this.route.queryParamMap);
 
   protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
-  protected readonly activeTab = computed<MediaType>(
+  // Тип контента берем из данных роута
+  protected readonly activeType = computed<MediaType>(
     () => this.routeData()?.['mediaType'] ?? MediaType.All
+  );
+  // Тип сортировки берем из query-параметров, по умолчанию 'newest'
+  protected readonly activeSort = computed<SortType>(
+    () => (this.queryParams()?.get('sort_by') as SortType) ?? SortType.Newest
   );
 
   protected readonly selectedGenres = computed<number[]>(() => {
@@ -51,11 +56,12 @@ export class MediaListPageComponent {
   protected readonly searchQuery = computed(() => this.queryParams()?.get('q') ?? '');
 
   protected readonly searchPlaceholder = computed(() => {
-    switch (this.activeTab()) {
+    switch (this.activeType()) {
       case MediaType.Movie:
         return 'Поиск фильмов...';
       case MediaType.Tv:
         return 'Поиск сериалов...';
+      case MediaType.All:
       default:
         return 'Поиск фильмов и сериалов...';
     }
@@ -95,11 +101,12 @@ export class MediaListPageComponent {
     const query = this.searchQuery();
     if (query) return `По запросу "${query}" ничего не найдено.`;
 
-    switch (this.activeTab()) {
+    switch (this.activeType()) {
       case MediaType.Movie:
         return 'Фильмы не найдены.';
       case MediaType.Tv:
         return 'Сериалы не найдены.';
+      case MediaType.All:
       default:
         return 'Контент не найден.';
     }
@@ -107,12 +114,14 @@ export class MediaListPageComponent {
 
   constructor() {
     effect(() => {
-      const type = this.activeTab();
+      // Теперь загрузка зависит от 4-х параметров
+      const type = this.activeType();
+      const sortBy = this.activeSort();
       const genres = this.selectedGenres();
       const query = this.searchQuery();
 
       untracked(() => {
-        this.resetAndLoad(type, genres, query);
+        this.resetAndLoad(type, sortBy, genres, query);
       });
     });
   }
@@ -141,14 +150,19 @@ export class MediaListPageComponent {
 
   // --- Методы загрузки данных ---
 
-  private resetAndLoad(type: MediaType, genreIds: number[], query: string): void {
+  private resetAndLoad(
+    type: MediaType,
+    sortBy: SortType,
+    genreIds: number[],
+    query: string
+  ): void {
     this.currentPage = 1;
     this.hasMorePages = true;
     this.isLoading.set(true);
     this.error.set(null);
     this.allMedia.set([]);
 
-    const request$ = this.getDataObservable(type, genreIds, query, this.currentPage);
+    const request$ = this.getDataObservable(type, sortBy, genreIds, query, this.currentPage);
 
     request$.subscribe({
       next: media => {
@@ -168,11 +182,12 @@ export class MediaListPageComponent {
   public loadNextPage(): void {
     this.isLoadingMore.set(true);
     this.currentPage++;
-    const type = this.activeTab();
+    const type = this.activeType();
+    const sortBy = this.activeSort();
     const genreIds = this.selectedGenres();
     const query = this.searchQuery();
 
-    const request$ = this.getDataObservable(type, genreIds, query, this.currentPage);
+    const request$ = this.getDataObservable(type, sortBy, genreIds, query, this.currentPage);
 
     request$.subscribe({
       next: media => {
@@ -192,6 +207,7 @@ export class MediaListPageComponent {
 
   private getDataObservable(
     type: MediaType,
+    sortBy: SortType,
     genreIds: number[],
     query: string,
     page: number
@@ -201,7 +217,7 @@ export class MediaListPageComponent {
       // Фильтрация произойдет в computed filteredMedia.
       return this.moviesService.searchMedia(query, type, page);
     } else {
-      return this.moviesService.getPopularMedia(type, genreIds, page);
+      return this.moviesService.getPopularMedia(type, sortBy, genreIds, page);
     }
   }
 }

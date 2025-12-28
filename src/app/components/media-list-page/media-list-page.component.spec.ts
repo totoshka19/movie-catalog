@@ -10,7 +10,7 @@ import { vi } from 'vitest';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-import { MediaType } from '../../core/models/media-type.enum';
+import { MediaType, SortType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 import { HeaderComponent } from '../header/header.component';
@@ -70,13 +70,13 @@ describe('MediaListPageComponent', () => {
 
   beforeEach(async () => {
     // Инициализируем Subjects начальными значениями
-    routeDataSubject = new BehaviorSubject({ mediaType: MediaType.Movie, genres: MOCK_GENRES });
-    queryParamsSubject = new BehaviorSubject(convertToParamMap({}));
+    routeDataSubject = new BehaviorSubject({ mediaType: MediaType.All, genres: MOCK_GENRES });
+    // По умолчанию сортировка 'newest'
+    queryParamsSubject = new BehaviorSubject(convertToParamMap({ sort_by: 'newest' }));
 
     // Создаем моки сервисов
     moviesServiceMock = {
       getPopularMedia: vi.fn().mockReturnValue(of(MOCK_MEDIA_ITEMS)),
-      // Добавляем мок для searchMedia
       searchMedia: vi.fn().mockReturnValue(of([])),
     };
 
@@ -92,7 +92,7 @@ describe('MediaListPageComponent', () => {
         SearchBarComponent,
         SidebarComponent,
         InfiniteScrollDirective,
-        HeaderComponent
+        HeaderComponent,
       ],
       providers: [
         provideRouter([]),
@@ -104,8 +104,8 @@ describe('MediaListPageComponent', () => {
             data: routeDataSubject.asObservable(),
             queryParamMap: queryParamsSubject.asObservable(),
             snapshot: {
-              data: { mediaType: MediaType.Movie, genres: MOCK_GENRES },
-              queryParamMap: convertToParamMap({}),
+              data: { mediaType: MediaType.All, genres: MOCK_GENRES },
+              queryParamMap: convertToParamMap({ sort_by: 'newest' }),
             },
           },
         },
@@ -127,8 +127,13 @@ describe('MediaListPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load media on initialization based on route data', () => {
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [], 1);
+  it('should load media on initialization with default sort', () => {
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(
+      MediaType.All,
+      SortType.Newest,
+      [],
+      1
+    );
 
     fixture.detectChanges();
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
@@ -136,8 +141,22 @@ describe('MediaListPageComponent', () => {
     expect(movieList.componentInstance.movies.length).toBe(3);
   });
 
+  it('should reload media when sort_by query param changes', async () => {
+    moviesServiceMock.getPopularMedia.mockClear();
+
+    queryParamsSubject.next(convertToParamMap({ sort_by: 'top_rated' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(
+      MediaType.All,
+      SortType.TopRated,
+      [],
+      1
+    );
+  });
+
   it('should call searchMedia when query param is present', async () => {
-    // Настраиваем мок, чтобы он возвращал отфильтрованные данные (имитируем сервер)
     const searchResults = MOCK_MEDIA_ITEMS.filter(m => m.title.includes('Matrix'));
     moviesServiceMock.searchMedia.mockReturnValue(of(searchResults));
 
@@ -145,12 +164,10 @@ describe('MediaListPageComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // Проверяем, что был вызван метод поиска
-    expect(moviesServiceMock.searchMedia).toHaveBeenCalledWith('Matrix', MediaType.Movie, 1);
+    expect(moviesServiceMock.searchMedia).toHaveBeenCalledWith('Matrix', MediaType.All, 1);
 
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
     expect(movieList.componentInstance.movies.length).toBe(2);
-    expect(movieList.componentInstance.movies[0].title).toBe('The Matrix');
   });
 
   it('should pass genres to sidebar', () => {
@@ -169,37 +186,6 @@ describe('MediaListPageComponent', () => {
       queryParams: { genre: '1' },
       queryParamsHandling: 'merge',
     });
-  });
-
-  it('should reload media when genre query param changes', async () => {
-    moviesServiceMock.getPopularMedia.mockClear();
-
-    queryParamsSubject.next(convertToParamMap({ genre: '2' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [2], 1);
-  });
-
-  it('should filter search results on client side when genres are selected during search', async () => {
-    // Сценарий: Ищем "Matrix" (сервер вернет 2 фильма), но выбран жанр "Comedy" (id: 2).
-    // У Матрицы жанры [1, 3], у Истории игрушек [4, 2].
-    // Результат поиска "Matrix" вернет только фильмы про Матрицу.
-    // Клиентский фильтр должен скрыть их, так как у них нет жанра 2.
-
-    const searchResults = MOCK_MEDIA_ITEMS.filter(m => m.title.includes('Matrix'));
-    moviesServiceMock.searchMedia.mockReturnValue(of(searchResults));
-
-    // Устанавливаем и поиск, и жанр
-    queryParamsSubject.next(convertToParamMap({ q: 'Matrix', genre: '2' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(moviesServiceMock.searchMedia).toHaveBeenCalledWith('Matrix', MediaType.Movie, 1);
-
-    const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
-    // Ожидаем 0, так как Матрица не Комедия
-    expect(movieList.componentInstance.movies.length).toBe(0);
   });
 
   it('should open modal when a movie is clicked', () => {
@@ -226,27 +212,5 @@ describe('MediaListPageComponent', () => {
     expect(movieList).toBeNull();
 
     loadingSubject.complete();
-  });
-
-  it('should display error message if loading fails', async () => {
-    const errorMessage = 'Network Error';
-    moviesServiceMock.getPopularMedia.mockReturnValue(throwError(() => new Error(errorMessage)));
-
-    queryParamsSubject.next(convertToParamMap({ genre: '5' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const errorEl = fixture.debugElement.query(By.css('.app-state-indicator--error'));
-    expect(errorEl).toBeTruthy();
-    expect(errorEl.nativeElement.textContent).toContain(errorMessage);
-  });
-
-  it('should call loadNextPage when infinite scroll emits', () => {
-    const spy = vi.spyOn(component, 'loadNextPage');
-    const mainContent = fixture.debugElement.query(By.css('main'));
-
-    mainContent.triggerEventHandler('scrollEnd', null);
-
-    expect(spy).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MediaType } from '../../core/models/media-type.enum';
+import { MediaType, SortType } from '../../core/models/media-type.enum';
 
 @Component({
   selector: 'app-header',
@@ -11,6 +11,7 @@ import { MediaType } from '../../core/models/media-type.enum';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  @Input({ required: true }) activeTab: MediaType = MediaType.All;
+  @Input({ required: true }) activeType: MediaType = MediaType.All;
+  @Input({ required: true }) activeSort: SortType = SortType.Newest;
   @Input() selectedGenres: number[] = [];
 }
