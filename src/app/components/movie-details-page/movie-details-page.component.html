@@ -8,7 +8,7 @@
       <div class="movie-details-page__poster">
         @if(itemData.poster_path) {
           <img
-            [ngSrc]="(itemData.poster_path | tmdbImage) ?? ''"
+            [ngSrc]="(itemData.poster_path | tmdbImage:'w500') ?? ''"
             [alt]="'Постер ' + itemData.title"
             width="250"
             height="375"

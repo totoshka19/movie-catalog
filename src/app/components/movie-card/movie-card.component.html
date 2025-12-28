@@ -16,7 +16,7 @@
     @if (movie.poster_path) {
       <img
         class="movie-card__poster"
-        [src]="movie.poster_path | tmdbImage"
+        [src]="movie.poster_path | tmdbImage:'w300'"
         [alt]="'Постер ' + movie.title"
         [class.movie-card__poster--loaded]="imageLoaded()"
         (load)="onImageLoad()"

@@ -7,7 +7,7 @@
     </button>
     <div class="movie-details__poster">
       @if (movie.poster_path) {
-        <img [src]="movie.poster_path | tmdbImage" [alt]="'Постер ' + movie.title">
+        <img [src]="movie.poster_path | tmdbImage:'w500'" [alt]="'Постер ' + movie.title">
       } @else {
         <div class="movie-details__poster-placeholder">Нет постера</div>
       }
