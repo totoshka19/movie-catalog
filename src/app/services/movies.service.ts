@@ -60,7 +60,8 @@ export class MoviesService {
     let baseParams = new HttpParams().set('page', page.toString());
 
     if (genreIds && genreIds.length > 0) {
-      baseParams = baseParams.set('with_genres', genreIds.join(','));
+      // ИЗМЕНЕНИЕ: Заменяем .join(',') на .join('|') для логики "ИЛИ"
+      baseParams = baseParams.set('with_genres', genreIds.join('|'));
     }
 
     // Получаем сегодняшнюю дату в формате YYYY-MM-DD
