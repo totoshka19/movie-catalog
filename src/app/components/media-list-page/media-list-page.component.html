@@ -1,13 +1,13 @@
 <app-header
   [activeTab]="activeTab()"
-  [selectedGenre]="selectedGenre()"
+  [selectedGenres]="selectedGenres()"
 ></app-header>
 
 <div class="page-layout">
   <app-sidebar
     [initialQuery]="searchQuery()"
     [placeholder]="searchPlaceholder()"
-    [selectedGenre]="selectedGenre()"
+    [selectedGenres]="selectedGenres()"
     [genres]="allGenres()"
     (searchChange)="onSearch($event)"
     (genreChange)="onGenreChange($event)"

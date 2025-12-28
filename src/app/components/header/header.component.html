@@ -8,19 +8,19 @@
       <a
         routerLink="/all"
         [class.active]="activeTab === 'all'"
-        [queryParams]="{ genre: selectedGenre }"
+        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
       >Все</a>
       <a
         routerLink="/movie"
         [class.active]="activeTab === 'movie'"
-        [queryParams]="{ genre: selectedGenre }"
+        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
       >Фильмы</a>
       <a
         routerLink="/tv"
         [class.active]="activeTab === 'tv'"
-        [queryParams]="{ genre: selectedGenre }"
+        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
       >Сериалы</a>
     </nav>

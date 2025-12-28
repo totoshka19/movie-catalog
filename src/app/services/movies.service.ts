@@ -57,21 +57,23 @@ export class MoviesService {
   }
 
   /**
-   * Получает популярные фильмы и/или сериалы с возможностью фильтрации по жанру и пагинацией.
+   * Получает популярные фильмы и/или сериалы с возможностью фильтрации по жанрам и пагинацией.
    * @param type - Тип контента для загрузки ('all', 'movie', 'tv').
-   * @param genreId - ID жанра для фильтрации.
+   * @param genreIds - Массив ID жанров для фильтрации.
    * @param page - Номер страницы (по умолчанию 1).
    * @returns Observable со списком медиа-элементов.
    */
   getPopularMedia(
     type: MediaType = MediaType.All,
-    genreId?: number,
+    genreIds: number[] = [],
     page: number = 1
   ): Observable<MediaItem[]> {
     let params = new HttpParams().set('page', page.toString());
 
-    if (genreId) {
-      params = params.set('with_genres', genreId.toString());
+    if (genreIds && genreIds.length > 0) {
+      // TMDb API использует запятую для AND (и) и пайп (|) для OR (или).
+      // Обычно в фильтрах используется запятая.
+      params = params.set('with_genres', genreIds.join(','));
     }
 
     const movies$ =

@@ -41,9 +41,12 @@ export class MediaListPageComponent {
     () => this.routeData()?.['mediaType'] ?? MediaType.All
   );
 
-  protected readonly selectedGenre = computed(() => {
-    const genreId = this.queryParams()?.get('genre');
-    return genreId ? Number(genreId) : undefined;
+  // Теперь это массив чисел
+  protected readonly selectedGenres = computed<number[]>(() => {
+    const genreParam = this.queryParams()?.get('genre');
+    if (!genreParam) return [];
+    // Разбиваем строку "12,28" на массив [12, 28]
+    return genreParam.split(',').map(id => Number(id)).filter(id => !isNaN(id));
   });
 
   protected readonly searchQuery = computed(() => this.queryParams()?.get('q') ?? '');
@@ -93,19 +96,21 @@ export class MediaListPageComponent {
   constructor() {
     effect(() => {
       const type = this.activeTab();
-      const genre = this.selectedGenre();
+      const genres = this.selectedGenres();
 
       untracked(() => {
-        this.resetAndLoad(type, genre);
+        this.resetAndLoad(type, genres);
       });
     });
   }
 
-  onGenreChange(event: Event): void {
-    const selectedId = (event.target as HTMLSelectElement).value;
+  onGenreChange(genres: number[]): void {
+    // Преобразуем массив обратно в строку через запятую, или null если пусто
+    const genreParam = genres.length > 0 ? genres.join(',') : null;
+
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { genre: selectedId || null },
+      queryParams: { genre: genreParam },
       queryParamsHandling: 'merge',
     });
   }
@@ -124,14 +129,14 @@ export class MediaListPageComponent {
 
   // --- Методы загрузки данных ---
 
-  private resetAndLoad(type: MediaType, genreId?: number): void {
+  private resetAndLoad(type: MediaType, genreIds: number[]): void {
     this.currentPage = 1;
     this.hasMorePages = true;
     this.isLoading.set(true);
     this.error.set(null);
     this.allMedia.set([]);
 
-    this.moviesService.getPopularMedia(type, genreId, this.currentPage).subscribe({
+    this.moviesService.getPopularMedia(type, genreIds, this.currentPage).subscribe({
       next: media => {
         this.allMedia.set(media);
         this.isLoading.set(false);
@@ -150,9 +155,9 @@ export class MediaListPageComponent {
     this.isLoadingMore.set(true);
     this.currentPage++;
     const type = this.activeTab();
-    const genreId = this.selectedGenre();
+    const genreIds = this.selectedGenres();
 
-    this.moviesService.getPopularMedia(type, genreId, this.currentPage).subscribe({
+    this.moviesService.getPopularMedia(type, genreIds, this.currentPage).subscribe({
       next: media => {
         if (media.length === 0) {
           this.hasMorePages = false;

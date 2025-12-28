@@ -13,25 +13,38 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 export class SidebarComponent {
   @Input({ required: true }) initialQuery: string = '';
   @Input({ required: true }) placeholder: string = 'Поиск...';
-  @Input() selectedGenre?: number;
+  // Изменили тип с number | undefined на number[]
+  @Input() selectedGenres: number[] = [];
   @Input({ required: true }) genres: Genre[] = [];
 
   @Output() searchChange = new EventEmitter<string>();
-  @Output() genreChange = new EventEmitter<Event>();
+  // Изменили тип события на массив чисел
+  @Output() genreChange = new EventEmitter<number[]>();
 
-  /**
-   * Пробрасывает событие из дочернего компонента `app-search-bar` наверх.
-   * @param query - Поисковый запрос.
-   */
   onSearch(query: string): void {
     this.searchChange.emit(query);
   }
 
-  /**
-   * Пробрасывает событие `change` от элемента `select` наверх.
-   * @param event - Событие изменения.
-   */
-  onGenreChange(event: Event): void {
-    this.genreChange.emit(event);
+  isSelected(id: number): boolean {
+    return this.selectedGenres.includes(id);
+  }
+
+  onGenreToggle(event: Event, genreId: number): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    let newGenres: number[];
+
+    if (isChecked) {
+      // Добавляем жанр
+      newGenres = [...this.selectedGenres, genreId];
+    } else {
+      // Удаляем жанр
+      newGenres = this.selectedGenres.filter(id => id !== genreId);
+    }
+
+    this.genreChange.emit(newGenres);
+  }
+
+  resetGenres(): void {
+    this.genreChange.emit([]);
   }
 }

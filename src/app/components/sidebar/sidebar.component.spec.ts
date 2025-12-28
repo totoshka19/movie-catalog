@@ -23,16 +23,17 @@ describe('SidebarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display genres from input', () => {
+  it('should display genres from input as checkboxes', () => {
     component.genres = [
       { id: 1, name: 'Боевик' },
       { id: 2, name: 'Комедия' },
     ];
     fixture.detectChanges();
-    const options = fixture.debugElement.queryAll(By.css('select option'));
-    // 1 (Все жанры) + 2 (из инпута)
-    expect(options.length).toBe(3);
-    expect(options[1].nativeElement.textContent).toBe('Боевик');
+
+    // Ищем элементы чекбоксов по классу лейбла или input
+    const checkboxLabels = fixture.debugElement.queryAll(By.css('.checkbox-label'));
+    expect(checkboxLabels.length).toBe(2);
+    expect(checkboxLabels[1].nativeElement.textContent).toContain('Комедия');
   });
 
   it('should emit searchChange event on search', () => {
@@ -45,15 +46,37 @@ describe('SidebarComponent', () => {
     expect(spy).toHaveBeenCalledWith('test query');
   });
 
-  it('should emit genreChange event on genre selection', () => {
+  it('should emit genreChange event with array when genre is toggled', () => {
     const spy = vi.spyOn(component.genreChange, 'emit');
-    component.genres = [{ id: 1, name: 'Боевик' }];
+    component.genres = [{ id: 1, name: 'Боевик' }, { id: 2, name: 'Комедия' }];
+    component.selectedGenres = []; // Изначально ничего не выбрано
     fixture.detectChanges();
 
-    const select = fixture.debugElement.query(By.css('select'));
-    select.nativeElement.value = '1';
-    select.triggerEventHandler('change', { target: select.nativeElement });
+    // Находим первый чекбокс (Боевик, id: 1)
+    const checkboxes = fixture.debugElement.queryAll(By.css('input[type="checkbox"]'));
+    const firstCheckbox = checkboxes[0];
 
-    expect(spy).toHaveBeenCalled();
+    // Симулируем клик/изменение (выбираем жанр)
+    firstCheckbox.nativeElement.checked = true;
+    firstCheckbox.triggerEventHandler('change', { target: firstCheckbox.nativeElement });
+
+    // Должен эмитить массив с [1]
+    expect(spy).toHaveBeenCalledWith([1]);
+  });
+
+  it('should emit genreChange event with removed id when unchecked', () => {
+    const spy = vi.spyOn(component.genreChange, 'emit');
+    component.genres = [{ id: 1, name: 'Боевик' }];
+    component.selectedGenres = [1]; // Изначально выбран
+    fixture.detectChanges();
+
+    const checkbox = fixture.debugElement.query(By.css('input[type="checkbox"]'));
+
+    // Симулируем снятие галочки
+    checkbox.nativeElement.checked = false;
+    checkbox.triggerEventHandler('change', { target: checkbox.nativeElement });
+
+    // Должен эмитить пустой массив
+    expect(spy).toHaveBeenCalledWith([]);
   });
 });

@@ -9,14 +9,25 @@
   </div>
 
   <div class="sidebar__section">
-    <h3>Жанры</h3>
-    <div class="genre-select-wrapper">
-      <select [value]="selectedGenre ?? ''" (change)="onGenreChange($event)">
-        <option value="">Все жанры</option>
-        @for (genre of genres; track genre.id) {
-          <option [value]="genre.id">{{ genre.name }}</option>
-        }
-      </select>
+    <div class="sidebar__header">
+      <h3>Жанры</h3>
+      @if (selectedGenres.length) {
+        <button class="sidebar__reset-btn" (click)="resetGenres()">Сбросить</button>
+      }
+    </div>
+
+    <div class="genres-list">
+      @for (genre of genres; track genre.id) {
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="isSelected(genre.id)"
+            (change)="onGenreToggle($event, genre.id)"
+          >
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-text">{{ genre.name }}</span>
+        </label>
+      }
     </div>
   </div>
 </aside>

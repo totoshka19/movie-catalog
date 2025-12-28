@@ -123,7 +123,8 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should load media on initialization based on route data', () => {
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, undefined, 1);
+    // Теперь ожидаем пустой массив жанров вместо undefined
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [], 1);
 
     fixture.detectChanges();
     const movieList = fixture.debugElement.query(By.directive(MovieListComponent));
@@ -151,24 +152,30 @@ describe('MediaListPageComponent', () => {
     expect(movieList.componentInstance.movies.length).toBe(0);
   });
 
-  it('should populate genre select with genres from resolver', () => {
-    const select = fixture.debugElement.query(By.css('select')).nativeElement as HTMLSelectElement;
-    const options = select.querySelectorAll('option');
-
-    expect(options.length).toBe(3);
-    expect(options[1].textContent).toContain('Action');
-    expect(options[1].value).toBe('1');
+  it('should pass genres to sidebar', () => {
+    // Проверяем, что жанры передаются в компонент сайдбара
+    const sidebar = fixture.debugElement.query(By.directive(SidebarComponent));
+    expect(sidebar).toBeTruthy();
+    expect(sidebar.componentInstance.genres).toEqual(MOCK_GENRES);
   });
 
-  it('should navigate with new query params when genre is changed', () => {
-    const select = fixture.debugElement.query(By.css('select'));
+  it('should navigate with new query params when genre is changed via sidebar', () => {
+    const sidebar = fixture.debugElement.query(By.directive(SidebarComponent));
 
-    select.nativeElement.value = '1';
-    select.triggerEventHandler('change', { target: select.nativeElement });
+    // Эмитим событие изменения жанров из сайдбара (выбрали жанр с ID 1)
+    sidebar.triggerEventHandler('genreChange', [1]);
 
     expect(router.navigate).toHaveBeenCalledWith([], {
       relativeTo: expect.anything(),
       queryParams: { genre: '1' },
+      queryParamsHandling: 'merge',
+    });
+
+    // Проверяем множественный выбор
+    sidebar.triggerEventHandler('genreChange', [1, 2]);
+    expect(router.navigate).toHaveBeenCalledWith([], {
+      relativeTo: expect.anything(),
+      queryParams: { genre: '1,2' },
       queryParamsHandling: 'merge',
     });
   });
@@ -176,11 +183,24 @@ describe('MediaListPageComponent', () => {
   it('should reload media when genre query param changes', async () => {
     moviesServiceMock.getPopularMedia.mockClear();
 
+    // Симулируем изменение URL (выбран жанр 2)
     queryParamsSubject.next(convertToParamMap({ genre: '2' }));
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, 2, 1);
+    // Ожидаем вызов сервиса с массивом [2]
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [2], 1);
+  });
+
+  it('should reload media when multiple genres selected', async () => {
+    moviesServiceMock.getPopularMedia.mockClear();
+
+    // Симулируем изменение URL (выбраны жанры 1 и 2)
+    queryParamsSubject.next(convertToParamMap({ genre: '1,2' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(moviesServiceMock.getPopularMedia).toHaveBeenCalledWith(MediaType.Movie, [1, 2], 1);
   });
 
   it('should open modal when a movie is clicked', () => {
@@ -223,11 +243,9 @@ describe('MediaListPageComponent', () => {
   });
 
   it('should highlight active tab correctly in header', async () => {
-    // В предыдущей версии табы были в сайдбаре, теперь в хедере
     const header = fixture.debugElement.query(By.directive(HeaderComponent));
     expect(header).toBeTruthy();
 
-    // Проверяем свойство activeTab у компонента хедера
     expect(header.componentInstance.activeTab).toBe(MediaType.Movie);
 
     routeDataSubject.next({ mediaType: MediaType.Tv, genres: [] });

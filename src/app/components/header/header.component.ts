@@ -12,5 +12,5 @@ import { MediaType } from '../../core/models/media-type.enum';
 })
 export class HeaderComponent {
   @Input({ required: true }) activeTab: MediaType = MediaType.All;
-  @Input() selectedGenre?: number;
+  @Input() selectedGenres: number[] = [];
 }
