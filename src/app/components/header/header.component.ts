@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MediaType, SortType } from '../../core/models/media-type.enum';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, SearchBarComponent], // ИЗМЕНЕНИЕ: Добавлен SearchBarComponent
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,4 +15,12 @@ export class HeaderComponent {
   @Input({ required: true }) activeType: MediaType = MediaType.All;
   @Input({ required: true }) activeSort: SortType = SortType.Newest;
   @Input() selectedGenres: number[] = [];
+  // ИЗМЕНЕНИЕ: Добавлены Input и Output для поиска
+  @Input() initialQuery: string = '';
+  @Input() placeholder: string = 'Поиск...';
+  @Output() searchChange = new EventEmitter<string>();
+
+  onSearch(query: string): void {
+    this.searchChange.emit(query);
+  }
 }

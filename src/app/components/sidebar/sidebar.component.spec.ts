@@ -3,7 +3,8 @@ import { vi } from 'vitest';
 import { By } from '@angular/platform-browser';
 
 import { SidebarComponent } from './sidebar.component';
-import { SearchBarComponent } from '../search-bar/search-bar.component';
+// ИЗМЕНЕНИЕ: SearchBarComponent больше не нужен для этого теста
+// import { SearchBarComponent } from '../search-bar/search-bar.component';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
@@ -11,7 +12,8 @@ describe('SidebarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent, SearchBarComponent],
+      // ИЗМЕНЕНИЕ: SearchBarComponent удален из imports
+      imports: [SidebarComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarComponent);
@@ -36,15 +38,8 @@ describe('SidebarComponent', () => {
     expect(checkboxLabels[1].nativeElement.textContent).toContain('Комедия');
   });
 
-  it('should emit searchChange event on search', () => {
-    const spy = vi.spyOn(component.searchChange, 'emit');
-    fixture.detectChanges();
-
-    const searchBar = fixture.debugElement.query(By.directive(SearchBarComponent));
-    searchBar.triggerEventHandler('searchChange', 'test query');
-
-    expect(spy).toHaveBeenCalledWith('test query');
-  });
+  // ИЗМЕНЕНИЕ: Тест для поиска удален
+  // it('should emit searchChange event on search', () => { ... });
 
   it('should emit genreChange event with array when genre is toggled', () => {
     const spy = vi.spyOn(component.genreChange, 'emit');

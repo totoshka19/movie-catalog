@@ -3,6 +3,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderComponent } from './header.component';
 import { By } from '@angular/platform-browser';
 import { MediaType, SortType } from '../../core/models/media-type.enum';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { vi } from 'vitest';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -10,7 +12,8 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderComponent, RouterTestingModule],
+      // ИЗМЕНЕНИЕ: Добавлен SearchBarComponent для тестирования
+      imports: [HeaderComponent, RouterTestingModule, SearchBarComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);
@@ -42,5 +45,15 @@ describe('HeaderComponent', () => {
     expect(activeLinks.length).toBe(2);
     expect(activeLinks[0].nativeElement.textContent).toContain('Лучшее');
     expect(activeLinks[1].nativeElement.textContent).toContain('Фильмы');
+  });
+
+  // ИЗМЕНЕНИЕ: Добавлен тест для события поиска
+  it('should emit searchChange event when search bar emits', () => {
+    const spy = vi.spyOn(component.searchChange, 'emit');
+    const searchBar = fixture.debugElement.query(By.directive(SearchBarComponent));
+
+    searchBar.triggerEventHandler('searchChange', 'test query');
+
+    expect(spy).toHaveBeenCalledWith('test query');
   });
 });

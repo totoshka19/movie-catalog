@@ -43,5 +43,14 @@
         >Сериалы</a>
       </nav>
     </div>
+
+    <!-- ИЗМЕНЕНИЕ: Добавлен блок для поиска -->
+    <div class="app-header__search">
+      <app-search-bar
+        [initialQuery]="initialQuery"
+        [placeholder]="placeholder"
+        (searchChange)="onSearch($event)"
+      ></app-search-bar>
+    </div>
   </div>
 </header>

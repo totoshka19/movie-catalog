@@ -21,7 +21,7 @@
   }
 
   @include respond-to('tablet') {
-    padding-top: 9rem;
+    padding-top: 13rem; // Дополнительное место для поиска и фильтров
   }
 }
 

@@ -46,11 +46,14 @@
     display: flex;
     align-items: center;
     gap: 2rem;
+    // ИЗМЕНЕНИЕ: Центрируем фильтры
+    margin: 0 auto;
 
     @include respond-to('tablet') {
       flex-direction: column;
       gap: 1.5rem;
       width: 100%;
+      margin: 0; // Сбрасываем центрирование
     }
   }
 
@@ -89,6 +92,20 @@
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
       }
+    }
+  }
+
+  // ИЗМЕНЕНИЕ: Стили для нового блока поиска
+  &__search {
+    width: 300px;
+
+    @include respond-to('desktop-lg') {
+      width: 260px;
+    }
+
+    @include respond-to('tablet') {
+      width: 100%;
+      order: -1; // На мобильных ставим поиск выше фильтров
     }
   }
 }

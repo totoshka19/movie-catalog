@@ -31,7 +31,7 @@
     border-radius: var(--border-radius-md);
   }
 
-  &__section:nth-child(2) {
+  &__section {
     display: flex;
     flex-direction: column;
     flex: 1; // Растягиваем на всю высоту
