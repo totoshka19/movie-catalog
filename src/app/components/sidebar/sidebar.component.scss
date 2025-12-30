@@ -16,10 +16,6 @@
   height: 100vh;
   width: 300px;
 
-  @include respond-to('desktop-lg') {
-    width: 260px;
-  }
-
   @include respond-to('desktop') {
     position: static;
     height: auto;
