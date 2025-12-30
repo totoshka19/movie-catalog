@@ -5,17 +5,21 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [SearchBarComponent], // Импортируем SearchBarComponent
+  imports: [SearchBarComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
+  // ИЗМЕНЕНИЕ: Добавлен Input для управления состоянием
+  @Input() isOpen = false;
   @Input() selectedGenres: number[] = [];
   @Input({ required: true }) genres: Genre[] = [];
-  @Input() initialQuery: string = ''; // Input для начального значения поиска
+  @Input() initialQuery: string = '';
   @Output() genreChange = new EventEmitter<number[]>();
-  @Output() searchChange = new EventEmitter<string>(); // Output для события поиска
+  @Output() searchChange = new EventEmitter<string>();
+  // ИЗМЕНЕНИЕ: Добавлен Output для закрытия
+  @Output() close = new EventEmitter<void>();
 
   isSelected(id: number): boolean {
     return this.selectedGenres.includes(id);
@@ -38,8 +42,12 @@ export class SidebarComponent {
     this.genreChange.emit([]);
   }
 
-  // Метод для "проброса" события от дочернего SearchBarComponent
   onSearchChange(query: string): void {
     this.searchChange.emit(query);
+  }
+
+  // ИЗМЕНЕНИЕ: Добавлен метод для закрытия
+  onClose(): void {
+    this.close.emit();
   }
 }

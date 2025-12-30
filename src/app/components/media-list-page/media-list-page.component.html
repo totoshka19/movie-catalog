@@ -4,16 +4,20 @@
   [selectedGenres]="selectedGenres()"
   [initialQuery]="searchQuery()"
   [placeholder]="searchPlaceholder()"
+  [isSidebarOpen]="isSidebarOpen()"
   (searchChange)="onSearch($event)"
+  (toggleSidebar)="onToggleSidebar()"
 ></app-header>
 
 <div class="page-layout">
   <app-sidebar
+    [isOpen]="isSidebarOpen()"
     [selectedGenres]="selectedGenres()"
     [genres]="allGenres()"
     [initialQuery]="searchQuery()"
     (genreChange)="onGenreChange($event)"
     (searchChange)="onSearch($event)"
+    (close)="onCloseSidebar()"
   ></app-sidebar>
 
   <main class="content">

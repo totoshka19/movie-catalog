@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, untracked } from '@angular/core';
+import { Component, computed, effect, HostListener, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -12,6 +12,7 @@ import { MediaType, SortType } from '../../core/models/media-type.enum';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
+import { ScrollLockService } from '../../services/scroll-lock.service';
 
 @Component({
   selector: 'app-media-list-page',
@@ -30,18 +31,22 @@ export class MediaListPageComponent {
   private readonly modalService = inject(ModalService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  // Инжектируем новый сервис состояния
+  // Инжектируем сервис состояния
   private readonly mediaListState = inject(MediaListStateService);
+  // ИЗМЕНЕНИЕ: Инжектируем сервис блокировки скролла
+  private readonly scrollLockService = inject(ScrollLockService);
 
   // --- Сигналы, получающие состояние из URL и resolver'а ---
   private readonly routeData = toSignal(this.route.data);
   private readonly queryParams = toSignal(this.route.queryParamMap);
 
+  // ИЗМЕНЕНИЕ: Сигнал для управления состоянием сайдбара
+  protected readonly isSidebarOpen = signal(false);
+
   protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
   protected readonly activeType = computed<MediaType>(
     () => this.routeData()?.['mediaType'] ?? MediaType.All
   );
-  // Тип сортировки берем из query-параметров, по умолчанию 'top_rated'
   protected readonly activeSort = computed<SortType>(
     () => (this.queryParams()?.get('sort_by') as SortType) ?? SortType.TopRated
   );
@@ -102,6 +107,27 @@ export class MediaListPageComponent {
         this.mediaListState.resetAndLoad(type, sortBy, genres, query);
       });
     });
+
+    // ИЗМЕНЕНИЕ: Добавляем effect для блокировки скролла при открытии сайдбара
+    effect(onCleanup => {
+      if (this.isSidebarOpen()) {
+        this.scrollLockService.lock();
+        onCleanup(() => {
+          this.scrollLockService.unlock();
+        });
+      }
+    });
+  }
+
+  /**
+   * Слушаем изменение размера окна.
+   * Если ширина становится больше 1023px (десктоп), закрываем сайдбар.
+   */
+  @HostListener('window:resize')
+  onResize(): void {
+    if (window.innerWidth > 1023 && this.isSidebarOpen()) {
+      this.isSidebarOpen.set(false);
+    }
   }
 
   // --- Обработчики событий от дочерних компонентов ---
@@ -130,5 +156,14 @@ export class MediaListPageComponent {
 
   loadNextPage(): void {
     this.mediaListState.loadNextPage();
+  }
+
+  // ИЗМЕНЕНИЕ: Методы для управления сайдбаром
+  onToggleSidebar(): void {
+    this.isSidebarOpen.update(v => !v);
+  }
+
+  onCloseSidebar(): void {
+    this.isSidebarOpen.set(false);
   }
 }

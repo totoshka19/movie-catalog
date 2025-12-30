@@ -15,10 +15,6 @@
   @include respond-to('desktop') {
     grid-template-columns: 1fr;
   }
-
-  @include respond-to('tablet') {
-    padding-top: 13rem; // Дополнительное место для поиска и фильтров
-  }
 }
 
 .content {

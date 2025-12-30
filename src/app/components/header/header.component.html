@@ -1,5 +1,16 @@
 <header class="app-header">
   <div class="app-header__container">
+    <!-- ИЗМЕНЕНИЕ: Оставляем только два span элемента -->
+    <button
+      class="app-header__burger"
+      [class.is-open]="isSidebarOpen"
+      (click)="onToggleSidebarClick()"
+      aria-label="Открыть меню"
+    >
+      <span></span>
+      <span></span>
+    </button>
+
     <div class="app-header__logo">
       <a routerLink="/">Медиа Каталог</a>
     </div>
@@ -44,7 +55,7 @@
       </nav>
     </div>
 
-    <!-- ИЗМЕНЕНИЕ: Добавлен блок для поиска -->
+    <!-- Добавлен блок для поиска -->
     <div class="app-header__search">
       <app-search-bar
         [initialQuery]="initialQuery"
