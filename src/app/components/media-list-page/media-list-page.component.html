@@ -37,20 +37,16 @@
       }
 
       <!--
-        ИЗМЕНЕНИЕ: Добавили невидимый "якорь" для Infinite Scroll.
-        Когда этот элемент приближается к вьюпорту, срабатывает событие.
-        Мы скрываем его (или не рендерим), если поиск активен (обычно в поиске пагинация
-        может работать иначе, но в текущей логике блокируем, как было).
+        ИЗМЕНЕНИЕ: Убираем условие @if. Теперь триггер будет работать всегда.
+        Его поведение контролируется через свойство [disabled].
       -->
-      @if (!searchQuery()) {
-        <div
-          class="infinite-scroll-trigger"
-          appInfiniteScroll
-          [threshold]="500"
-          [disabled]="isLoading() || isLoadingMore() || !hasMorePages"
-          (scrollEnd)="loadNextPage()"
-        ></div>
-      }
+      <div
+        class="infinite-scroll-trigger"
+        appInfiniteScroll
+        [threshold]="500"
+        [disabled]="isLoading() || isLoadingMore() || !hasMorePages"
+        (scrollEnd)="loadNextPage()"
+      ></div>
     }
   </main>
 </div>

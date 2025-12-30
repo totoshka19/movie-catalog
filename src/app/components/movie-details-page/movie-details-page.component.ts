@@ -15,6 +15,7 @@ import { Params, Router } from '@angular/router';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { StatusTranslationPipe } from '../../pipes/status-translation.pipe';
 import { VideoPlayerComponent } from '../video-player/video-player.component';
+import { ScrollLockService } from '../../services/scroll-lock.service';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -42,6 +43,8 @@ export class MovieDetailsPageComponent {
   private readonly moviesService = inject(MoviesService);
   private readonly navigationHistoryService = inject(NavigationHistoryService);
   private readonly router = inject(Router);
+  // Инжектируем новый сервис для управления скроллом
+  private readonly scrollLockService = inject(ScrollLockService);
 
   // Сигнал для хранения состояния ошибки
   protected readonly error = signal<string | null>(null);
@@ -122,12 +125,14 @@ export class MovieDetailsPageComponent {
   });
 
   constructor() {
-    // Добавляем эффект для блокировки скролла при открытии трейлера
-    effect(() => {
+    // ИЗМЕНЕНИЕ: Используем ScrollLockService для управления прокруткой
+    effect(onCleanup => {
       if (this.selectedTrailerKey()) {
-        document.body.classList.add('no-scroll');
-      } else {
-        document.body.classList.remove('no-scroll');
+        this.scrollLockService.lock();
+
+        onCleanup(() => {
+          this.scrollLockService.unlock();
+        });
       }
     });
   }
