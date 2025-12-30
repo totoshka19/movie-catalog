@@ -163,7 +163,9 @@ export class MoviesService {
         const tvShows = tvShowsResponse ? this.normalizeTvShows(tvShowsResponse.results) : [];
 
         if (type === MediaType.All) {
-          return this.interleaveArrays(movies, tvShows);
+          // ИСПРАВЛЕНИЕ: Объединяем массивы и сортируем их по рейтингу
+          const combined = [...movies, ...tvShows];
+          return combined.sort((a, b) => b.vote_average - a.vote_average);
         } else {
           return [...movies, ...tvShows];
         }
