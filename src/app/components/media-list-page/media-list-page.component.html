@@ -11,7 +11,9 @@
   <app-sidebar
     [selectedGenres]="selectedGenres()"
     [genres]="allGenres()"
+    [initialQuery]="searchQuery()"
     (genreChange)="onGenreChange($event)"
+    (searchChange)="onSearch($event)"
   ></app-sidebar>
 
   <main class="content">

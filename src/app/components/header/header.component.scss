@@ -100,7 +100,8 @@
     width: 300px;
 
     @include respond-to('desktop-lg') {
-      width: 260px;
+      // Скрываем поиск в хедере на экранах < 1440px
+      display: none;
     }
 
     @include respond-to('tablet') {

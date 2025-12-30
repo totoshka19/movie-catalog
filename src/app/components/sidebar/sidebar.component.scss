@@ -27,6 +27,20 @@
     border-radius: var(--border-radius-md);
   }
 
+  // Стили для нового блока поиска
+  &__search {
+    display: none; // По умолчанию скрыт
+
+    @include respond-to('desktop-lg') {
+      display: block; // Показываем на экранах < 1440px
+    }
+
+    // На планшетах поиск переезжает в хедер, поэтому снова скрываем
+    @include respond-to('tablet') {
+      display: none;
+    }
+  }
+
   &__section {
     display: flex;
     flex-direction: column;

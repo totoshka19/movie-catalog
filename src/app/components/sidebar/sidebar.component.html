@@ -1,4 +1,13 @@
 <aside class="sidebar">
+  <!-- Блок для поиска, который будет виден на малых экранах -->
+  <div class="sidebar__search">
+    <app-search-bar
+      [initialQuery]="initialQuery"
+      placeholder="Поиск..."
+      (searchChange)="onSearchChange($event)"
+    ></app-search-bar>
+  </div>
+
   <div class="sidebar__section">
     <div class="sidebar__header">
       <h3>

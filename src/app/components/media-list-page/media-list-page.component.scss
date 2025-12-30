@@ -12,10 +12,6 @@
   grid-template-columns: 300px 1fr;
   padding-top: 4rem;
 
-  @include respond-to('desktop-lg') {
-    grid-template-columns: 260px 1fr;
-  }
-
   @include respond-to('desktop') {
     grid-template-columns: 1fr;
   }
