@@ -1,11 +1,55 @@
-<!-- ИЗМЕНЕНИЕ: Добавлен оверлей для закрытия по клику вне сайдбара -->
 @if (isOpen) {
   <div class="sidebar-overlay" (click)="onClose()"></div>
 }
 
-<!-- ИЗМЕНЕНИЕ: Добавлена привязка класса is-open -->
 <aside class="sidebar" [class.is-open]="isOpen">
-  <!-- Блок для поиска, который будет виден на малых экранах -->
+  <!-- Блок фильтров, перенесенный из хедера. Виден только на мобильных/планшетах через CSS -->
+  <div class="sidebar__filters">
+    <!-- Группа 1: Сортировка -->
+    <nav class="sidebar__nav">
+      <a
+        [routerLink]="[]"
+        [queryParams]="{ sort_by: 'newest' }"
+        queryParamsHandling="merge"
+        [class.active]="activeSort === 'newest'"
+        (click)="onClose()"
+      >Новинки</a>
+      <a
+        [routerLink]="[]"
+        [queryParams]="{ sort_by: 'top_rated' }"
+        queryParamsHandling="merge"
+        [class.active]="activeSort === 'top_rated'"
+        (click)="onClose()"
+      >Лучшее</a>
+    </nav>
+
+    <!-- Группа 2: Тип контента -->
+    <nav class="sidebar__nav">
+      <a
+        routerLink="/all"
+        [class.active]="activeType === 'all'"
+        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
+        queryParamsHandling="merge"
+        (click)="onClose()"
+      >Все</a>
+      <a
+        routerLink="/movie"
+        [class.active]="activeType === 'movie'"
+        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
+        queryParamsHandling="merge"
+        (click)="onClose()"
+      >Фильмы</a>
+      <a
+        routerLink="/tv"
+        [class.active]="activeType === 'tv'"
+        [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
+        queryParamsHandling="merge"
+        (click)="onClose()"
+      >Сериалы</a>
+    </nav>
+  </div>
+
+  <!-- Блок для поиска -->
   <div class="sidebar__search">
     <app-search-bar
       [initialQuery]="initialQuery"

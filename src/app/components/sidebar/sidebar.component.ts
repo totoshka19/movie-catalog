@@ -1,24 +1,29 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Genre } from '../../models/movie.model';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { MediaType, SortType } from '../../core/models/media-type.enum';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [SearchBarComponent],
+  imports: [SearchBarComponent, RouterLink],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  // ИЗМЕНЕНИЕ: Добавлен Input для управления состоянием
   @Input() isOpen = false;
   @Input() selectedGenres: number[] = [];
   @Input({ required: true }) genres: Genre[] = [];
   @Input() initialQuery: string = '';
+
+  // Новые инпуты для отображения активного состояния фильтров
+  @Input() activeType: MediaType = MediaType.All;
+  @Input() activeSort: SortType = SortType.Newest;
+
   @Output() genreChange = new EventEmitter<number[]>();
   @Output() searchChange = new EventEmitter<string>();
-  // ИЗМЕНЕНИЕ: Добавлен Output для закрытия
   @Output() close = new EventEmitter<void>();
 
   isSelected(id: number): boolean {
@@ -46,7 +51,6 @@ export class SidebarComponent {
     this.searchChange.emit(query);
   }
 
-  // ИЗМЕНЕНИЕ: Добавлен метод для закрытия
   onClose(): void {
     this.close.emit();
   }

@@ -10,11 +10,14 @@
 ></app-header>
 
 <div class="page-layout">
+  <!-- Передаем текущие активные фильтры и тип в сайдбар -->
   <app-sidebar
     [isOpen]="isSidebarOpen()"
     [selectedGenres]="selectedGenres()"
     [genres]="allGenres()"
     [initialQuery]="searchQuery()"
+    [activeType]="activeType()"
+    [activeSort]="activeSort()"
     (genreChange)="onGenreChange($event)"
     (searchChange)="onSearch($event)"
     (close)="onCloseSidebar()"
