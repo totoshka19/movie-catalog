@@ -1,4 +1,3 @@
-<!-- Сайдбар: Фиксирован слева на десктопе -->
 <aside class="sidebar">
   <div class="sidebar__section">
     <app-search-bar
@@ -12,7 +11,6 @@
     <div class="sidebar__header">
       <h3>
         Жанры
-        <!-- Отображаем счетчик, если выбран хотя бы один жанр -->
         @if (selectedGenres.length) {
           <span class="sidebar__genre-count">{{ selectedGenres.length }}</span>
         }
@@ -22,18 +20,20 @@
       }
     </div>
 
-    <div class="genres-list">
-      @for (genre of genres; track genre.id) {
-        <label class="checkbox-label">
-          <input
-            type="checkbox"
-            [checked]="isSelected(genre.id)"
-            (change)="onGenreToggle($event, genre.id)"
-          >
-          <span class="checkbox-custom"></span>
-          <span class="checkbox-text">{{ genre.name }}</span>
-        </label>
-      }
+    <div class="sidebar__genres-container">
+      <div class="genres-list">
+        @for (genre of genres; track genre.id) {
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="isSelected(genre.id)"
+              (change)="onGenreToggle($event, genre.id)"
+            >
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-text">{{ genre.name }}</span>
+          </label>
+        }
+      </div>
     </div>
   </div>
 </aside>

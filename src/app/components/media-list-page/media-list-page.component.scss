@@ -8,34 +8,40 @@
 .page-layout {
   max-width: 1920px;
   margin: 0 auto;
-
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: 3rem;
-  padding: 2.5rem;
+  padding-top: 4rem;
 
   @include respond-to('desktop-lg') {
     grid-template-columns: 260px 1fr;
-    gap: 2rem;
-    padding: 2rem;
   }
 
   @include respond-to('desktop') {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+  }
+
+  @include respond-to('tablet') {
+    padding-top: 9rem;
+  }
+}
+
+.content {
+  min-height: calc(100vh - 10rem);
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+
+  @include respond-to('desktop-lg') {
+    padding: 2rem;
+  }
+
+  @include respond-to('desktop') {
     padding: 1.5rem;
   }
 
   @include respond-to('tablet') {
     padding: 1rem;
   }
-}
-
-.content {
-  // Оставляем это правило, чтобы сайдбар не прыгал вертикально при пустом поиске
-  min-height: calc(100vh - 10rem);
-  display: flex;
-  flex-direction: column;
 }
 
 .app-state-indicator {
@@ -65,7 +71,6 @@
   }
 }
 
-// Стили для элемента-триггера
 .infinite-scroll-trigger {
   height: 1px; // Минимальная высота, чтобы элемент существовал
   width: 100%;
