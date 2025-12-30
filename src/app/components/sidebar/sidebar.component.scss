@@ -37,7 +37,7 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; // Уменьшил общий gap, так как элементов стало больше
+  gap: 1.5rem;
   z-index: 10;
   position: fixed;
   top: 4.7rem;
@@ -55,13 +55,19 @@
     border-right: 1px solid var(--color-border);
   }
 
+  // На экранах < 768px растягиваем на всю ширину
+  @include respond-to('tablet') {
+    width: 100%;
+    border-right: none;
+  }
+
   &.is-open {
     @include respond-to('desktop') {
       transform: translateX(0);
     }
   }
 
-  // --- Стили для блока фильтров (новое) ---
+  // --- Стили для блока фильтров ---
   &__filters {
     display: none; // Скрыты на больших экранах
     flex-direction: column;
