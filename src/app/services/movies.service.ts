@@ -14,6 +14,7 @@ import {
   ImdbTitle,
   ImdbTitleType,
 } from '../models/imdb.model';
+import { mapMediaTypeToImdbTypes } from '../utils/media-type.utils';
 
 export interface TitleQueryParams {
   types?: ImdbTitleType[];
@@ -31,7 +32,7 @@ export class MoviesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  loadGenres(): Observable<ImdbInterest[]> { // ИЗМЕНЕНИЕ: Возвращаемый тип теперь ImdbInterest[]
+  loadGenres(): Observable<ImdbInterest[]> {
     return this.http.get<ImdbListInterestCategoriesResponse>(`${this.apiUrl}/interests`).pipe(
       map(response => {
         return response.categories.flatMap(cat => cat.interests);
@@ -47,55 +48,37 @@ export class MoviesService {
   ): Observable<ImdbListTitlesResponse> {
     let params = new HttpParams();
 
-    // 1. Маппинг типов (Movie/Tv -> ImdbTitleType)
-    const types = this.mapMediaTypeToImdbType(mediaType);
+    const types = mapMediaTypeToImdbTypes(mediaType);
     if (types.length) {
       types.forEach(t => (params = params.append('types', t)));
     }
 
-    // 2. Маппинг сортировки
     const { sort, order } = this.mapSortType(sortBy);
     params = params.set('sortBy', sort).set('sortOrder', order);
 
-    // 3. Жанры (Interest IDs)
     if (interestIds.length) {
       interestIds.forEach(id => (params = params.append('interestIds', id)));
     }
 
-    // 4. Пагинация
     if (pageToken) {
       params = params.set('pageToken', pageToken);
     }
 
-    // Доп. фильтры для чистоты выдачи (исключаем без рейтинга и постеров, если нужно)
-    // params = params.set('minVoteCount', 100);
-
     return this.http.get<ImdbListTitlesResponse>(`${this.apiUrl}/titles`, { params });
   }
 
-  /**
-   * Поиск по названию.
-   * Использует отдельный эндпоинт /search/titles.
-   */
   searchTitles(query: string, limit: number = 20): Observable<ImdbListTitlesResponse> {
     const params = new HttpParams().set('query', query).set('limit', limit);
     return this.http.get<ImdbListTitlesResponse>(`${this.apiUrl}/search/titles`, { params });
   }
 
-  /**
-   * Получение детальной информации о тайтле.
-   * Делает параллельные запросы за деталями, кредитами и видео.
-   */
   getTitleDetails(id: string): Observable<ImdbTitle> {
-    // 1. Основная инфо
     const details$ = this.http.get<ImdbTitle>(`${this.apiUrl}/titles/${id}`);
 
-    // 2. Актеры (Credits)
     const credits$ = this.http.get<ImdbListTitleCreditsResponse>(`${this.apiUrl}/titles/${id}/credits`, {
       params: { pageSize: 10 }
     });
 
-    // 3. Видео (Трейлеры)
     const videos$ = this.http.get<ImdbListTitleVideosResponse>(`${this.apiUrl}/titles/${id}/videos`, {
       params: { pageSize: 5 }
     });
@@ -106,7 +89,6 @@ export class MoviesService {
       videosResp: videos$
     }).pipe(
       map(({ details, creditsResp, videosResp }) => {
-        // Обогащаем основной объект деталями
         return {
           ...details,
           creditsList: creditsResp.credits,
@@ -114,20 +96,6 @@ export class MoviesService {
         } as ImdbTitle & { creditsList: any[], videosList: any[] };
       })
     );
-  }
-
-  // --- Helpers ---
-
-  private mapMediaTypeToImdbType(type: MediaType): ImdbTitleType[] {
-    switch (type) {
-      case MediaType.Movie:
-        return [ImdbTitleType.Movie, ImdbTitleType.TvMovie];
-      case MediaType.Tv:
-        return [ImdbTitleType.TvSeries, ImdbTitleType.TvMiniSeries];
-      case MediaType.All:
-      default:
-        return []; // Пустой массив = все типы
-    }
   }
 
   private mapSortType(sort: SortType): { sort: ImdbSortBy; order: ImdbSortOrder } {

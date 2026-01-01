@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, 
 import { ImdbTitle } from '../../models/imdb.model';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
+import { mapImdbTypeToMediaType } from '../../utils/media-type.utils';
 
 @Component({
   selector: 'app-movie-details',
@@ -17,31 +18,9 @@ export class MovieDetailsComponent implements AfterViewInit {
 
   protected readonly isVisible = signal(false);
 
-  /**
-   * Преобразует ЛЮБОЙ тип медиа из API в тип, понятный для роутера ('movie' или 'tv').
-   * Обрабатывает все известные типы из Swagger и нечувствителен к регистру.
-   */
   public get detailsPageLink(): any[] {
-    const type = this.movie.type.toLowerCase();
-    const id = this.movie.id;
-
-    switch (type) {
-      // Все, что относится к сериалам
-      case 'tv_series':
-      case 'tv_mini_series':
-      case 'tv_special':
-        return ['/media', 'tv', id];
-
-      // Все остальное (включая MOVIE, SHORT, VIDEO и т.д.) считаем фильмами
-      case 'movie':
-      case 'tv_movie':
-      case 'short':
-      case 'video':
-      case 'video_game':
-      case 'videogame':
-      default:
-        return ['/media', 'movie', id];
-    }
+    const routeType = mapImdbTypeToMediaType(this.movie.type);
+    return ['/media', routeType, this.movie.id];
   }
 
   ngAfterViewInit(): void {
