@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { RouterTestingModule } from '@angular/router/testing';
-
 import { MovieDetailsComponent } from './movie-details.component';
 import { ImdbTitle, ImdbTitleType } from '../../models/imdb.model';
 
@@ -54,7 +53,7 @@ describe('MovieDetailsComponent', () => {
 
     expect(titleText).toBe('Тестовый фильм (2024)');
 
-    expect(compiled.querySelector('.movie-details__rating')?.textContent).toContain('9.9');
+    expect(compiled.querySelector('.movie-details__rating')?.textContent).toContain('9,9');
     expect(compiled.querySelector('.movie-details__description')?.textContent).toBe(
       'Это описание тестового фильма.'
     );

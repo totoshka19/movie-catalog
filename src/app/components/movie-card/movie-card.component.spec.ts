@@ -45,6 +45,6 @@ describe('MovieCard', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const ratingEl = compiled.querySelector('.movie-card__rating');
     expect(ratingEl).toBeTruthy();
-    expect(ratingEl?.textContent).toContain(MOCK_MEDIA_ITEM.rating?.aggregateRating);
+    expect(ratingEl?.textContent).toContain('8,5');
   });
 });

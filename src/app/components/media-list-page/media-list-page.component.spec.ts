@@ -201,7 +201,7 @@ describe('MediaListPageComponent', () => {
 
     expect(router.navigate).toHaveBeenCalledWith([], {
       relativeTo: expect.anything(),
-      queryParams: { genre: 'action' },
+      queryParams: { genre: 'action', q: null },
       queryParamsHandling: 'merge',
     });
   });
@@ -212,7 +212,7 @@ describe('MediaListPageComponent', () => {
 
     movieListDebugEl.triggerEventHandler('movieClick', itemToClick);
 
-    expect(modalServiceMock.open).toHaveBeenCalledWith(itemToClick);
+    expect(modalServiceMock.open).toHaveBeenCalledWith(itemToClick, MediaType.All);
   });
 
   it('should show loading skeleton when isLoading is true', async () => {
