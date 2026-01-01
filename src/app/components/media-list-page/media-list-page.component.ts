@@ -1,8 +1,7 @@
 import { Component, computed, effect, HostListener, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Genre } from '../../models/movie.model';
-import { ImdbTitle } from '../../models/imdb.model';
+import { ImdbInterest, ImdbTitle } from '../../models/imdb.model';
 import { ModalService } from '../../services/modal.service';
 import { MediaListStateService } from '../../services/media-list-state.service';
 import { MovieListComponent } from '../movie-list/movie-list.component';
@@ -35,7 +34,7 @@ export class MediaListPageComponent {
   private readonly routeData = toSignal(this.route.data);
   private readonly queryParams = toSignal(this.route.queryParamMap);
   protected readonly isSidebarOpen = signal(false);
-  protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
+  protected readonly allGenres = computed<ImdbInterest[]>(() => this.routeData()?.['genres'] ?? []);
   protected readonly activeType = computed<MediaType>(
     () => this.routeData()?.['mediaType'] ?? MediaType.All
   );

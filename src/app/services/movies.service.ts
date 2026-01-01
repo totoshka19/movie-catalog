@@ -4,6 +4,7 @@ import { Observable, forkJoin, map, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MediaType, SortType } from '../core/models/media-type.enum';
 import {
+  ImdbInterest,
   ImdbListInterestCategoriesResponse,
   ImdbListTitleCreditsResponse,
   ImdbListTitlesResponse,
@@ -13,7 +14,6 @@ import {
   ImdbTitle,
   ImdbTitleType,
 } from '../models/imdb.model';
-import { Genre } from '../models/movie.model';
 
 export interface TitleQueryParams {
   types?: ImdbTitleType[];
@@ -31,32 +31,18 @@ export class MoviesService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  /**
-   * Загружает список жанров (интересов) из API.
-   * Адаптирует ответ к интерфейсу Genre[].
-   */
-  loadGenres(): Observable<Genre[]> {
+  loadGenres(): Observable<ImdbInterest[]> { // ИЗМЕНЕНИЕ: Возвращаемый тип теперь ImdbInterest[]
     return this.http.get<ImdbListInterestCategoriesResponse>(`${this.apiUrl}/interests`).pipe(
       map(response => {
-        // Извлекаем интересы из всех категорий и превращаем в плоский список
-        const allInterests = response.categories.flatMap(cat => cat.interests);
-        // Маппим в формат Genre
-        return allInterests.map(interest => ({
-          id: interest.id, // строковый ID, например "action"
-          name: interest.name,
-        }));
+        return response.categories.flatMap(cat => cat.interests);
       })
     );
   }
 
-  /**
-   * Основной метод получения списка тайтлов (Фильмы/Сериалы) с фильтрацией.
-   * Заменяет старый getPopularMedia.
-   */
   getTitles(
     mediaType: MediaType,
     sortBy: SortType,
-    genres: string[] = [], // IDs жанров
+    genres: string[] = [],
     pageToken?: string
   ): Observable<ImdbListTitlesResponse> {
     let params = new HttpParams();

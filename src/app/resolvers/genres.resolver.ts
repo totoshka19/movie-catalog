@@ -2,9 +2,9 @@ import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { map } from 'rxjs';
 import { MoviesService } from '../services/movies.service';
-import { Genre } from '../models/movie.model';
+import { ImdbInterest } from '../models/imdb.model';
 
-export const genresResolver: ResolveFn<Genre[]> = () => {
+export const genresResolver: ResolveFn<ImdbInterest[]> = () => {
   const moviesService = inject(MoviesService);
 
   return moviesService.loadGenres().pipe(
