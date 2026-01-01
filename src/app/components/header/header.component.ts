@@ -14,9 +14,8 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 export class HeaderComponent {
   @Input({ required: true }) activeType: MediaType = MediaType.All;
   @Input({ required: true }) activeSort: SortType = SortType.Newest;
-  // ИЗМЕНЕНИЕ: Добавляем новый Input для отслеживания состояния сайдбара
   @Input() isSidebarOpen = false;
-  @Input() selectedGenres: number[] = [];
+  @Input() selectedGenres: string[] = [];
   @Input() initialQuery: string = '';
   @Input() placeholder: string = 'Поиск...';
   @Output() searchChange = new EventEmitter<string>();

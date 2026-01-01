@@ -14,30 +14,28 @@ import { MediaType, SortType } from '../../core/models/media-type.enum';
 })
 export class SidebarComponent {
   @Input() isOpen = false;
-  @Input() selectedGenres: number[] = [];
+  @Input() selectedGenres: string[] = [];
   @Input({ required: true }) genres: Genre[] = [];
   @Input() initialQuery: string = '';
-
-  // Новые инпуты для отображения активного состояния фильтров
   @Input() activeType: MediaType = MediaType.All;
   @Input() activeSort: SortType = SortType.Newest;
-
-  @Output() genreChange = new EventEmitter<number[]>();
+  @Output() genreChange = new EventEmitter<string[]>();
   @Output() searchChange = new EventEmitter<string>();
   @Output() close = new EventEmitter<void>();
 
-  isSelected(id: number): boolean {
-    return this.selectedGenres.includes(id);
+  isSelected(id: string | number): boolean {
+    return this.selectedGenres.includes(String(id));
   }
 
-  onGenreToggle(event: Event, genreId: number): void {
+  onGenreToggle(event: Event, genreId: string | number): void {
     const isChecked = (event.target as HTMLInputElement).checked;
-    let newGenres: number[];
+    const idStr = String(genreId);
+    let newGenres: string[];
 
     if (isChecked) {
-      newGenres = [...this.selectedGenres, genreId];
+      newGenres = [...this.selectedGenres, idStr];
     } else {
-      newGenres = this.selectedGenres.filter(id => id !== genreId);
+      newGenres = this.selectedGenres.filter(id => id !== idStr);
     }
 
     this.genreChange.emit(newGenres);

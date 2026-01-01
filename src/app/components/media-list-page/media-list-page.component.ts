@@ -1,11 +1,10 @@
 import { Component, computed, effect, HostListener, inject, signal, untracked } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-
-import { MediaItem, Genre } from '../../models/movie.model';
+import { Genre } from '../../models/movie.model';
+import { ImdbTitle } from '../../models/imdb.model';
 import { ModalService } from '../../services/modal.service';
 import { MediaListStateService } from '../../services/media-list-state.service';
-
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { SkeletonListComponent } from '../skeleton-list/skeleton-list.component';
 import { MediaType, SortType } from '../../core/models/media-type.enum';
@@ -31,18 +30,11 @@ export class MediaListPageComponent {
   private readonly modalService = inject(ModalService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  // Инжектируем сервис состояния
   private readonly mediaListState = inject(MediaListStateService);
-  // ИЗМЕНЕНИЕ: Инжектируем сервис блокировки скролла
   private readonly scrollLockService = inject(ScrollLockService);
-
-  // --- Сигналы, получающие состояние из URL и resolver'а ---
   private readonly routeData = toSignal(this.route.data);
   private readonly queryParams = toSignal(this.route.queryParamMap);
-
-  // ИЗМЕНЕНИЕ: Сигнал для управления состоянием сайдбара
   protected readonly isSidebarOpen = signal(false);
-
   protected readonly allGenres = computed<Genre[]>(() => this.routeData()?.['genres'] ?? []);
   protected readonly activeType = computed<MediaType>(
     () => this.routeData()?.['mediaType'] ?? MediaType.All
@@ -50,14 +42,14 @@ export class MediaListPageComponent {
   protected readonly activeSort = computed<SortType>(
     () => (this.queryParams()?.get('sort_by') as SortType) ?? SortType.TopRated
   );
-  protected readonly selectedGenres = computed<number[]>(() => {
+
+  protected readonly selectedGenres = computed<string[]>(() => {
     const genreParam = this.queryParams()?.get('genre');
     if (!genreParam) return [];
-    return genreParam.split(',').map(id => Number(id)).filter(id => !isNaN(id));
+    return genreParam.split(',').filter(id => id.length > 0);
   });
-  protected readonly searchQuery = computed(() => this.queryParams()?.get('q') ?? '');
 
-  // --- Прокси-сигналы и свойства, получающие данные из сервиса состояния ---
+  protected readonly searchQuery = computed(() => this.queryParams()?.get('q') ?? '');
   protected readonly isLoading = this.mediaListState.isLoading;
   protected readonly isLoadingMore = this.mediaListState.isLoadingMore;
   protected readonly error = this.mediaListState.error;
@@ -66,7 +58,6 @@ export class MediaListPageComponent {
     return this.mediaListState.canLoadMore();
   }
 
-  // --- Computed-сигналы, зависящие от состояния роутера ---
   protected readonly searchPlaceholder = computed(() => {
     switch (this.activeType()) {
       case MediaType.Movie:
@@ -82,33 +73,21 @@ export class MediaListPageComponent {
   protected readonly emptyListMessage = computed(() => {
     const query = this.searchQuery();
     if (query) return `По запросу "${query}" ничего не найдено.`;
-
-    switch (this.activeType()) {
-      case MediaType.Movie:
-        return 'Фильмы не найдены.';
-      case MediaType.Tv:
-        return 'Сериалы не найдены.';
-      case MediaType.All:
-      default:
-        return 'Контент не найден.';
-    }
+    return 'Контент не найден.';
   });
 
   constructor() {
     effect(() => {
-      // Получаем все зависимые параметры из роутера
       const type = this.activeType();
       const sortBy = this.activeSort();
       const genres = this.selectedGenres();
       const query = this.searchQuery();
 
-      // Вызываем метод сервиса состояния для загрузки данных
       untracked(() => {
         this.mediaListState.resetAndLoad(type, sortBy, genres, query);
       });
     });
 
-    // ИЗМЕНЕНИЕ: Добавляем effect для блокировки скролла при открытии сайдбара
     effect(onCleanup => {
       if (this.isSidebarOpen()) {
         this.scrollLockService.lock();
@@ -119,10 +98,6 @@ export class MediaListPageComponent {
     });
   }
 
-  /**
-   * Слушаем изменение размера окна.
-   * Если ширина становится больше 1023px (десктоп), закрываем сайдбар.
-   */
   @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth > 1023 && this.isSidebarOpen()) {
@@ -130,9 +105,7 @@ export class MediaListPageComponent {
     }
   }
 
-  // --- Обработчики событий от дочерних компонентов ---
-
-  onGenreChange(genres: number[]): void {
+  onGenreChange(genres: string[]): void {
     const genreParam = genres.length > 0 ? genres.join(',') : null;
 
     this.router.navigate([], {
@@ -150,7 +123,7 @@ export class MediaListPageComponent {
     });
   }
 
-  onMediaSelect(item: MediaItem): void {
+  onMediaSelect(item: ImdbTitle): void {
     this.modalService.open(item);
   }
 
@@ -158,7 +131,6 @@ export class MediaListPageComponent {
     this.mediaListState.loadNextPage();
   }
 
-  // ИЗМЕНЕНИЕ: Методы для управления сайдбаром
   onToggleSidebar(): void {
     this.isSidebarOpen.update(v => !v);
   }
