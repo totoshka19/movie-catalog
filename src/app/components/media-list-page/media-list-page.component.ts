@@ -109,7 +109,10 @@ export class MediaListPageComponent {
 
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { genre: genreParam },
+      queryParams: {
+        genre: genreParam,
+        q: null, // Сбрасываем поиск при выборе жанра
+      },
       queryParamsHandling: 'merge',
     });
   }
@@ -117,7 +120,10 @@ export class MediaListPageComponent {
   onSearch(query: string): void {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { q: query || null },
+      queryParams: {
+        q: query || null,
+        genre: null, // Сбрасываем жанры при поиске
+      },
       queryParamsHandling: 'merge',
     });
   }
