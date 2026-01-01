@@ -42,7 +42,7 @@ export class MoviesService {
   getTitles(
     mediaType: MediaType,
     sortBy: SortType,
-    genres: string[] = [],
+    interestIds: string[] = [],
     pageToken?: string
   ): Observable<ImdbListTitlesResponse> {
     let params = new HttpParams();
@@ -57,9 +57,9 @@ export class MoviesService {
     const { sort, order } = this.mapSortType(sortBy);
     params = params.set('sortBy', sort).set('sortOrder', order);
 
-    // 3. Жанры
-    if (genres.length) {
-      genres.forEach(g => (params = params.append('genres', g)));
+    // 3. Жанры (Interest IDs)
+    if (interestIds.length) {
+      interestIds.forEach(id => (params = params.append('interestIds', id)));
     }
 
     // 4. Пагинация
