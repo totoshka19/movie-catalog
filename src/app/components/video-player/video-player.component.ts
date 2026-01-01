@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { $localize } from '@angular/localize/init';
 
 @Component({
   selector: 'app-video-player',
@@ -27,7 +28,7 @@ export class VideoPlayerComponent implements AfterViewInit {
   /**
    * Заголовок видео, опционально.
    */
-  @Input() title: string = 'Трейлер';
+  @Input() title: string = $localize`:@@videoPlayerTrailerTitle:Трейлер`;
 
   /**
    * Событие, которое вызывается при закрытии плеера.

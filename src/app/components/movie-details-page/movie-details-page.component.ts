@@ -13,6 +13,7 @@ import { VideoPlayerComponent } from '../video-player/video-player.component';
 import { ScrollLockService } from '../../services/scroll-lock.service';
 import { ResizeImagePipe } from '../../pipes/resize-image.pipe';
 import { MediaType } from '../../core/models/media-type.enum';
+import { $localize } from '@angular/localize/init';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -50,7 +51,7 @@ export class MovieDetailsPageComponent {
       return this.moviesService.getTitleDetails(id);
     }),
     catchError((err: Error) => {
-      this.error.set(err.message || 'Ошибка загрузки данных');
+      this.error.set($localize`:@@errorLoadingDetails:Ошибка загрузки данных`);
       return EMPTY;
     })
   );
@@ -63,7 +64,10 @@ export class MovieDetailsPageComponent {
     const item = this.mediaItem();
     if (!item) return [];
 
-    const mediaTypeLabel = this.type() === MediaType.Movie ? 'Фильмы' : 'Сериалы';
+    const mediaTypeLabel =
+      this.type() === MediaType.Movie
+        ? $localize`:@@mediaTypeMovies:Фильмы`
+        : $localize`:@@mediaTypeTvSeries:Сериалы`;
 
     const previousUrl = this.navigationHistoryService.previousUrl();
     const urlTree = this.router.parseUrl(previousUrl);
@@ -71,7 +75,7 @@ export class MovieDetailsPageComponent {
     const queryParams = urlTree.queryParams;
 
     return [
-      { label: 'Главная', link: path, queryParams: queryParams },
+      { label: $localize`:@@breadcrumbHome:Главная`, link: path, queryParams: queryParams },
       { label: mediaTypeLabel, link: path, queryParams: queryParams },
       { label: item.primaryTitle || item.originalTitle, link: '' },
     ];

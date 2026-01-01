@@ -11,6 +11,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { HeaderComponent } from '../header/header.component';
 import { InfiniteScrollDirective } from '../../directives/infinite-scroll.directive';
 import { ScrollLockService } from '../../services/scroll-lock.service';
+import { $localize } from '@angular/localize/init';
 
 @Component({
   selector: 'app-media-list-page',
@@ -60,19 +61,19 @@ export class MediaListPageComponent {
   protected readonly searchPlaceholder = computed(() => {
     switch (this.activeType()) {
       case MediaType.Movie:
-        return 'Поиск фильмов...';
+        return $localize`:@@searchPlaceholderMovie:Поиск фильмов...`;
       case MediaType.Tv:
-        return 'Поиск сериалов...';
+        return $localize`:@@searchPlaceholderTv:Поиск сериалов...`;
       case MediaType.All:
       default:
-        return 'Поиск фильмов и сериалов...';
+        return $localize`:@@searchPlaceholderAll:Поиск фильмов и сериалов...`;
     }
   });
 
   protected readonly emptyListMessage = computed(() => {
     const query = this.searchQuery();
-    if (query) return `По запросу "${query}" ничего не найдено.`;
-    return 'Контент не найден.';
+    if (query) return $localize`:@@emptyListSearch:По запросу "${query}" ничего не найдено.`;
+    return $localize`:@@emptyListDefault:Контент не найден.`;
   });
 
   constructor() {
