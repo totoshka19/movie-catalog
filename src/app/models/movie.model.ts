@@ -1,10 +1,10 @@
 import { MediaType } from '../core/models/media-type.enum';
 
 /**
- * Интерфейс для жанра, как его возвращает TMDb API.
+ * Интерфейс для жанра.
  */
 export interface Genre {
-  id: number;
+  id: number | string;
   name: string;
 }
 
@@ -120,7 +120,6 @@ export interface MediaItem {
   genres?: Genre[];
   genreNames: string[];
   genre_ids: number[];
-  // Новые опциональные поля
   tagline?: string;
   runtime?: number;
   number_of_seasons?: number;
