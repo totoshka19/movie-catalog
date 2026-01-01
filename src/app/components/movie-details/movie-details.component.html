@@ -1,37 +1,38 @@
-<!-- Оверлей для затемнения фона и отлова клика для закрытия -->
-<!-- Привязываем класс is-visible к сигналу для управления анимацией -->
 <div class="movie-details__overlay" (click)="onClose()" [class.is-visible]="isVisible()">
-  <!-- Сам контент модального окна -->
   <article class="movie-details__content" (click)="onContentClick($event)">
     <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть">
-      &times; <!-- Символ крестика -->
+      &times;
     </button>
     <div class="movie-details__poster">
-      @if (movie.poster_path) {
-        <img [src]="movie.poster_path | tmdbImage:'w500'" [alt]="'Постер ' + movie.title">
+      @if (movie.primaryImage?.url) {
+        <img [src]="movie.primaryImage!.url" [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)">
       } @else {
         <div class="movie-details__poster-placeholder">Нет постера</div>
       }
     </div>
     <div class="movie-details__info">
-      <h2 class="movie-details__title">{{ movie.title }} ({{ movie.release_date | date: 'yyyy' }})</h2>
+      <h2 class="movie-details__title">
+        {{ movie.primaryTitle || movie.originalTitle }}
+        @if (movie.startYear) {
+          ({{ movie.startYear }})
+        }
+      </h2>
       <div class="movie-details__meta">
-        <!-- Форматируем рейтинг до одного знака после запятой -->
-        <span class="movie-details__rating">★ {{ movie.vote_average | number: '1.1-1' }}</span>
-        <!-- Жанры могут быть недоступны в данных из общего списка, поэтому проверяем их наличие -->
+        @if (movie.rating && movie.rating.aggregateRating > 0) {
+          <span class="movie-details__rating">★ {{ movie.rating.aggregateRating | number: '1.1-1' }}</span>
+        }
         @if (movie.genres?.length) {
           <div class="movie-details__genres">
-            @for (genre of movie.genres; track genre.id) {
-              <span class="movie-details__genre-tag">{{ genre.name }}</span>
+            @for (genre of movie.genres; track genre) {
+              <span class="movie-details__genre-tag">{{ genre }}</span>
             }
           </div>
         }
       </div>
-      <!-- Используем поле overview -->
-      <p class="movie-details__description">{{ movie.overview }}</p>
 
-      <!-- ИСПРАВЛЕНИЕ: Обновляем текст на кнопке -->
-      <a class="movie-details__page-link" [routerLink]="['/media', movie.media_type, movie.id]">
+      <p class="movie-details__description">{{ movie.plot || 'Описание отсутствует.' }}</p>
+
+      <a class="movie-details__page-link" [routerLink]="['/media', movie.type, movie.id]">
         Подробнее
       </a>
     </div>

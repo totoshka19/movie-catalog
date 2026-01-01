@@ -1,24 +1,19 @@
-<!-- Новый полноэкранный хедер для хлебных крошек -->
 <div class="movie-details-page__header">
   <div class="movie-details-page__breadcrumb-container">
-    <!-- Хлебные крошки отображаются только после загрузки данных -->
     @if (mediaItem()) {
       <app-breadcrumb [items]="breadcrumbs()"></app-breadcrumb>
     }
   </div>
 </div>
 
-<!-- Основной контейнер страницы с ограниченной шириной -->
 <div class="movie-details-page">
-  <!-- Условие if проверяет наличие данных -->
   @if (mediaItem(); as itemData) {
-    <!-- Контент загружен -->
     <article class="movie-details-page__content">
       <div class="movie-details-page__poster">
-        @if(itemData.poster_path) {
+        @if(itemData.primaryImage?.url) {
           <img
-            [ngSrc]="(itemData.poster_path | tmdbImage:'w500') ?? ''"
-            [alt]="'Постер ' + itemData.title"
+            [ngSrc]="itemData.primaryImage!.url"
+            [alt]="'Постер ' + itemData.primaryTitle"
             width="300"
             height="450"
             priority
@@ -28,43 +23,36 @@
         }
       </div>
       <div class="movie-details-page__info">
-        <h1 class="movie-details-page__title">{{ itemData.title }} ({{ itemData.release_date | date: 'yyyy' }})</h1>
-
-        @if (itemData.tagline) {
-          <p class="movie-details-page__tagline">{{ itemData.tagline }}</p>
-        }
+        <h1 class="movie-details-page__title">
+          {{ itemData.primaryTitle || itemData.originalTitle }}
+          @if (itemData.startYear) {
+            ({{ itemData.startYear }})
+          }
+        </h1>
 
         <div class="movie-details-page__meta">
-          <span class="movie-details-page__rating">★ {{ itemData.vote_average | number: '1.1-1' }}</span>
+          @if (itemData.rating && itemData.rating.aggregateRating > 0) {
+            <span class="movie-details-page__rating">★ {{ itemData.rating.aggregateRating | number: '1.1-1' }}</span>
+          }
           <div class="movie-details-page__genres">
-            @for (genre of itemData.genres; track genre.id) {
-              <span class="movie-details-page__genre-tag">{{ genre.name }}</span>
+            @for (genre of itemData.genres; track genre) {
+              <span class="movie-details-page__genre-tag">{{ genre }}</span>
             }
           </div>
         </div>
 
-        <!-- Дополнительная информация (продолжительность, сезоны и т.д.) -->
         <div class="movie-details-page__extra-info">
-          @if (itemData.runtime) {
-            <span>Продолжительность: {{ itemData.runtime }} мин.</span>
+          @if (itemData.runtimeSeconds) {
+            <span>Продолжительность: {{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }} мин.</span>
           }
-          @if (itemData.number_of_seasons) {
-            <span>Сезонов: {{ itemData.number_of_seasons }}</span>
-          }
-          @if (itemData.number_of_episodes) {
-            <span>Эпизодов: {{ itemData.number_of_episodes }}</span>
-          }
-          @if (itemData.status) {
-            <span>Статус: {{ itemData.status | statusTranslation }}</span>
-          }
+          <!-- Дополнительные поля, если они есть в ответе -->
         </div>
 
+        <p class="movie-details-page__description">{{ itemData.plot || 'Описание отсутствует.' }}</p>
 
-        <p class="movie-details-page__description">{{ itemData.overview }}</p>
-
-        <!-- Блок с кнопками действий -->
         <div class="movie-details-page__actions">
-          @if (itemData.videos?.length) {
+          <!-- Проверяем наличие видео через расширенное свойство (временное решение) -->
+          @if (itemData['videosList']?.length) {
             <button class="btn btn--primary" (click)="onPlayTrailer()">
               Смотреть трейлер
             </button>
@@ -73,55 +61,44 @@
       </div>
     </article>
 
-    <!-- Секция с актерским составом -->
-    @if (itemData.credits?.cast?.length) {
+    <!-- Секция с актерами -->
+    @if (itemData['creditsList']?.length) {
       <section class="movie-details-page__section">
-        <h2 class="movie-details-page__section-title">Актерский состав</h2>
+        <h2 class="movie-details-page__section-title">Актерский состав и создатели</h2>
         <div class="cast-list">
-          <!-- ИСПРАВЛЕНИЕ: Меняем количество отображаемых актеров с 10 на 8 -->
-          @for (actor of itemData.credits!.cast.slice(0, 8); track actor.id) {
+          @for (credit of itemData['creditsList']; track credit.name?.id) {
             <div class="cast-member">
               <div class="cast-member__photo">
-                @if (actor.profile_path) {
-                  <img [src]="actor.profile_path | tmdbImage:'w185'" [alt]="actor.name" loading="lazy">
+                @if (credit.name?.primaryImage?.url) {
+                  <img [src]="credit.name?.primaryImage?.url" [alt]="credit.name?.displayName" loading="lazy">
                 } @else {
                   <div class="cast-member__photo-placeholder"></div>
                 }
               </div>
-              <p class="cast-member__name">{{ actor.name }}</p>
-              <p class="cast-member__character">{{ actor.character }}</p>
+              <p class="cast-member__name">{{ credit.name?.displayName }}</p>
+              <p class="cast-member__character">{{ credit.characters?.join(', ') || credit.category }}</p>
             </div>
           }
         </div>
       </section>
     }
 
-    <!-- Секция с рекомендациями -->
-    @if (itemData.recommendations?.length) {
-      <section class="movie-details-page__section">
-        <h2 class="movie-details-page__section-title">Рекомендации</h2>
-        <!-- Предоставляем пустой массив как значение по умолчанию -->
-        <app-movie-list
-          [movies]="itemData.recommendations ?? []"
-          (movieClick)="onRecommendationClick($event)"
-        ></app-movie-list>
-      </section>
-    }
+    <!-- Рекомендации пока скрываем, так как в новом API их нужно запрашивать отдельно или по-другому -->
 
   } @else if (error()) {
-    <!-- Состояние ошибки -->
     <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
   } @else {
-    <!-- Данные загружаются: показываем скелетон -->
     <app-skeleton-details></app-skeleton-details>
   }
 </div>
 
 <!-- Модальное окно с плеером -->
-@if (selectedTrailerKey(); as key) {
+<!-- Примечание: VideoPlayerComponent нужно будет обновить, если API не отдает YouTube ключи напрямую,
+     но пока предполагаем, что id видео подходит или мы доработаем плеер позже. -->
+@if (selectedTrailerId(); as id) {
   <app-video-player
-    [videoKey]="key"
-    [title]="mediaItem()?.title ?? 'Трейлер'"
+    [videoKey]="id"
+    [title]="mediaItem()?.primaryTitle ?? 'Трейлер'"
     (close)="onCloseTrailer()"
   ></app-video-player>
 }

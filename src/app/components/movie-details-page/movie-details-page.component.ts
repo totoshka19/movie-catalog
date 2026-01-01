@@ -1,19 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MoviesService } from '../../services/movies.service';
-import { MediaItem } from '../../models/movie.model';
+import { ImdbTitle, ImdbTitleType } from '../../models/imdb.model'; // Новые модели
 import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
 import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
-import { TmdbImagePipe } from '../../pipes/tmdb-image.pipe';
-import { MediaType } from '../../core/models/media-type.enum';
 import { APP_ROUTES } from '../../core/constants/routes.constants';
 import { NavigationHistoryService } from '../../services/navigation-history.service';
 import { Params, Router } from '@angular/router';
-import { MovieListComponent } from '../movie-list/movie-list.component';
-import { StatusTranslationPipe } from '../../pipes/status-translation.pipe';
 import { VideoPlayerComponent } from '../video-player/video-player.component';
 import { ScrollLockService } from '../../services/scroll-lock.service';
 
@@ -26,140 +22,77 @@ import { ScrollLockService } from '../../services/scroll-lock.service';
     NgOptimizedImage,
     BreadcrumbComponent,
     SkeletonDetailsComponent,
-    TmdbImagePipe,
-    MovieListComponent,
-    StatusTranslationPipe,
-    VideoPlayerComponent, // Импортируем новый компонент
+    VideoPlayerComponent,
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovieDetailsPageComponent {
-  // Получаем id и тип из параметров роута
   public readonly id = input.required<string>();
-  public readonly type = input.required<MediaType.Movie | MediaType.Tv>();
+  public readonly type = input.required<string>();
 
   private readonly moviesService = inject(MoviesService);
   private readonly navigationHistoryService = inject(NavigationHistoryService);
   private readonly router = inject(Router);
-  // Инжектируем новый сервис для управления скроллом
   private readonly scrollLockService = inject(ScrollLockService);
-
-  // Сигнал для хранения состояния ошибки
   protected readonly error = signal<string | null>(null);
+  protected readonly selectedTrailerId = signal<string | null>(null);
 
-  // Сигнал для управления видимостью трейлера
-  protected readonly selectedTrailerKey = signal<string | null>(null);
+  private readonly routeParams = computed(() => ({ id: this.id() }));
 
-  // Создаем сигнал из инпутов, чтобы отслеживать их изменения вместе
-  private readonly routeParams = computed(() => ({ id: this.id(), type: this.type() }));
-
-  private readonly mediaItem$: Observable<MediaItem> = toObservable(this.routeParams).pipe(
-    switchMap(({ id, type }) => {
-      // Сбрасываем ошибку и трейлер перед новым запросом
+  private readonly mediaItem$: Observable<ImdbTitle> = toObservable(this.routeParams).pipe(
+    switchMap(({ id }) => {
       this.error.set(null);
-      this.selectedTrailerKey.set(null);
-      // Прокручиваем страницу вверх при навигации
+      this.selectedTrailerId.set(null);
       window.scrollTo(0, 0);
-      return this.moviesService.getMediaDetails(Number(id), type);
+      return this.moviesService.getTitleDetails(id);
     }),
     catchError((err: Error) => {
-      // Устанавливаем сигнал ошибки
-      this.error.set(err.message);
-      // Возвращаем пустой Observable, чтобы mediaItem остался null
+      this.error.set(err.message || 'Ошибка загрузки данных');
       return EMPTY;
     })
   );
 
-  // Превращаем Observable с элементом обратно в сигнал для использования в шаблоне
   protected readonly mediaItem = toSignal(this.mediaItem$, {
     initialValue: null,
   });
 
-  // Сигнал для формирования хлебных крошек
   protected readonly breadcrumbs = computed<Breadcrumb[]>(() => {
     const item = this.mediaItem();
-    if (!item) {
-      return [];
-    }
+    if (!item) return [];
 
-    const mediaTypeLabel = item.media_type === MediaType.Movie ? 'Фильмы' : 'Сериалы';
-    const previousUrl = this.navigationHistoryService.previousUrl();
+    const isMovie = item.type === ImdbTitleType.Movie || item.type === ImdbTitleType.TvMovie;
+    const mediaTypeLabel = isMovie ? 'Фильмы' : 'Сериалы';
 
-    // Определяем, является ли предыдущий URL валидной страницей списка
-    const isPreviousUrlList =
-      previousUrl.startsWith(`/${APP_ROUTES.MOVIE}`) ||
-      previousUrl.startsWith(`/${APP_ROUTES.TV}`) ||
-      previousUrl.startsWith(`/${APP_ROUTES.ALL}`);
-
-    let homeQueryParams: Params | undefined;
-    let mediaTypeLink: string[] | string;
-    let mediaTypeQueryParams: Params | undefined;
-
-    if (isPreviousUrlList) {
-      // Парсим URL, чтобы отделить путь от query-параметров
-      const url = new URL(previousUrl, window.location.origin);
-      mediaTypeLink = [url.pathname];
-      mediaTypeQueryParams = {};
-      url.searchParams.forEach((value, key) => {
-        (mediaTypeQueryParams as Params)[key] = value;
-      });
-      // Используем те же query-параметры для ссылки "Главная"
-      homeQueryParams = mediaTypeQueryParams;
-    } else {
-      // Создаем ссылку по умолчанию без параметров, если пришли не со страницы списка
-      mediaTypeLink =
-        item.media_type === MediaType.Movie ? [`/${APP_ROUTES.MOVIE}`] : [`/${APP_ROUTES.TV}`];
-    }
+    const listLink = isMovie ? `/${APP_ROUTES.MOVIE}` : `/${APP_ROUTES.TV}`;
 
     return [
-      {
-        label: 'Главная',
-        link: [`/${APP_ROUTES.ALL}`], // Ссылка всегда ведет на таб "Все"
-        queryParams: homeQueryParams, // Но с сохранением фильтров
-      },
-      { label: mediaTypeLabel, link: mediaTypeLink, queryParams: mediaTypeQueryParams },
-      { label: item.title, link: '' }, // У последнего элемента нет ссылки
+      { label: 'Главная', link: [`/${APP_ROUTES.ALL}`] },
+      { label: mediaTypeLabel, link: [listLink] },
+      { label: item.primaryTitle || item.originalTitle, link: '' },
     ];
   });
 
   constructor() {
-    // ИЗМЕНЕНИЕ: Используем ScrollLockService для управления прокруткой
     effect(onCleanup => {
-      if (this.selectedTrailerKey()) {
+      if (this.selectedTrailerId()) {
         this.scrollLockService.lock();
-
-        onCleanup(() => {
-          this.scrollLockService.unlock();
-        });
+        onCleanup(() => this.scrollLockService.unlock());
       }
     });
   }
 
-  /**
-   * Обрабатывает клик по карточке в списке рекомендаций.
-   * Осуществляет навигацию на страницу деталей для выбранного элемента.
-   * @param item - Выбранный фильм или сериал.
-   */
-  onRecommendationClick(item: MediaItem): void {
-    this.router.navigate(['/media', item.media_type, item.id]);
-  }
-
-  /**
-   * Находит ключ первого доступного трейлера и открывает плеер.
-   */
   onPlayTrailer(): void {
-    const videos = this.mediaItem()?.videos;
+    const item = this.mediaItem() as any;
+    const videos = item?.videosList;
+
     if (videos && videos.length > 0) {
-      this.selectedTrailerKey.set(videos[0].key);
+      this.selectedTrailerId.set(videos[0].id);
     }
   }
 
-  /**
-   * Закрывает плеер с трейлером.
-   */
   onCloseTrailer(): void {
-    this.selectedTrailerKey.set(null);
+    this.selectedTrailerId.set(null);
   }
 }
