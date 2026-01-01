@@ -8,8 +8,7 @@
         <img
           [ngSrc]="movie.primaryImage!.url"
           [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
-          [width]="movie.primaryImage!.width"
-          [height]="movie.primaryImage!.height"
+          fill
         >
       } @else {
         <div class="movie-details__poster-placeholder">Нет постера</div>

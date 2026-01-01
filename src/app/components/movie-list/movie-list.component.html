@@ -1,13 +1,13 @@
 <div class="movie-list">
-  @for (movie of movies; track movie.id) {
+  @for (movie of movies; track movie.id; let i = $index) {
     <app-movie-card
       [movie]="movie"
+      [priority]="i < 6"
       (click)="onCardClick(movie)"
     ></app-movie-card>
   }
 </div>
 
-<!-- ИСПРАВЛЕНО: Убран ?. перед length, так как movies required input, но оставлена проверка на сам массив -->
 @if (!movies || !movies.length) {
   <p class="movie-list__empty-message">{{ emptyMessage }}</p>
 }

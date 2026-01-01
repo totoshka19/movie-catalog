@@ -3,7 +3,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MoviesService } from '../../services/movies.service';
 import { ImdbTitle, ImdbTitleType } from '../../models/imdb.model';
 import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
-import { DecimalPipe, NgOptimizedImage } from '@angular/common'; // DatePipe удален
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
@@ -12,6 +12,7 @@ import { NavigationHistoryService } from '../../services/navigation-history.serv
 import { Params, Router } from '@angular/router';
 import { VideoPlayerComponent } from '../video-player/video-player.component';
 import { ScrollLockService } from '../../services/scroll-lock.service';
+import { ResizeImagePipe } from '../../pipes/resize-image.pipe';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -22,6 +23,7 @@ import { ScrollLockService } from '../../services/scroll-lock.service';
     BreadcrumbComponent,
     SkeletonDetailsComponent,
     VideoPlayerComponent,
+    ResizeImagePipe,
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',
@@ -84,7 +86,6 @@ export class MovieDetailsPageComponent {
 
   onPlayTrailer(): void {
     const item = this.mediaItem();
-    // Теперь videosList официально существует в интерфейсе ImdbTitle
     const videos = item?.videosList;
 
     if (videos && videos.length > 0) {

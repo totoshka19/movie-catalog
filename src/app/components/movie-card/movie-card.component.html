@@ -16,11 +16,12 @@
     @if (movie.primaryImage?.url) {
       <img
         class="movie-card__poster"
-        [src]="movie.primaryImage!.url"
+        [ngSrc]="movie.primaryImage!.url | resizeImage:400"
         [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
+        fill
+        [priority]="priority"
         [class.movie-card__poster--loaded]="imageLoaded()"
         (load)="onImageLoad()"
-        loading="lazy"
       >
     }
 
@@ -42,7 +43,6 @@
     <!-- Отображаем жанры -->
     @if (movie.genres?.length) {
       <div class="movie-card__genres">
-        <!-- ИСПРАВЛЕНО: Добавлен ! после genres, так как проверка выше уже прошла -->
         @for (genre of movie.genres!.slice(0, 3); track genre) {
           <span class="movie-card__genre-tag">{{ genre }}</span>
         }

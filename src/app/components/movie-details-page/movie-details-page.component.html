@@ -12,10 +12,9 @@
       <div class="movie-details-page__poster">
         @if(itemData.primaryImage?.url) {
           <img
-            [ngSrc]="itemData.primaryImage!.url"
+            [ngSrc]="itemData.primaryImage!.url | resizeImage:600"
             [alt]="'Постер ' + itemData.primaryTitle"
-            [width]="itemData.primaryImage!.width"
-            [height]="itemData.primaryImage!.height"
+            fill
             priority
           >
         } @else {
@@ -63,7 +62,7 @@
       <section class="movie-details-page__section">
         <h2 class="movie-details-page__section-title">Актерский состав и создатели</h2>
         <div class="cast-list">
-          @for (credit of itemData.creditsList; track credit.name?.id) {
+          @for (credit of itemData.creditsList; track $index) {
             <div class="cast-member">
               <div class="cast-member__photo">
                 @if (credit.name?.primaryImage?.url) {

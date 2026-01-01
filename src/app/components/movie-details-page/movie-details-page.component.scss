@@ -4,7 +4,6 @@
   display: block;
 }
 
-// Новый полноэкранный хедер для хлебных крошек
 .movie-details-page__header {
   position: sticky;
   top: 0;
@@ -14,7 +13,6 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-// Контейнер внутри хедера для ограничения ширины хлебных крошек
 .movie-details-page__breadcrumb-container {
   max-width: 1440px;
   margin: 0 auto;
@@ -29,7 +27,6 @@
   }
 }
 
-// Этот класс теперь является контейнером для основного контента.
 .movie-details-page {
   max-width: 1440px;
   margin: 0 auto;
@@ -54,6 +51,7 @@
   }
 
   &__poster {
+    position: relative;
     flex-shrink: 0;
     width: 300px;
     height: 450px;
@@ -64,9 +62,7 @@
     justify-content: center;
 
     img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: var(--border-radius-md);
     }
   }
