@@ -14,8 +14,8 @@
           <img
             [ngSrc]="itemData.primaryImage!.url"
             [alt]="'Постер ' + itemData.primaryTitle"
-            width="300"
-            height="450"
+            [width]="itemData.primaryImage!.width"
+            [height]="itemData.primaryImage!.height"
             priority
           >
         } @else {
@@ -50,7 +50,6 @@
         <p class="movie-details-page__description">{{ itemData.plot || 'Описание отсутствует.' }}</p>
 
         <div class="movie-details-page__actions">
-          <!-- Исправлено: используем точечную нотацию, так как поле добавлено в интерфейс -->
           @if (itemData.videosList?.length) {
             <button class="btn btn--primary" (click)="onPlayTrailer()">
               Смотреть трейлер
@@ -60,8 +59,6 @@
       </div>
     </article>
 
-    <!-- Секция с актерами -->
-      <!-- Исправлено: используем точечную нотацию -->
     @if (itemData.creditsList?.length) {
       <section class="movie-details-page__section">
         <h2 class="movie-details-page__section-title">Актерский состав и создатели</h2>
@@ -90,7 +87,6 @@
   }
 </div>
 
-<!-- Модальное окно с плеером -->
 @if (selectedTrailerId(); as id) {
   <app-video-player
     [videoKey]="id"

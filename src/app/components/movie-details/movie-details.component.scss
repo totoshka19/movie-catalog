@@ -17,15 +17,12 @@
     align-items: center;
     padding: var(--spacing-unit);
 
-    // Начальное состояние (до анимации)
     opacity: 0;
     transition: opacity var(--transition-speed);
 
-    // Активное состояние (после анимации)
     &.is-visible {
       opacity: 1;
 
-      // Контент анимируется только когда оверлей видим
       .movie-details__content {
         opacity: 1;
         transform: translateY(0);
@@ -45,7 +42,6 @@
     gap: calc(var(--spacing-unit) * 3);
     padding: calc(var(--spacing-unit) * 4);
 
-    // Начальное состояние (до анимации)
     opacity: 0;
     transform: translateY(-30px);
     transition: opacity var(--transition-speed), transform var(--transition-speed);
@@ -72,20 +68,24 @@
   &__poster {
     flex-shrink: 0;
     width: 250px;
+    height: 375px;
+    border-radius: var(--border-radius-md);
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: var(--border-radius-md);
       display: block;
     }
   }
 
-  // Стиль для заглушки в модальном окне
   &__poster-placeholder {
     width: 100%;
-    height: 375px; // Фиксированная высота для сохранения пропорций
+    height: 375px;
     background-color: #2a2a2a;
     display: flex;
     align-items: center;
@@ -126,7 +126,6 @@
   }
 
   &__genre-tag {
-    /* ИЗМЕНЕНИЕ: Используем новую переменную и делаем текст белым */
     background-color: var(--color-accent-tag);
     color: white;
     padding: calc(var(--spacing-unit) / 2) var(--spacing-unit);
@@ -138,17 +137,14 @@
     line-height: 1.6;
     color: var(--color-text-secondary);
 
-    // Ограничиваем описание и добавляем многоточие
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    /* ИСПРАВЛЕНИЕ: Уменьшаем количество видимых строк текста */
     -webkit-line-clamp: 6;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
 
-// Адаптивность для мобильных устройств
 @media (max-width: 768px) {
   .movie-details {
     &__content {
@@ -158,6 +154,7 @@
     &__poster {
       width: 100%;
       max-width: 200px;
+      height: 300px;
       margin: 0 auto;
     }
     &__poster-placeholder {
@@ -166,9 +163,7 @@
     &__title {
       font-size: 1.5rem;
     }
-    // На мобильных устройствах можно показывать чуть больше текста
     &__description {
-      /* ИСПРАВЛЕНИЕ: Уменьшаем количество строк и здесь для консистентности */
       -webkit-line-clamp: 8;
     }
   }
@@ -176,7 +171,7 @@
 
 .movie-details__page-link {
   display: inline-block;
-  margin-top: auto; /* Это свойство прижимает кнопку к низу блока */
+  margin-top: auto;
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius-md);
   background-color: var(--color-primary);
@@ -187,7 +182,6 @@
   transition: background-color var(--transition-speed);
 
   &:hover {
-    /* ИЗМЕНЕНИЕ: Устанавливаем правильный цвет для hover-эффекта */
     background-color: #210f6c;
   }
 }

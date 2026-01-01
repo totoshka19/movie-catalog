@@ -5,7 +5,12 @@
     </button>
     <div class="movie-details__poster">
       @if (movie.primaryImage?.url) {
-        <img [src]="movie.primaryImage!.url" [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)">
+        <img
+          [ngSrc]="movie.primaryImage!.url"
+          [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
+          [width]="movie.primaryImage!.width"
+          [height]="movie.primaryImage!.height"
+        >
       } @else {
         <div class="movie-details__poster-placeholder">Нет постера</div>
       }
@@ -21,7 +26,6 @@
         @if (movie.rating && movie.rating.aggregateRating > 0) {
           <span class="movie-details__rating">★ {{ movie.rating.aggregateRating | number: '1.1-1' }}</span>
         }
-        <!-- ИСПРАВЛЕНО: Добавлен ?. перед length -->
         @if (movie.genres?.length) {
           <div class="movie-details__genres">
             @for (genre of movie.genres; track genre) {
