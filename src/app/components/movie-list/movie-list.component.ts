@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { MediaItem } from '../../models/movie.model';
+import { ImdbTitle } from '../../models/imdb.model';
 import { MovieCardComponent } from '../movie-card/movie-card.component';
 
 @Component({
@@ -11,11 +11,11 @@ import { MovieCardComponent } from '../movie-card/movie-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovieListComponent {
-  @Input({ required: true }) movies: MediaItem[] = [];
+  @Input({ required: true }) movies: ImdbTitle[] = [];
   @Input() emptyMessage: string = 'Элементы не найдены.';
-  @Output() movieClick = new EventEmitter<MediaItem>();
+  @Output() movieClick = new EventEmitter<ImdbTitle>();
 
-  onCardClick(movie: MediaItem): void {
+  onCardClick(movie: ImdbTitle): void {
     this.movieClick.emit(movie);
   }
 }

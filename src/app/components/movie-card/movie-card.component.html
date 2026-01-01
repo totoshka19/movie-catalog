@@ -1,23 +1,23 @@
 <article class="movie-card">
   <figure class="movie-card__figure">
-    <!-- 1. Если у фильма нет постера (poster_path === null) -->
-    @if (!movie.poster_path) {
+    <!-- 1. Если у фильма нет постера -->
+    @if (!movie.primaryImage?.url) {
       <div class="movie-card__no-poster">
         <span>Нет постера</span>
       </div>
     }
 
     <!-- 2. Если постер есть, но он еще загружается -->
-    @if (movie.poster_path && !imageLoaded()) {
+    @if (movie.primaryImage?.url && !imageLoaded()) {
       <div class="movie-card__placeholder"></div>
     }
 
-    <!-- 3. Изображение (рендерится только если есть путь) -->
-    @if (movie.poster_path) {
+    <!-- 3. Изображение -->
+    @if (movie.primaryImage?.url) {
       <img
         class="movie-card__poster"
-        [src]="movie.poster_path | tmdbImage:'w300'"
-        [alt]="'Постер ' + movie.title"
+        [src]="movie.primaryImage!.url"
+        [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
         [class.movie-card__poster--loaded]="imageLoaded()"
         (load)="onImageLoad()"
         loading="lazy"
@@ -25,19 +25,24 @@
     }
 
     <!-- Отображаем плашку с рейтингом -->
-    @if (movie.vote_average > 0) {
+    @if (movie.rating && movie.rating.aggregateRating > 0) {
       <div class="movie-card__rating">
-        ★ {{ movie.vote_average | number: '1.1-1' }}
+        ★ {{ movie.rating.aggregateRating | number: '1.1-1' }}
       </div>
     }
   </figure>
   <div class="movie-card__info">
-    <h3 class="movie-card__title">{{ movie.title }}</h3>
-    <p class="movie-card__year">{{ movie.release_date | date: 'yyyy' }}</p>
+    <h3 class="movie-card__title">{{ movie.primaryTitle || movie.originalTitle }}</h3>
+
+    <!-- Год релиза -->
+    @if (movie.startYear) {
+      <p class="movie-card__year">{{ movie.startYear }}</p>
+    }
+
     <!-- Отображаем жанры -->
-    @if (movie.genreNames.length) {
+    @if (movie.genres?.length) {
       <div class="movie-card__genres">
-        @for (genre of movie.genreNames; track genre) {
+        @for (genre of movie.genres.slice(0, 3); track genre) {
           <span class="movie-card__genre-tag">{{ genre }}</span>
         }
       </div>
