@@ -37,7 +37,7 @@
 
       <p class="movie-details__description">{{ movie.plot || 'Описание отсутствует.' }}</p>
 
-      <a class="movie-details__page-link" [routerLink]="['/media', movie.type, movie.id]">
+      <a class="movie-details__page-link" [routerLink]="detailsPageLink">
         Подробнее
       </a>
     </div>
