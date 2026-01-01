@@ -1,4 +1,3 @@
-
 /**
  * Типы тайтлов в IMDb API.
  */
@@ -99,6 +98,29 @@ export interface ImdbInterestCategory {
 }
 
 /**
+ * Видео (Трейлер)
+ */
+export interface ImdbVideo {
+  id: string;
+  name: string;
+  description?: string;
+  primaryImage?: ImdbImage;
+  type: string;
+  runtimeSeconds?: number;
+}
+
+/**
+ * Кредит (Роль в фильме)
+ */
+export interface ImdbCredit {
+  title?: ImdbTitle;
+  name?: ImdbName;
+  category: string;
+  characters?: string[];
+  episodeCount?: number;
+}
+
+/**
  * Основная сущность: Фильм или Сериал.
  */
 export interface ImdbTitle {
@@ -124,29 +146,10 @@ export interface ImdbTitle {
   originCountries?: ImdbCountry[];
   spokenLanguages?: ImdbLanguage[];
   interests?: ImdbInterest[];
-}
 
-/**
- * Видео (Трейлер)
- */
-export interface ImdbVideo {
-  id: string;
-  name: string;
-  description?: string;
-  primaryImage?: ImdbImage;
-  type: string;
-  runtimeSeconds?: number;
-}
-
-/**
- * Кредит (Роль в фильме)
- */
-export interface ImdbCredit {
-  title?: ImdbTitle;
-  name?: ImdbName;
-  category: string;
-  characters?: string[];
-  episodeCount?: number;
+  // Расширенные поля (заполняются при детальном запросе)
+  creditsList?: ImdbCredit[];
+  videosList?: ImdbVideo[];
 }
 
 // --- Response Interfaces (Ответы API) ---

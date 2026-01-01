@@ -45,14 +45,13 @@
           @if (itemData.runtimeSeconds) {
             <span>Продолжительность: {{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }} мин.</span>
           }
-          <!-- Дополнительные поля, если они есть в ответе -->
         </div>
 
         <p class="movie-details-page__description">{{ itemData.plot || 'Описание отсутствует.' }}</p>
 
         <div class="movie-details-page__actions">
-          <!-- Проверяем наличие видео через расширенное свойство (временное решение) -->
-          @if (itemData['videosList']?.length) {
+          <!-- Исправлено: используем точечную нотацию, так как поле добавлено в интерфейс -->
+          @if (itemData.videosList?.length) {
             <button class="btn btn--primary" (click)="onPlayTrailer()">
               Смотреть трейлер
             </button>
@@ -62,11 +61,12 @@
     </article>
 
     <!-- Секция с актерами -->
-    @if (itemData['creditsList']?.length) {
+      <!-- Исправлено: используем точечную нотацию -->
+    @if (itemData.creditsList?.length) {
       <section class="movie-details-page__section">
         <h2 class="movie-details-page__section-title">Актерский состав и создатели</h2>
         <div class="cast-list">
-          @for (credit of itemData['creditsList']; track credit.name?.id) {
+          @for (credit of itemData.creditsList; track credit.name?.id) {
             <div class="cast-member">
               <div class="cast-member__photo">
                 @if (credit.name?.primaryImage?.url) {
@@ -83,8 +83,6 @@
       </section>
     }
 
-    <!-- Рекомендации пока скрываем, так как в новом API их нужно запрашивать отдельно или по-другому -->
-
   } @else if (error()) {
     <div class="app-state-indicator app-state-indicator--error">{{ error() }}</div>
   } @else {
@@ -93,8 +91,6 @@
 </div>
 
 <!-- Модальное окно с плеером -->
-<!-- Примечание: VideoPlayerComponent нужно будет обновить, если API не отдает YouTube ключи напрямую,
-     но пока предполагаем, что id видео подходит или мы доработаем плеер позже. -->
 @if (selectedTrailerId(); as id) {
   <app-video-player
     [videoKey]="id"

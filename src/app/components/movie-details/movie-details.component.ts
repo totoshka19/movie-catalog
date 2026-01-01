@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output, signal, AfterViewInit } from '@angular/core';
 import { ImdbTitle } from '../../models/imdb.model';
 import { RouterLink } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common'; // DatePipe удален
 
 @Component({
   selector: 'app-movie-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe],
+  imports: [RouterLink, DecimalPipe],
   templateUrl: './movie-details.component.html',
   styleUrl: './movie-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

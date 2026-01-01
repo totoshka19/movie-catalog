@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 import { ImdbTitle } from '../../models/imdb.model';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common'; // DatePipe удален
 
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  imports: [DatePipe, DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: './movie-card.component.html',
   styleUrl: './movie-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

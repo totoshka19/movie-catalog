@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MoviesService } from '../../services/movies.service';
-import { ImdbTitle, ImdbTitleType } from '../../models/imdb.model'; // Новые модели
+import { ImdbTitle, ImdbTitleType } from '../../models/imdb.model';
 import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
-import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common'; // DatePipe удален
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
@@ -17,7 +17,6 @@ import { ScrollLockService } from '../../services/scroll-lock.service';
   selector: 'app-movie-details-page',
   standalone: true,
   imports: [
-    DatePipe,
     DecimalPipe,
     NgOptimizedImage,
     BreadcrumbComponent,
@@ -84,7 +83,8 @@ export class MovieDetailsPageComponent {
   }
 
   onPlayTrailer(): void {
-    const item = this.mediaItem() as any;
+    const item = this.mediaItem();
+    // Теперь videosList официально существует в интерфейсе ImdbTitle
     const videos = item?.videosList;
 
     if (videos && videos.length > 0) {
