@@ -137,7 +137,9 @@ export interface ImdbTitle {
   // Связанные объекты
   primaryImage?: ImdbImage;
   rating?: ImdbRating;
-  genres: string[];
+
+  // Помечаем как опциональное, чтобы избежать ошибок runtime, если API не вернет поле
+  genres?: string[];
 
   // Списки связанных персон и сущностей
   directors?: ImdbName[];

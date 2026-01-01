@@ -21,8 +21,8 @@
         @if (movie.rating && movie.rating.aggregateRating > 0) {
           <span class="movie-details__rating">★ {{ movie.rating.aggregateRating | number: '1.1-1' }}</span>
         }
-        <!-- Исправлено: убран лишний ?. -->
-        @if (movie.genres.length) {
+        <!-- ИСПРАВЛЕНО: Добавлен ?. перед length -->
+        @if (movie.genres?.length) {
           <div class="movie-details__genres">
             @for (genre of movie.genres; track genre) {
               <span class="movie-details__genre-tag">{{ genre }}</span>

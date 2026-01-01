@@ -7,6 +7,7 @@
   }
 </div>
 
-@if (!movies.length) {
+<!-- ИСПРАВЛЕНО: Убран ?. перед length, так как movies required input, но оставлена проверка на сам массив -->
+@if (!movies || !movies.length) {
   <p class="movie-list__empty-message">{{ emptyMessage }}</p>
 }

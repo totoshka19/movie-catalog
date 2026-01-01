@@ -40,10 +40,10 @@
     }
 
     <!-- Отображаем жанры -->
-    <!-- Исправлено: убран лишний ?. перед length, так как массив определен в интерфейсе -->
-    @if (movie.genres.length) {
+    @if (movie.genres?.length) {
       <div class="movie-card__genres">
-        @for (genre of movie.genres.slice(0, 3); track genre) {
+        <!-- ИСПРАВЛЕНО: Добавлен ! после genres, так как проверка выше уже прошла -->
+        @for (genre of movie.genres!.slice(0, 3); track genre) {
           <span class="movie-card__genre-tag">{{ genre }}</span>
         }
       </div>
