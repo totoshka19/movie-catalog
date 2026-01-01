@@ -25,8 +25,8 @@ describe('SidebarComponent', () => {
 
   it('should display genres from input as checkboxes', () => {
     component.genres = [
-      { id: 1, name: 'Боевик' },
-      { id: 2, name: 'Комедия' },
+      { id: '1', name: 'Боевик' },
+      { id: '2', name: 'Комедия' },
     ];
     fixture.detectChanges();
 
@@ -37,7 +37,7 @@ describe('SidebarComponent', () => {
 
   it('should emit genreChange event with array when genre is toggled', () => {
     const spy = vi.spyOn(component.genreChange, 'emit');
-    component.genres = [{ id: 1, name: 'Боевик' }, { id: 2, name: 'Комедия' }];
+    component.genres = [{ id: '1', name: 'Боевик' }, { id: '2', name: 'Комедия' }];
     component.selectedGenres = [];
     fixture.detectChanges();
 
@@ -47,13 +47,13 @@ describe('SidebarComponent', () => {
     firstCheckbox.nativeElement.checked = true;
     firstCheckbox.triggerEventHandler('change', { target: firstCheckbox.nativeElement });
 
-    expect(spy).toHaveBeenCalledWith([1]);
+    expect(spy).toHaveBeenCalledWith(['1']);
   });
 
   it('should emit genreChange event with removed id when unchecked', () => {
     const spy = vi.spyOn(component.genreChange, 'emit');
-    component.genres = [{ id: 1, name: 'Боевик' }];
-    component.selectedGenres = [1];
+    component.genres = [{ id: '1', name: 'Боевик' }];
+    component.selectedGenres = ['1'];
     fixture.detectChanges();
 
     const checkbox = fixture.debugElement.query(By.css('input[type="checkbox"]'));

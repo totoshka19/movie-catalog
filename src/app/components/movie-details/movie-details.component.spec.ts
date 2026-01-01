@@ -47,9 +47,13 @@ describe('MovieDetailsComponent', () => {
 
   it('should display movie details correctly', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.movie-details__title')?.textContent).toContain(
-      'Тестовый фильм (2024)'
-    );
+    const titleText = compiled
+      .querySelector('.movie-details__title')
+      ?.textContent?.replace(/\s+/g, ' ')
+      .trim();
+
+    expect(titleText).toBe('Тестовый фильм (2024)');
+
     expect(compiled.querySelector('.movie-details__rating')?.textContent).toContain('9.9');
     expect(compiled.querySelector('.movie-details__description')?.textContent).toBe(
       'Это описание тестового фильма.'
