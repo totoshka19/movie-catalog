@@ -38,7 +38,7 @@ export function mapMediaTypeToImdbTypes(mediaType: MediaType): ImdbTitleType[] {
     case MediaType.Movie:
       return [ImdbTitleType.Movie, ImdbTitleType.TvMovie];
     case MediaType.Tv:
-      return [ImdbTitleType.TvSeries, ImdbTitleType.TvMiniSeries];
+      return [ImdbTitleType.TvSeries, ImdbTitleType.TvMiniSeries, ImdbTitleType.TvSpecial];
     case MediaType.All:
     default:
       return []; // Пустой массив означает все типы

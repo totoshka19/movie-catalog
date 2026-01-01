@@ -3,6 +3,7 @@ import { ImdbTitle } from '../../models/imdb.model';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { mapImdbTypeToMediaType } from '../../utils/media-type.utils';
+import { MediaType } from '../../core/models/media-type.enum';
 
 @Component({
   selector: 'app-movie-details',
@@ -14,12 +15,20 @@ import { mapImdbTypeToMediaType } from '../../utils/media-type.utils';
 })
 export class MovieDetailsComponent implements AfterViewInit {
   @Input({ required: true }) movie!: ImdbTitle;
+  @Input() mediaTypeContext: MediaType | null = null;
   @Output() close = new EventEmitter<void>();
 
   protected readonly isVisible = signal(false);
 
   public get detailsPageLink(): any[] {
-    const routeType = mapImdbTypeToMediaType(this.movie.type);
+    const typeFromContext =
+      this.mediaTypeContext && this.mediaTypeContext !== MediaType.All
+        ? this.mediaTypeContext
+        : null;
+
+    // Если контекста нет (маловероятно), пытаемся угадать по типу из API
+    const routeType = typeFromContext ?? mapImdbTypeToMediaType(this.movie.type);
+
     return ['/media', routeType, this.movie.id];
   }
 

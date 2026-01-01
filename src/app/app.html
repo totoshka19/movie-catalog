@@ -4,9 +4,10 @@
 </main>
 
 <!-- Модальное окно для деталей (управляется через ModalService) -->
-@if (selectedMedia(); as mediaItem) {
+@if (selectedMedia(); as data) {
   <app-movie-details
-    [movie]="mediaItem"
+    [movie]="data.item"
+    [mediaTypeContext]="data.type"
     (close)="onCloseDetails()"
   ></app-movie-details>
 }

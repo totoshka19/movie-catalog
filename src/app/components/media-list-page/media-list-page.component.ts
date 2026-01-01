@@ -129,7 +129,7 @@ export class MediaListPageComponent {
   }
 
   onMediaSelect(item: ImdbTitle): void {
-    this.modalService.open(item);
+    this.modalService.open(item, this.activeType());
   }
 
   loadNextPage(): void {

@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { MoviesService } from '../../services/movies.service';
-import { ImdbTitle, ImdbTitleType } from '../../models/imdb.model';
+import { ImdbTitle } from '../../models/imdb.model';
 import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { Breadcrumb } from '../../models/breadcrumb.model';
 import { SkeletonDetailsComponent } from '../skeleton-details/skeleton-details.component';
-import { APP_ROUTES } from '../../core/constants/routes.constants';
 import { NavigationHistoryService } from '../../services/navigation-history.service';
-import { Params, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { VideoPlayerComponent } from '../video-player/video-player.component';
 import { ScrollLockService } from '../../services/scroll-lock.service';
 import { ResizeImagePipe } from '../../pipes/resize-image.pipe';
+import { MediaType } from '../../core/models/media-type.enum';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -63,23 +63,25 @@ export class MovieDetailsPageComponent {
     const item = this.mediaItem();
     if (!item) return [];
 
-    const isMovie = item.type === ImdbTitleType.Movie || item.type === ImdbTitleType.TvMovie;
-    const mediaTypeLabel = isMovie ? 'Фильмы' : 'Сериалы';
+    const mediaTypeLabel = this.type() === MediaType.Movie ? 'Фильмы' : 'Сериалы';
 
-    const listLink = isMovie ? `/${APP_ROUTES.MOVIE}` : `/${APP_ROUTES.TV}`;
+    const previousUrl = this.navigationHistoryService.previousUrl();
+    const urlTree = this.router.parseUrl(previousUrl);
+    const path = [previousUrl.split('?')[0]];
+    const queryParams = urlTree.queryParams;
 
     return [
-      { label: 'Главная', link: [`/${APP_ROUTES.ALL}`] },
-      { label: mediaTypeLabel, link: [listLink] },
+      { label: 'Главная', link: path, queryParams: queryParams },
+      { label: mediaTypeLabel, link: path, queryParams: queryParams },
       { label: item.primaryTitle || item.originalTitle, link: '' },
     ];
   });
 
   constructor() {
-    effect(onCleanup => {
+    effect(oncleanup => {
       if (this.selectedTrailerId()) {
         this.scrollLockService.lock();
-        onCleanup(() => this.scrollLockService.unlock());
+        oncleanup(() => this.scrollLockService.unlock());
       }
     });
   }
