@@ -5,6 +5,7 @@
     type="text"
     [placeholder]="placeholder()"
     aria-label="Поиск фильмов"
+    i18n-aria-label
     [formControl]="searchControl"
   >
   <!-- Кнопка очистки появляется, только если в поле есть значение -->
@@ -13,6 +14,7 @@
       class="search-bar__clear-btn"
       (click)="clearSearch()"
       aria-label="Очистить поиск"
+      i18n-aria-label
       type="button"
     >
       &times; <!-- Символ крестика -->

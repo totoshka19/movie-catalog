@@ -1,6 +1,6 @@
 <div class="movie-details__overlay" (click)="onClose()" [class.is-visible]="isVisible()">
   <article class="movie-details__content" (click)="onContentClick($event)">
-    <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть">
+    <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть" i18n-aria-label>
       &times;
     </button>
     <div class="movie-details__poster">
@@ -8,10 +8,11 @@
         <img
           [ngSrc]="movie.primaryImage!.url"
           [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
+          i18n-alt
           fill
         >
       } @else {
-        <div class="movie-details__poster-placeholder">Нет постера</div>
+        <div class="movie-details__poster-placeholder" i18n>Нет постера</div>
       }
     </div>
     <div class="movie-details__info">
@@ -36,7 +37,7 @@
 
       <p class="movie-details__description">{{ movie.plot || 'Описание отсутствует.' }}</p>
 
-      <a class="movie-details__page-link" [routerLink]="detailsPageLink">
+      <a class="movie-details__page-link" [routerLink]="detailsPageLink" i18n>
         Подробнее
       </a>
     </div>

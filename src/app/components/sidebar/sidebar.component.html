@@ -13,6 +13,7 @@
         queryParamsHandling="merge"
         [class.active]="activeSort === 'newest'"
         (click)="onClose()"
+        i18n
       >Новинки</a>
       <a
         [routerLink]="[]"
@@ -20,6 +21,7 @@
         queryParamsHandling="merge"
         [class.active]="activeSort === 'top_rated'"
         (click)="onClose()"
+        i18n
       >Лучшее</a>
     </nav>
 
@@ -31,6 +33,7 @@
         [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
         (click)="onClose()"
+        i18n
       >Все</a>
       <a
         routerLink="/movie"
@@ -38,6 +41,7 @@
         [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
         (click)="onClose()"
+        i18n
       >Фильмы</a>
       <a
         routerLink="/tv"
@@ -45,6 +49,7 @@
         [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
         (click)="onClose()"
+        i18n
       >Сериалы</a>
     </nav>
   </div>
@@ -54,20 +59,21 @@
     <app-search-bar
       [initialQuery]="initialQuery"
       placeholder="Поиск..."
+      i18n-placeholder
       (searchChange)="onSearchChange($event)"
     ></app-search-bar>
   </div>
 
   <div class="sidebar__section">
     <div class="sidebar__header">
-      <h3>
+      <h3 i18n>
         Жанры
         @if (selectedGenres.length) {
           <span class="sidebar__genre-count">{{ selectedGenres.length }}</span>
         }
       </h3>
       @if (selectedGenres.length) {
-        <button class="sidebar__reset-btn" (click)="resetGenres()">Сбросить</button>
+        <button class="sidebar__reset-btn" (click)="resetGenres()" i18n>Сбросить</button>
       }
     </div>
 
