@@ -1,19 +1,9 @@
 {
   "version": 2,
-  "public": true,
   "rewrites": [
     {
-      "source": "/ru/(.*)",
-      "destination": "/ru/index.html"
-    },
-    {
-      "source": "/en/(.*)",
-      "destination": "/en/index.html"
-    },
-    {
-      "source": "/",
-      "destination": "/ru/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "cleanUrls": true
+  ]
 }
