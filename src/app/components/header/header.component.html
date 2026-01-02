@@ -6,14 +6,14 @@
       [class.is-open]="isSidebarOpen"
       (click)="onToggleSidebarClick()"
       aria-label="Открыть меню"
-      i18n-aria-label
+      i18n-aria-label="@@header.openMenu"
     >
       <span></span>
       <span></span>
     </button>
 
     <div class="app-header__logo">
-      <a routerLink="/" i18n>Медиа Каталог</a>
+      <a routerLink="/" i18n="@@header.title">Медиа Каталог</a>
     </div>
 
     <div class="app-header__filters">
@@ -24,14 +24,14 @@
           [queryParams]="{ sort_by: 'newest' }"
           queryParamsHandling="merge"
           [class.active]="activeSort === 'newest'"
-          i18n
+          i18n="@@header.sortNewest"
         >Новинки</a>
         <a
           [routerLink]="[]"
           [queryParams]="{ sort_by: 'top_rated' }"
           queryParamsHandling="merge"
           [class.active]="activeSort === 'top_rated'"
-          i18n
+          i18n="@@header.sortTopRated"
         >Лучшее</a>
       </nav>
 
@@ -42,21 +42,21 @@
           [class.active]="activeType === 'all'"
           [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
           queryParamsHandling="merge"
-          i18n
+          i18n="@@header.typeAll"
         >Все</a>
         <a
           routerLink="/movie"
           [class.active]="activeType === 'movie'"
           [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
           queryParamsHandling="merge"
-          i18n
+          i18n="@@header.typeMovies"
         >Фильмы</a>
         <a
           routerLink="/tv"
           [class.active]="activeType === 'tv'"
           [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
           queryParamsHandling="merge"
-          i18n
+          i18n="@@header.typeTvShows"
         >Сериалы</a>
       </nav>
     </div>

@@ -13,7 +13,7 @@
         queryParamsHandling="merge"
         [class.active]="activeSort === 'newest'"
         (click)="onClose()"
-        i18n
+        i18n="@@sidebar.sortNewest"
       >Новинки</a>
       <a
         [routerLink]="[]"
@@ -21,7 +21,7 @@
         queryParamsHandling="merge"
         [class.active]="activeSort === 'top_rated'"
         (click)="onClose()"
-        i18n
+        i18n="@@sidebar.sortTopRated"
       >Лучшее</a>
     </nav>
 
@@ -33,7 +33,7 @@
         [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
         (click)="onClose()"
-        i18n
+        i18n="@@sidebar.typeAll"
       >Все</a>
       <a
         routerLink="/movie"
@@ -41,7 +41,7 @@
         [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
         (click)="onClose()"
-        i18n
+        i18n="@@sidebar.typeMovies"
       >Фильмы</a>
       <a
         routerLink="/tv"
@@ -49,7 +49,7 @@
         [queryParams]="{ genre: selectedGenres.length ? selectedGenres.join(',') : null }"
         queryParamsHandling="merge"
         (click)="onClose()"
-        i18n
+        i18n="@@sidebar.typeTvShows"
       >Сериалы</a>
     </nav>
   </div>
@@ -59,21 +59,21 @@
     <app-search-bar
       [initialQuery]="initialQuery"
       placeholder="Поиск..."
-      i18n-placeholder
+      i18n-placeholder="@@sidebar.searchPlaceholder"
       (searchChange)="onSearchChange($event)"
     ></app-search-bar>
   </div>
 
   <div class="sidebar__section">
     <div class="sidebar__header">
-      <h3 i18n>
-        Жанры
+      <h3>
+        <span i18n="@@sidebar.genresTitleText">Жанры</span>
         @if (selectedGenres.length) {
           <span class="sidebar__genre-count">{{ selectedGenres.length }}</span>
         }
       </h3>
       @if (selectedGenres.length) {
-        <button class="sidebar__reset-btn" (click)="resetGenres()" i18n>Сбросить</button>
+        <button class="sidebar__reset-btn" (click)="resetGenres()" i18n="@@sidebar.resetFilters">Сбросить</button>
       }
     </div>
 

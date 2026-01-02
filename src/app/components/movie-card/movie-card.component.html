@@ -3,7 +3,7 @@
     <!-- 1. Если у фильма нет постера -->
     @if (!movie.primaryImage?.url) {
       <div class="movie-card__no-poster">
-        <span i18n>Нет постера</span>
+        <span i18n="@@movieCard.noPoster">Нет постера</span>
       </div>
     }
 
@@ -18,7 +18,7 @@
         class="movie-card__poster"
         [ngSrc]="movie.primaryImage!.url | resizeImage:400"
         [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
-        i18n-alt
+        i18n-alt="@@movieCard.posterAlt"
         fill
         [priority]="priority"
         [class.movie-card__poster--loaded]="imageLoaded()"

@@ -54,9 +54,11 @@ describe('MovieDetailsComponent', () => {
     expect(titleText).toBe('Тестовый фильм (2024)');
 
     expect(compiled.querySelector('.movie-details__rating')?.textContent).toContain('9,9');
-    expect(compiled.querySelector('.movie-details__description')?.textContent).toBe(
+
+    expect(compiled.querySelector('.movie-details__description')?.textContent?.trim()).toBe(
       'Это описание тестового фильма.'
     );
+
     const genreTags = compiled.querySelectorAll('.movie-details__genre-tag');
     expect(genreTags.length).toBe(2);
     expect(genreTags[0].textContent).toBe('Тест');

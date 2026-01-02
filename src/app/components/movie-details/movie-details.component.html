@@ -1,6 +1,6 @@
 <div class="movie-details__overlay" (click)="onClose()" [class.is-visible]="isVisible()">
   <article class="movie-details__content" (click)="onContentClick($event)">
-    <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть" i18n-aria-label>
+    <button class="movie-details__close-btn" (click)="onClose()" aria-label="Закрыть" i18n-aria-label="@@detailsModal.close">
       &times;
     </button>
     <div class="movie-details__poster">
@@ -8,11 +8,11 @@
         <img
           [ngSrc]="movie.primaryImage!.url"
           [alt]="'Постер ' + (movie.primaryTitle || movie.originalTitle)"
-          i18n-alt
+          i18n-alt="@@detailsModal.posterAlt"
           fill
         >
       } @else {
-        <div class="movie-details__poster-placeholder" i18n>Нет постера</div>
+        <div class="movie-details__poster-placeholder" i18n="@@detailsModal.noPoster">Нет постера</div>
       }
     </div>
     <div class="movie-details__info">
@@ -35,9 +35,15 @@
         }
       </div>
 
-      <p class="movie-details__description">{{ movie.plot || 'Описание отсутствует.' }}</p>
+      <p class="movie-details__description">
+        @if (movie.plot) {
+          {{ movie.plot }}
+        } @else {
+          <span i18n="@@detailsModal.noDescription">Описание отсутствует.</span>
+        }
+      </p>
 
-      <a class="movie-details__page-link" [routerLink]="detailsPageLink" i18n>
+      <a class="movie-details__page-link" [routerLink]="detailsPageLink" i18n="@@detailsModal.moreDetails">
         Подробнее
       </a>
     </div>

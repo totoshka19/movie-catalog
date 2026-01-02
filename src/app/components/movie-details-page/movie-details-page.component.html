@@ -14,12 +14,12 @@
           <img
             [ngSrc]="itemData.primaryImage!.url | resizeImage:600"
             [alt]="'Постер ' + itemData.primaryTitle"
-            i18n-alt
+            i18n-alt="@@detailsPage.posterAlt"
             fill
             priority
           >
         } @else {
-          <div class="movie-details-page__poster-placeholder" i18n>Нет постера</div>
+          <div class="movie-details-page__poster-placeholder" i18n="@@detailsPage.noPoster">Нет постера</div>
         }
       </div>
       <div class="movie-details-page__info">
@@ -43,15 +43,21 @@
 
         <div class="movie-details-page__extra-info">
           @if (itemData.runtimeSeconds) {
-            <span i18n>Продолжительность: {{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }} мин.</span>
+            <span i18n="@@detailsPage.duration">Продолжительность: {{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }} мин.</span>
           }
         </div>
 
-        <p class="movie-details-page__description">{{ itemData.plot || 'Описание отсутствует.' }}</p>
+        <p class="movie-details-page__description">
+          @if (itemData.plot) {
+            {{ itemData.plot }}
+          } @else {
+            <span i18n="@@detailsPage.noDescription">Описание отсутствует.</span>
+          }
+        </p>
 
         <div class="movie-details-page__actions">
           @if (itemData.videosList?.length) {
-            <button class="btn btn--primary" (click)="onPlayTrailer()" i18n>
+            <button class="btn btn--primary" (click)="onPlayTrailer()" i18n="@@detailsPage.watchTrailer">
               Смотреть трейлер
             </button>
           }
@@ -61,7 +67,7 @@
 
     @if (itemData.creditsList?.length) {
       <section class="movie-details-page__section">
-        <h2 class="movie-details-page__section-title" i18n>Актерский состав и создатели</h2>
+        <h2 class="movie-details-page__section-title" i18n="@@detailsPage.castAndCrew">Актерский состав и создатели</h2>
         <div class="cast-list">
           @for (credit of itemData.creditsList; track $index) {
             <div class="cast-member">

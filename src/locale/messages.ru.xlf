@@ -2,7 +2,7 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="ru" target-language="ru" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="3280120531238938888" datatype="html">
+      <trans-unit id="header.openMenu" datatype="html">
         <source>Открыть меню</source>
         <target>Открыть меню</target>
         <context-group purpose="location">
@@ -10,7 +10,7 @@
           <context context-type="linenumber">6</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="523293815757914388" datatype="html">
+      <trans-unit id="header.title" datatype="html">
         <source>Медиа Каталог</source>
         <target>Медиа Каталог</target>
         <context-group purpose="location">
@@ -18,7 +18,7 @@
           <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2352520330985289945" datatype="html">
+      <trans-unit id="header.sortNewest" datatype="html">
         <source>Новинки</source>
         <target>Новинки</target>
         <context-group purpose="location">
@@ -26,7 +26,7 @@
           <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4633359049444530823" datatype="html">
+      <trans-unit id="header.sortTopRated" datatype="html">
         <source>Лучшее</source>
         <target>Лучшее</target>
         <context-group purpose="location">
@@ -34,7 +34,7 @@
           <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4739551943144220377" datatype="html">
+      <trans-unit id="header.typeAll" datatype="html">
         <source>Все</source>
         <target>Все</target>
         <context-group purpose="location">
@@ -42,7 +42,7 @@
           <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1876615523493072744" datatype="html">
+      <trans-unit id="header.typeMovies" datatype="html">
         <source>Фильмы</source>
         <target>Фильмы</target>
         <context-group purpose="location">
@@ -50,7 +50,7 @@
           <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="261427529482296335" datatype="html">
+      <trans-unit id="header.typeTvShows" datatype="html">
         <source>Сериалы</source>
         <target>Сериалы</target>
         <context-group purpose="location">
@@ -58,7 +58,7 @@
           <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5268045995586944630" datatype="html">
+      <trans-unit id="movieCard.noPoster" datatype="html">
         <source>Нет постера</source>
         <target>Нет постера</target>
         <context-group purpose="location">
@@ -66,7 +66,7 @@
           <context context-type="linenumber">5</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="231145103223969963" datatype="html">
+      <trans-unit id="movieCard.posterAlt" datatype="html">
         <source>Постер <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></source>
         <target>Постер <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></target>
         <context-group purpose="location">
@@ -74,7 +74,7 @@
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8283453363384262828" datatype="html">
+      <trans-unit id="detailsModal.close" datatype="html">
         <source>Закрыть</source>
         <target>Закрыть</target>
         <context-group purpose="location">
@@ -82,7 +82,7 @@
           <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="446227608229295594" datatype="html">
+      <trans-unit id="detailsModal.posterAlt" datatype="html">
         <source>Постер <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></source>
         <target>Постер <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></target>
         <context-group purpose="location">
@@ -90,7 +90,7 @@
           <context context-type="linenumber">9</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8868611181708453488" datatype="html">
+      <trans-unit id="detailsModal.noPoster" datatype="html">
         <source>Нет постера</source>
         <target>Нет постера</target>
         <context-group purpose="location">
@@ -98,7 +98,15 @@
           <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5602513678632598341" datatype="html">
+      <trans-unit id="detailsModal.noDescription" datatype="html">
+        <source>Описание отсутствует.</source>
+        <target>Описание отсутствует.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details/movie-details.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="detailsModal.moreDetails" datatype="html">
         <source>Подробнее</source>
         <target>Подробнее</target>
         <context-group purpose="location">
@@ -106,7 +114,7 @@
           <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8883907530634148648" datatype="html">
+      <trans-unit id="detailsPage.posterAlt" datatype="html">
         <source>Постер <x id="INTERPOLATION" equiv-text="{{itemData.primaryTitle}}"/></source>
         <target>Постер <x id="INTERPOLATION" equiv-text="{{itemData.primaryTitle}}"/></target>
         <context-group purpose="location">
@@ -114,7 +122,7 @@
           <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4622288344692881269" datatype="html">
+      <trans-unit id="detailsPage.noPoster" datatype="html">
         <source>Нет постера</source>
         <target>Нет постера</target>
         <context-group purpose="location">
@@ -122,7 +130,7 @@
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="895493212885233290" datatype="html">
+      <trans-unit id="detailsPage.duration" datatype="html">
         <source>Продолжительность: <x id="INTERPOLATION" equiv-text="{{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }}"/> мин.</source>
         <target>Продолжительность: <x id="INTERPOLATION" equiv-text="{{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }}"/> мин.</target>
         <context-group purpose="location">
@@ -130,7 +138,15 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="462635914995228032" datatype="html">
+      <trans-unit id="detailsPage.noDescription" datatype="html">
+        <source>Описание отсутствует.</source>
+        <target>Описание отсутствует.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="detailsPage.watchTrailer" datatype="html">
         <source>Смотреть трейлер</source>
         <target>Смотреть трейлер</target>
         <context-group purpose="location">
@@ -138,7 +154,7 @@
           <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="434685791243170756" datatype="html">
+      <trans-unit id="detailsPage.castAndCrew" datatype="html">
         <source>Актерский состав и создатели</source>
         <target>Актерский состав и создатели</target>
         <context-group purpose="location">
@@ -146,7 +162,7 @@
           <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="452504313539268045" datatype="html">
+      <trans-unit id="search.ariaLabel" datatype="html">
         <source>Поиск фильмов</source>
         <target>Поиск фильмов</target>
         <context-group purpose="location">
@@ -154,7 +170,7 @@
           <context context-type="linenumber">6</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1335158145218868501" datatype="html">
+      <trans-unit id="search.clear" datatype="html">
         <source>Очистить поиск</source>
         <target>Очистить поиск</target>
         <context-group purpose="location">
@@ -162,7 +178,7 @@
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="882522108714853616" datatype="html">
+      <trans-unit id="sidebar.sortNewest" datatype="html">
         <source>Новинки</source>
         <target>Новинки</target>
         <context-group purpose="location">
@@ -170,7 +186,7 @@
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7707440402844598460" datatype="html">
+      <trans-unit id="sidebar.sortTopRated" datatype="html">
         <source>Лучшее</source>
         <target>Лучшее</target>
         <context-group purpose="location">
@@ -178,7 +194,7 @@
           <context context-type="linenumber">18</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="310639453733234252" datatype="html">
+      <trans-unit id="sidebar.typeAll" datatype="html">
         <source>Все</source>
         <target>Все</target>
         <context-group purpose="location">
@@ -186,7 +202,7 @@
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6840251215162208169" datatype="html">
+      <trans-unit id="sidebar.typeMovies" datatype="html">
         <source>Фильмы</source>
         <target>Фильмы</target>
         <context-group purpose="location">
@@ -194,7 +210,7 @@
           <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2355523922659392200" datatype="html">
+      <trans-unit id="sidebar.typeTvShows" datatype="html">
         <source>Сериалы</source>
         <target>Сериалы</target>
         <context-group purpose="location">
@@ -202,7 +218,7 @@
           <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="463695421100388258" datatype="html">
+      <trans-unit id="sidebar.searchPlaceholder" datatype="html">
         <source>Поиск...</source>
         <target>Поиск...</target>
         <context-group purpose="location">
@@ -210,15 +226,15 @@
           <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4768322079974249301" datatype="html">
+      <trans-unit id="sidebar.genresTitleText" datatype="html">
         <source>Жанры</source>
         <target>Жанры</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="238268484131238566" datatype="html">
+      <trans-unit id="sidebar.resetFilters" datatype="html">
         <source>Сбросить</source>
         <target>Сбросить</target>
         <context-group purpose="location">
@@ -226,7 +242,7 @@
           <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1228549156384232383" datatype="html">
+      <trans-unit id="videoPlayer.close" datatype="html">
         <source>Закрыть</source>
         <target>Закрыть</target>
         <context-group purpose="location">
@@ -319,7 +335,7 @@
         <target>Не удалось загрузить данные. Попробуйте позже.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/media-list-state.service.ts</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">138</context>
         </context-group>
       </trans-unit>
     </body>
