@@ -13,7 +13,6 @@ import { VideoPlayerComponent } from '../video-player/video-player.component';
 import { ScrollLockService } from '../../services/scroll-lock.service';
 import { ResizeImagePipe } from '../../pipes/resize-image.pipe';
 import { MediaType } from '../../core/models/media-type.enum';
-import { $localize } from '@angular/localize/init';
 
 @Component({
   selector: 'app-movie-details-page',

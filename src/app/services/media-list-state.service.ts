@@ -3,7 +3,6 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { MoviesService } from './movies.service';
 import { MediaType, SortType } from '../core/models/media-type.enum';
 import { ImdbTitle } from '../models/imdb.model';
-import { $localize } from '@angular/localize/init';
 
 /**
  * Сервис для управления состоянием страницы со списком медиа.

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="ru" target-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="3280120531238938888" datatype="html">
+        <source>Открыть меню</source>
+        <target>Open menu</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="523293815757914388" datatype="html">
+        <source>Медиа Каталог</source>
+        <target>Media Catalog</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2352520330985289945" datatype="html">
+        <source>Новинки</source>
+        <target>Newest</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4633359049444530823" datatype="html">
+        <source>Лучшее</source>
+        <target>Top Rated</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4739551943144220377" datatype="html">
+        <source>Все</source>
+        <target>All</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1876615523493072744" datatype="html">
+        <source>Фильмы</source>
+        <target>Movies</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="261427529482296335" datatype="html">
+        <source>Сериалы</source>
+        <target>TV Shows</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5268045995586944630" datatype="html">
+        <source>Нет постера</source>
+        <target>No Poster</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-card/movie-card.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="231145103223969963" datatype="html">
+        <source>Постер <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></source>
+        <target>Poster for <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-card/movie-card.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8283453363384262828" datatype="html">
+        <source>Закрыть</source>
+        <target>Close</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details/movie-details.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="446227608229295594" datatype="html">
+        <source>Постер <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></source>
+        <target>Poster for <x id="INTERPOLATION" equiv-text="{{movie.primaryTitle || movie.originalTitle}}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details/movie-details.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8868611181708453488" datatype="html">
+        <source>Нет постера</source>
+        <target>No Poster</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details/movie-details.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5602513678632598341" datatype="html">
+        <source>Подробнее</source>
+        <target>More Details</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details/movie-details.component.html</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8883907530634148648" datatype="html">
+        <source>Постер <x id="INTERPOLATION" equiv-text="{{itemData.primaryTitle}}"/></source>
+        <target>Poster for <x id="INTERPOLATION" equiv-text="{{itemData.primaryTitle}}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4622288344692881269" datatype="html">
+        <source>Нет постера</source>
+        <target>No Poster</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="895493212885233290" datatype="html">
+        <source>Продолжительность: <x id="INTERPOLATION" equiv-text="{{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }}"/> мин.</source>
+        <target>Duration: <x id="INTERPOLATION" equiv-text="{{ (itemData.runtimeSeconds / 60) | number:'1.0-0' }}"/> min.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="462635914995228032" datatype="html">
+        <source>Смотреть трейлер</source>
+        <target>Watch Trailer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="434685791243170756" datatype="html">
+        <source>Актерский состав и создатели</source>
+        <target>Cast &amp; Crew</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="452504313539268045" datatype="html">
+        <source>Поиск фильмов</source>
+        <target>Search for media</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/search-bar/search-bar.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1335158145218868501" datatype="html">
+        <source>Очистить поиск</source>
+        <target>Clear search</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/search-bar/search-bar.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="882522108714853616" datatype="html">
+        <source>Новинки</source>
+        <target>Newest</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7707440402844598460" datatype="html">
+        <source>Лучшее</source>
+        <target>Top Rated</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="310639453733234252" datatype="html">
+        <source>Все</source>
+        <target>All</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6840251215162208169" datatype="html">
+        <source>Фильмы</source>
+        <target>Movies</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2355523922659392200" datatype="html">
+        <source>Сериалы</source>
+        <target>TV Shows</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="463695421100388258" datatype="html">
+        <source>Поиск...</source>
+        <target>Search...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4768322079974249301" datatype="html">
+        <source>Жанры</source>
+        <target>Genres</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="238268484131238566" datatype="html">
+        <source>Сбросить</source>
+        <target>Reset</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1228549156384232383" datatype="html">
+        <source>Закрыть</source>
+        <target>Close</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/video-player/video-player.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="searchPlaceholderMovie" datatype="html">
+        <source>Поиск фильмов...</source>
+        <target>Search for movies...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/media-list-page/media-list-page.component.ts</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="searchPlaceholderTv" datatype="html">
+        <source>Поиск сериалов...</source>
+        <target>Search for TV shows...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/media-list-page/media-list-page.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="searchPlaceholderAll" datatype="html">
+        <source>Поиск фильмов и сериалов...</source>
+        <target>Search for movies and TV shows...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/media-list-page/media-list-page.component.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="emptyListSearch" datatype="html">
+        <source>По запросу &quot;<x id="PH" equiv-text="this.searchQuery()"/>&quot; ничего не найдено.</source>
+        <target>No results found for &quot;<x id="PH" equiv-text="this.searchQuery()"/>&quot;.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/media-list-page/media-list-page.component.ts</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="emptyListDefault" datatype="html">
+        <source>Контент не найден.</source>
+        <target>No content found.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/media-list-page/media-list-page.component.ts</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errorLoadingDetails" datatype="html">
+        <source>Ошибка загрузки данных</source>
+        <target>Failed to load details</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.ts</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="mediaTypeMovies" datatype="html">
+        <source>Фильмы</source>
+        <target>Movies</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.ts</context>
+          <context context-type="linenumber">73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="mediaTypeTvSeries" datatype="html">
+        <source>Сериалы</source>
+        <target>TV Shows</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="breadcrumbHome" datatype="html">
+        <source>Главная</source>
+        <target>Home</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/movie-details-page/movie-details-page.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="videoPlayerTrailerTitle" datatype="html">
+        <source>Трейлер</source>
+        <target>Trailer</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/video-player/video-player.component.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errorLoadingDataGeneral" datatype="html">
+        <source>Не удалось загрузить данные. Попробуйте позже.</source>
+        <target>Failed to load data. Please try again later.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/services/media-list-state.service.ts</context>
+          <context context-type="linenumber">156</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
