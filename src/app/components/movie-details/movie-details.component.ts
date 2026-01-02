@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { mapImdbTypeToMediaType } from '../../utils/media-type.utils';
 import { MediaType } from '../../core/models/media-type.enum';
+import { GenreTranslationPipe } from '../../pipes/genre-translation.pipe';
 
 @Component({
   selector: 'app-movie-details',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, NgOptimizedImage],
+  imports: [RouterLink, DecimalPipe, NgOptimizedImage, GenreTranslationPipe],
   templateUrl: './movie-details.component.html',
   styleUrl: './movie-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,10 +26,7 @@ export class MovieDetailsComponent implements AfterViewInit {
       this.mediaTypeContext && this.mediaTypeContext !== MediaType.All
         ? this.mediaTypeContext
         : null;
-
-    // Если контекста нет (маловероятно), пытаемся угадать по типу из API
     const routeType = typeFromContext ?? mapImdbTypeToMediaType(this.movie.type);
-
     return ['/media', routeType, this.movie.id];
   }
 

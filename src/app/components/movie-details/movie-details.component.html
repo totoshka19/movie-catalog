@@ -29,7 +29,7 @@
         @if (movie.genres?.length) {
           <div class="movie-details__genres">
             @for (genre of movie.genres; track genre) {
-              <span class="movie-details__genre-tag">{{ genre }}</span>
+              <span class="movie-details__genre-tag">{{ genre | genreTranslation }}</span>
             }
           </div>
         }

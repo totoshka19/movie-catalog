@@ -3,11 +3,12 @@ import { RouterLink } from '@angular/router';
 import { ImdbInterest } from '../../models/imdb.model';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { MediaType, SortType } from '../../core/models/media-type.enum';
+import { GenreTranslationPipe } from '../../pipes/genre-translation.pipe';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [SearchBarComponent, RouterLink],
+  imports: [SearchBarComponent, RouterLink, GenreTranslationPipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -45,7 +45,7 @@
     @if (movie.genres?.length) {
       <div class="movie-card__genres">
         @for (genre of movie.genres!.slice(0, 3); track genre) {
-          <span class="movie-card__genre-tag">{{ genre }}</span>
+          <span class="movie-card__genre-tag">{{ genre | genreTranslation }}</span>
         }
       </div>
     }

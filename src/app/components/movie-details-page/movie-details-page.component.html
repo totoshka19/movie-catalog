@@ -36,7 +36,7 @@
           }
           <div class="movie-details-page__genres">
             @for (genre of itemData.genres; track genre) {
-              <span class="movie-details-page__genre-tag">{{ genre }}</span>
+              <span class="movie-details-page__genre-tag">{{ genre | genreTranslation }}</span>
             }
           </div>
         </div>

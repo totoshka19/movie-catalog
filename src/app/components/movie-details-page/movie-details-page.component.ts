@@ -13,6 +13,7 @@ import { VideoPlayerComponent } from '../video-player/video-player.component';
 import { ScrollLockService } from '../../services/scroll-lock.service';
 import { ResizeImagePipe } from '../../pipes/resize-image.pipe';
 import { MediaType } from '../../core/models/media-type.enum';
+import { GenreTranslationPipe } from '../../pipes/genre-translation.pipe';
 
 @Component({
   selector: 'app-movie-details-page',
@@ -24,6 +25,7 @@ import { MediaType } from '../../core/models/media-type.enum';
     SkeletonDetailsComponent,
     VideoPlayerComponent,
     ResizeImagePipe,
+    GenreTranslationPipe
   ],
   templateUrl: './movie-details-page.component.html',
   styleUrl: './movie-details-page.component.scss',

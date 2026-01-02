@@ -87,7 +87,7 @@
               (change)="onGenreToggle($event, genre.id)"
             >
             <span class="checkbox-custom"></span>
-            <span class="checkbox-text">{{ genre.name }}</span>
+            <span class="checkbox-text">{{ genre.name | genreTranslation }}</span>
           </label>
         }
       </div>
